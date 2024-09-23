@@ -5,11 +5,7 @@ import { Vocabulary } from 'src/vocabulary/schemas/vocabulary.schema';
 import { Question } from 'src/question/schemas/question.schema';
 
 import { MetaData, MetaDataSchema } from 'src/common/meta_data.schema';
-
-enum Role {
-  USER = 'user',
-  ADMIN = 'admin',
-}
+import { Role } from 'src/enum/role.enum';
 
 @Schema({ timestamps: true }) // created_at & updated_at was automacally created
 export class User extends Document {
@@ -25,8 +21,8 @@ export class User extends Document {
   @Prop()
   dob: Date;
 
-  @Prop({ required: true, enum: Role, default: Role.USER })
-  role: Role;
+  @Prop({ required: true, enum: Role, default: Role.User })
+  roles: Role;
 
   @Prop()
   number_phone: string;
