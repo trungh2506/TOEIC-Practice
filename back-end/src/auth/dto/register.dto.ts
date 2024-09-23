@@ -16,6 +16,11 @@ export class RegisterDTO {
   @IsEmail()
   email: string;
 
+  @IsOptional()
+  @IsNotEmpty({ message: 'Fullname is required' })
+  @IsString()
+  fullname: string;
+
   @IsNotEmpty({ message: 'Password is required' })
   @IsString()
   @MinLength(6)

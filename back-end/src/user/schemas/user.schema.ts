@@ -25,6 +25,9 @@ export class User extends Document {
   roles: Role;
 
   @Prop()
+  fullname: string;
+
+  @Prop()
   number_phone: string;
 
   @Prop({ type: Object })
