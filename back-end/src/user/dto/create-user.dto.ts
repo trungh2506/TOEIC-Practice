@@ -25,6 +25,11 @@ export class CreateUserDto {
   password: string;
 
   @IsOptional()
+  @IsNotEmpty({ message: 'Fullname is required' })
+  @IsString()
+  fullname: string;
+
+  @IsOptional()
   @IsDateString({}, { message: 'Invalid date of birth format' })
   dob?: Date;
 

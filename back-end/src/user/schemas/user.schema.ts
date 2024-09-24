@@ -7,6 +7,8 @@ import { Question } from 'src/question/schemas/question.schema';
 import { MetaData, MetaDataSchema } from 'src/common/meta_data.schema';
 import { Role } from 'src/enum/role.enum';
 
+import { Exclude, Expose } from 'class-transformer';
+
 @Schema({ timestamps: true }) // created_at & updated_at was automacally created
 export class User extends Document {
   @Prop({ required: true })
@@ -38,6 +40,9 @@ export class User extends Document {
 
   @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Question' }] })
   favorites: Question[];
+
+  @Prop()
+  refresh_token: string;
 
   @Prop({ type: MetaDataSchema, default: () => ({}) })
   meta_data: MetaData;

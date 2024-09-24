@@ -5,6 +5,8 @@ import {
   Request,
   Get,
   Body,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { LocalAuthGuard } from './passport/local-auth.guard';
@@ -34,9 +36,14 @@ export class AuthController {
     return this.authService.register(registerDto);
   }
 
+  @Post('refresh')
+  @Public()
+  async refresh(@Body('refresh_token') refreshToken: string) {
+    return this.authService.refresh(refreshToken);
+  }
+
   @Get('profile')
-  @Roles(Role.Admin)
   getProfile(@Request() req) {
-    return req.user;
+    return this.authService.profile(req.user?._id);
   }
 }

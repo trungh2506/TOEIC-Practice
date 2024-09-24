@@ -6,19 +6,27 @@ import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './passport/local.strategy';
 import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
-import { jwtConstants } from './constants';
 import { JwtStrategy } from './passport/jwt.strategy';
+
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { RefreshTokenStrategy } from './passport/refreshToken.strategy';
 
 @Module({
   imports: [
     UserModule,
     PassportModule,
-    JwtModule.register({
-      secret: jwtConstants.secret,
-      signOptions: { expiresIn: '60s' },
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'), // Lấy secret từ biến môi trường
+        signOptions: {
+          expiresIn: configService.get<string>('JWT_SECRET_EXPIRE_IN'),
+        },
+      }),
     }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, RefreshTokenStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}
