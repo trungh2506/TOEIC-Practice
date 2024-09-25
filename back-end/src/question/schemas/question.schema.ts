@@ -1,11 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-import { MetaData, MetaDataSchema  } from 'src/common/meta_data.schema';
+import { MetaData, MetaDataSchema } from 'src/common/meta_data.schema';
 
 @Schema({ timestamps: true })
 export class Question extends Document {
-  
   @Prop({ required: true })
   question_number: number;
 
@@ -20,6 +19,9 @@ export class Question extends Document {
 
   @Prop({ required: true })
   part: number;
+
+  @Prop({ required: true })
+  section: string;
 
   @Prop({ type: [String], required: true })
   options: string[];

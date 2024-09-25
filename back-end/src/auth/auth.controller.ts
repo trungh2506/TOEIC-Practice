@@ -2,12 +2,15 @@ import {
   Controller,
   Post,
   UseGuards,
-  Request,
   Get,
   Body,
   UseInterceptors,
   ClassSerializerInterceptor,
+  Req,
+  Res,
 } from '@nestjs/common';
+
+import { Response, Request } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { LocalAuthGuard } from './passport/local-auth.guard';
 
@@ -26,8 +29,22 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   @Public()
-  async login(@Body() loginDto: LoginDTO) {
-    return this.authService.login(loginDto);
+  async login(@Body() loginDto: LoginDTO, @Res() res: Response) {
+    // return this.authService.login(loginDto);
+
+    const { access_token, refresh_token } =
+      await this.authService.login(loginDto);
+
+    // Lưu refresh token vào cookie
+    res.cookie('refreshToken', refresh_token, {
+      httpOnly: true, // Ngăn chặn truy cập qua JavaScript
+      secure: process.env.NODE_ENV === 'production', // Chỉ gửi cookie qua HTTPS
+      sameSite: 'strict', // Ngăn chặn CSRF
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Thời gian hết hạn (30 ngày)
+    });
+
+    // Gửi token truy cập về phía client
+    return res.json({ access_token });
   }
 
   @Post('register')
@@ -38,12 +55,28 @@ export class AuthController {
 
   @Post('refresh')
   @Public()
-  async refresh(@Body('refresh_token') refreshToken: string) {
-    return this.authService.refresh(refreshToken);
+  async refresh(@Req() req: Request, @Res() res: Response) {
+    const refreshToken = req.cookies.refreshToken; // Lấy refresh token từ cookie
+    if (!refreshToken) {
+      return res.status(403).json({ message: 'Refresh Token is required' });
+    }
+
+    // Xử lý logic làm mới refresh token
+    const { access_token } = await this.authService.refresh(refreshToken);
+
+    // Lưu refresh token mới vào cookie
+    res.cookie('refreshToken', access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+    });
+
+    return res.json({ access_token });
   }
 
   @Get('profile')
-  getProfile(@Request() req) {
+  getProfile(@Req() req) {
     return this.authService.profile(req.user?._id);
   }
 }
