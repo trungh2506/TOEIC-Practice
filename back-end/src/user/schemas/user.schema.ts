@@ -41,9 +41,6 @@ export class User extends Document {
   @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Question' }] })
   favorites: Question[];
 
-  @Prop()
-  refresh_token: string;
-
   @Prop({ type: MetaDataSchema, default: () => ({}) })
   meta_data: MetaData;
 }
