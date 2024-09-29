@@ -12,7 +12,10 @@ export class ToeicTestService {
     @InjectModel(Toeic_Test.name) private toeicTestModel: Model<Toeic_Test>,
   ) {}
 
-  create(createToeicTestDto: CreateToeicTestDto) {
+  create(
+    createToeicTestDto: CreateToeicTestDto,
+    files: Array<Express.Multer.File>,
+  ) {
     return 'This action adds a new toeicTest';
   }
 

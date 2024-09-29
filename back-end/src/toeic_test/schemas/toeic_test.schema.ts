@@ -9,6 +9,9 @@ export class Toeic_Test extends Document {
   @Prop({ required: true })
   title: string;
 
+  @Prop()
+  image: string;
+
   @Prop({ type: [{ type: String, ref: 'Question' }] }) // Array of Question IDs for listening part
   listening: Question[];
 

@@ -7,10 +7,13 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Question } from './schemas/question.schema';
 @Injectable()
 export class QuestionService {
-  constructor(@InjectModel(Question.name) private questionModel: Model<Question>) {}
+  constructor(
+    @InjectModel(Question.name) private questionModel: Model<Question>,
+  ) {}
 
   create(createQuestionDto: CreateQuestionDto) {
-    return 'This action adds a new question';
+    const newQuestion = new this.questionModel(createQuestionDto);
+    return newQuestion.save();
   }
 
   findAll() {
