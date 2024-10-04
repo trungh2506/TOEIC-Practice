@@ -47,6 +47,7 @@ export class ToeicTestController {
   )
   create(
     @Req() req: Request,
+    @Body() body: any,
     @UploadedFiles()
     files: {
       testImage?: Express.Multer.File;
@@ -56,7 +57,9 @@ export class ToeicTestController {
       audios?: Express.Multer.File[];
     },
   ) {
-    return this.toeicTestService.create(files);
+    const toeic_test_title = body.title;
+    // console.log('aaaa', body.title || '');
+    return this.toeicTestService.create(files, toeic_test_title);
   }
 
   @Get()

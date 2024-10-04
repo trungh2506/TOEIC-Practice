@@ -22,18 +22,28 @@ export class ToeicTestService {
     @InjectModel(Toeic_Test.name) private toeicTestModel: Model<Toeic_Test>,
   ) {}
 
-  async create(files: {
-    testImage?: Express.Multer.File;
-    questions?: Express.Multer.File;
-    passages?: Express.Multer.File;
-    images?: Express.Multer.File[];
-    audios?: Express.Multer.File[];
-  }) {
+  async create(
+    files: {
+      testImage?: Express.Multer.File;
+      questions?: Express.Multer.File;
+      passages?: Express.Multer.File;
+      images?: Express.Multer.File[];
+      audios?: Express.Multer.File[];
+    },
+    toeic_test_title: string,
+  ) {
+    const toeicTestDto = new CreateToeicTestDto();
+    toeicTestDto.title = toeic_test_title;
+    toeicTestDto.image = files.testImage.originalname;
+    if (!toeicTestDto.listening) toeicTestDto.listening = [];
+    if (!toeicTestDto.reading) toeicTestDto.reading = [];
+    if (!toeicTestDto.passages) toeicTestDto.passages = [];
+
     if (files.questions) {
       const workbook = XLSX.readFile(files.questions[0].path);
       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
       const questionsData: Question[] = XLSX.utils.sheet_to_json(worksheet);
-      console.log('Questions Data:', questionsData);
+      // console.log('Questions Data:', questionsData);
       for (const question of questionsData) {
         const questionDto = new CreateQuestionDto();
         questionDto.question_number = question.question_number;
@@ -45,13 +55,16 @@ export class ToeicTestService {
           question.option_b || '',
           question.option_c || '',
           question.option_d || '',
-        ].filter((option) => option !== '');
-        console.log('option a', question.option_a);
+        ];
         questionDto.section = question.section;
         questionDto.correct_answer = question.correct_answer;
         questionDto.script = question.script;
         questionDto.passage_id = question.passage_id;
-        await this.questionService.create(questionDto);
+
+        const newQuestion = await this.questionService.create(questionDto);
+        if (questionDto.section.includes('listening')) {
+          toeicTestDto.listening.push(newQuestion);
+        } else toeicTestDto.reading.push(newQuestion);
       }
     } else {
       console.log('No questions file uploaded.');
@@ -77,12 +90,15 @@ export class ToeicTestService {
         } else {
           passageDto.images = [];
         }
-        await this.passageService.create(passageDto);
+        const newPassage = await this.passageService.create(passageDto);
+        toeicTestDto.passages.push(newPassage);
       }
     } else {
       console.log('No passages file uploaded.');
     }
 
+    const newToeicTest = new this.toeicTestModel(toeicTestDto);
+    newToeicTest.save();
     return 'This action adds a new toeicTest';
   }
 

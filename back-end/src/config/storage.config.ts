@@ -2,13 +2,6 @@ import { existsSync, mkdirSync } from 'fs';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 
-// export const storage = diskStorage({
-//   destination: './uploads',
-//   filename: (req, file, callback) => {
-//     callback(null, generateFilename(file));
-//   },
-// });
-
 export const storage = diskStorage({
   destination: (req, file, cb) => {
     const dateFolder = req.body.title;
@@ -30,7 +23,7 @@ export const storage = diskStorage({
     cb(null, uploadPath);
   },
   filename: (req, file, callback) => {
-    callback(null, generateFilename(file));
+    callback(null, `${req.body.title}-${generateFilename(file)}`);
   },
 });
 

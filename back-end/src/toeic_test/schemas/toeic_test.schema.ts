@@ -13,15 +13,14 @@ export class Toeic_Test extends Document {
   @Prop()
   image: string;
 
-  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Passage' }] })
-  listening: Passage[];
-
-  // Mảng các Passage cho phần Reading
-  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Passage' }] })
-  reading: Passage[];
+  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Question' }] })
+  listening: Question[];
 
   @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Question' }] })
-  standalone_questions: Question[];
+  reading: Question[];
+
+  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Passage' }] })
+  passages: Passage[];
 
   @Prop({ type: MetaDataSchema, default: () => ({}) })
   meta_data: MetaData;
