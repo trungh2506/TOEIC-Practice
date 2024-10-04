@@ -12,7 +12,7 @@ import { extname } from 'path';
 export const storage = diskStorage({
   destination: (req, file, cb) => {
     const dateFolder = req.body.title;
-
+    console.log(dateFolder);
     let uploadPath = `./uploads/${dateFolder}`;
 
     if (file.mimetype.startsWith('image/')) {
@@ -35,5 +35,5 @@ export const storage = diskStorage({
 });
 
 function generateFilename(file) {
-  return `${Date.now()}.${extname(file.originalname)}`;
+  return file.originalname;
 }

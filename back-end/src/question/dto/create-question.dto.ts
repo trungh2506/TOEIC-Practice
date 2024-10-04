@@ -6,6 +6,7 @@ import {
   IsString,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { Types } from 'mongoose';
 
 export class CreateQuestionDto {
   @IsNumber()
@@ -18,11 +19,11 @@ export class CreateQuestionDto {
 
   @IsArray()
   @IsOptional()
-  question_images?: string[];
+  question_image?: string;
 
   @IsString()
   @IsOptional()
-  question_audio_url?: string;
+  question_audio?: string;
 
   @IsNumber()
   @IsNotEmpty()
@@ -33,12 +34,16 @@ export class CreateQuestionDto {
   section: string;
 
   @IsArray()
-  @IsNotEmpty()
+  @IsString({ each: true })
   options: string[];
 
   @IsString()
   @IsNotEmpty()
   correct_answer: string;
+
+  @IsString()
+  @IsOptional()
+  passage_id: string;
 
   @IsString()
   @IsOptional()

@@ -36,7 +36,8 @@ export class ToeicTestController {
   @UseInterceptors(
     FileFieldsInterceptor(
       [
-        { name: 'excel', maxCount: 1 },
+        { name: 'questions', maxCount: 1 },
+        { name: 'passages', maxCount: 1 },
         { name: 'images', maxCount: 100 },
         { name: 'audios', maxCount: 100 },
         { name: 'testImage', maxCount: 1 },
@@ -49,21 +50,13 @@ export class ToeicTestController {
     @UploadedFiles()
     files: {
       testImage?: Express.Multer.File;
-      excel?: Express.Multer.File;
+      questions?: Express.Multer.File;
+      passages?: Express.Multer.File;
       images?: Express.Multer.File[];
       audios?: Express.Multer.File[];
     },
   ) {
-    // Parse dữ liệu từ form-data thành DTO
-    //  const createToeicTestDto = plainToClass(CreateToeicTestDto, JSON.parse(req.body));
-    console.log('CreateToeicTestDto:', req.body);
-
-    const workbook = XLSX.readFile(files.excel[0].path);
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]]; // Lấy sheet đầu tiên
-    const data = XLSX.utils.sheet_to_json(worksheet);
-    console.log('Excel Data:', data); // In ra dữ liệu từ file Excel
-
-    return 'File upload success';
+    return this.toeicTestService.create(files);
   }
 
   @Get()

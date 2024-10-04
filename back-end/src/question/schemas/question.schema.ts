@@ -1,21 +1,22 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Schema as MongooseSchema } from 'mongoose';
 
 import { MetaData, MetaDataSchema } from 'src/common/meta_data.schema';
+import { Passage } from 'src/passage/schemas/passage.schema';
 
 @Schema({ timestamps: true })
 export class Question extends Document {
   @Prop({ required: true })
   question_number: number;
 
-  @Prop({ required: true })
+  @Prop()
   question_text: string;
 
-  @Prop({ type: [String], default: [] })
-  question_images: string[];
+  @Prop({ type: String })
+  question_image: string;
 
   @Prop({ default: null })
-  question_audio_url: string;
+  question_audio: string;
 
   @Prop({ required: true })
   part: number;
@@ -28,6 +29,9 @@ export class Question extends Document {
 
   @Prop({ required: true })
   correct_answer: string;
+
+  @Prop()
+  passage_id: string;
 
   @Prop({ default: null })
   script: string;

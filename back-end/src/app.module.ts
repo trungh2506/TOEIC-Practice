@@ -17,6 +17,7 @@ import { JwtAuthGuard } from './auth/passport/jwt-auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { MulterModule } from '@nestjs/platform-express';
+import { PassageModule } from './passage/passage.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { MulterModule } from '@nestjs/platform-express';
     ToeicTestModule,
     UserAnswerModule,
     AuthModule,
+    PassageModule,
   ],
   controllers: [AppController],
   providers: [

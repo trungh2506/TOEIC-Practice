@@ -32,7 +32,7 @@ export class AuthService {
 
   async register(registerDto: RegisterDTO): Promise<{ access_token: string }> {
     const { username, email, password } = registerDto;
-
+    console.log(registerDto);
     const existingUser = await this.userService.findOneByEmail(email);
     if (existingUser) {
       throw new HttpException(
