@@ -38,6 +38,7 @@ export class ToeicTestService {
     toeicTestDto.image = files.testImage[0].originalname;
     if (!toeicTestDto.listening) toeicTestDto.listening = [];
     if (!toeicTestDto.reading) toeicTestDto.reading = [];
+    if (!toeicTestDto.passages) toeicTestDto.passages = [];
 
     // Passages
     if (files.passages) {
@@ -60,6 +61,7 @@ export class ToeicTestService {
           passageDto.images = [];
         }
         const newPassage = await this.passageService.create(passageDto);
+        toeicTestDto.passages.push(newPassage);
       }
     } else {
       console.log('No passages file uploaded.');

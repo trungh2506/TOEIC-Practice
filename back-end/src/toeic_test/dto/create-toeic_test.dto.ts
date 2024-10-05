@@ -24,4 +24,7 @@ export class CreateToeicTestDto {
 
   @IsArray()
   reading: Question[];
+
+  @IsArray()
+  passages: Passage[];
 }
