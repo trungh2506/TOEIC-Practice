@@ -19,9 +19,6 @@ export class Toeic_Test extends Document {
   @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Question' }] })
   reading: Question[];
 
-  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Passage' }] })
-  passages: Passage[];
-
   @Prop({ type: MetaDataSchema, default: () => ({}) })
   meta_data: MetaData;
 }

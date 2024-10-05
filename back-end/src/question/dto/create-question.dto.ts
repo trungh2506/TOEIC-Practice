@@ -41,7 +41,6 @@ export class CreateQuestionDto {
   @IsNotEmpty()
   correct_answer: string;
 
-  @IsString()
   @IsOptional()
   passage_id: string;
 

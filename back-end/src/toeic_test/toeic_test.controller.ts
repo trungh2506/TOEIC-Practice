@@ -58,18 +58,20 @@ export class ToeicTestController {
     },
   ) {
     const toeic_test_title = body.title;
-    // console.log('aaaa', body.title || '');
+    console.log('aaaa', files.testImage);
     return this.toeicTestService.create(files, toeic_test_title);
   }
 
+  @Public()
   @Get()
   findAll() {
     return this.toeicTestService.findAll();
   }
 
+  @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.toeicTestService.findOne(+id);
+    return this.toeicTestService.findOne(id);
   }
 
   @Patch(':id')
