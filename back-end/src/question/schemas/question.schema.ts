@@ -12,7 +12,7 @@ export class Question extends Document {
   @Prop()
   question_text: string;
 
-  @Prop({ type: String })
+  @Prop()
   question_image: string;
 
   @Prop({ default: null })
@@ -36,8 +36,8 @@ export class Question extends Document {
   @Prop({ default: null })
   script: string;
 
-  // @Prop({ type: MetaDataSchema, default: () => ({}) })
-  // meta_data: MetaData;
+  @Prop({ type: MetaDataSchema, default: () => ({}) })
+  meta_data: MetaData;
 }
 
 export const QuestionSchema = SchemaFactory.createForClass(Question);

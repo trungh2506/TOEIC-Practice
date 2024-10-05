@@ -114,25 +114,29 @@ export class ToeicTestService {
   }
 
   async findOne(id: string) {
-    const toeic_test = await this.toeicTestModel
+    const toeicTest = await this.toeicTestModel
       .findById(id)
       .populate({
         path: 'listening',
         model: 'Question',
         populate: {
-          path: 'passage_id', // Populate trường passage_id trong Question
-          model: 'Passage', // Mô hình Passage
+          path: 'passage_id',
+          model: 'Passage',
         },
       })
       .populate({
         path: 'reading',
         model: 'Question',
         populate: {
-          path: 'passage_id', // Populate trường passage_id trong Question
-          model: 'Passage', // Mô hình Passage
+          path: 'passage_id',
+          model: 'Passage',
         },
       });
-    return toeic_test;
+
+    const allQuestion = [...toeicTest.listening, ...toeicTest.reading];
+    allQuestion.map((question) => {});
+
+    return allQuestion;
   }
 
   update(id: number, updateToeicTestDto: UpdateToeicTestDto) {

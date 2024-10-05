@@ -23,8 +23,8 @@ export class Passage extends Document {
   @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Question' }] })
   questions: Question[];
 
-  // @Prop({ type: MetaDataSchema, default: () => ({}) })
-  // meta_data: MetaData;
+  @Prop({ type: MetaDataSchema, default: () => ({}) })
+  meta_data: MetaData;
 }
 
 export const PassageSchema = SchemaFactory.createForClass(Passage);
