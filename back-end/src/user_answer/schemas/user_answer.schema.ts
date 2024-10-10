@@ -9,15 +9,31 @@ export class User_Answer extends Document {
   user_id: string;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Toeic_Test' })
-  test_id: string;
+  toeic_test_id: string;
 
   @Prop({
     type: [
-      { question_id: MongooseSchema.Types.ObjectId, selected_option: String },
+      {
+        question_id: MongooseSchema.Types.ObjectId,
+        selected_option: String,
+        status: {
+          type: String,
+          enum: ['correct', 'incorrect', 'unanswered'],
+          default: 'unanswered',
+        },
+      },
     ],
   })
   answers: { question_id: string; selected_option: string }[];
+  @Prop({ default: 0 })
+  correct_answers: number;
+  @Prop({ default: 0 })
+  incorrect_answers: number;
+  @Prop({ default: 0 })
+  unanswered_answers: number;
 
+  @Prop({ default: Date.now })
+  date_answer: Date;
   @Prop({ type: MetaDataSchema, default: () => ({}) })
   meta_data: MetaData;
 }

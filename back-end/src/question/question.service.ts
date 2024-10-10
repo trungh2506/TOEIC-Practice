@@ -20,8 +20,9 @@ export class QuestionService {
     return `This action returns all question`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} question`;
+  async findOne(question_id: string) {
+    const question = await this.questionModel.findById(question_id);
+    return question;
   }
 
   update(id: number, updateQuestionDto: UpdateQuestionDto) {

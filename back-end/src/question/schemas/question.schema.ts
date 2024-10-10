@@ -31,7 +31,7 @@ export class Question extends Document {
   correct_answer: string;
 
   @Prop({ type: String, ref: 'Passage' })
-  passage_id: String;
+  passage_id: Passage;
 
   @Prop({ default: null })
   script: string;

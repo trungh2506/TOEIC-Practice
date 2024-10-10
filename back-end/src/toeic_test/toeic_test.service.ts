@@ -134,9 +134,25 @@ export class ToeicTestService {
       });
 
     const allQuestion = [...toeicTest.listening, ...toeicTest.reading];
-    allQuestion.map((question) => {});
 
-    return allQuestion;
+    // Nhóm các câu hỏi theo passage_id
+    const groupedQuestions = allQuestion.reduce((acc, question) => {
+      const passageId = question.passage_id?._id || 'no-passage'; // Sử dụng passage_id hoặc 'no-passage' nếu null
+      if (!acc[passageId]) {
+        acc[passageId] = {
+          passage: question.passage_id,
+          questions: [],
+        };
+      }
+      acc[passageId].questions.push(question);
+      return acc;
+    }, {});
+
+    // Chuyển đổi đối tượng nhóm thành mảng
+    const groupedArray = Object.values(groupedQuestions);
+
+    // return groupedArray;
+    return toeicTest;
   }
 
   update(id: number, updateToeicTestDto: UpdateToeicTestDto) {
@@ -145,5 +161,14 @@ export class ToeicTestService {
 
   remove(id: number) {
     return `This action removes a #${id} toeicTest`;
+  }
+
+  async getTotalQuestion(toeic_test_id: string) {
+    const toeic_test = await this.toeicTestModel.findById(toeic_test_id);
+    if (!toeic_test) {
+      throw new Error('Toeic test not found');
+    }
+    let total = toeic_test.listening.length + toeic_test.reading.length;
+    return total;
   }
 }

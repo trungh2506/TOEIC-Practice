@@ -17,6 +17,9 @@ export class Passage extends Document {
   @Prop()
   content: string;
 
+  @Prop({ default: null })
+  audio: string;
+
   @Prop({ type: [String], default: [] })
   images: string[];
 

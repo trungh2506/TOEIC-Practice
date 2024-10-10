@@ -18,5 +18,6 @@ import { QuestionModule } from 'src/question/question.module';
   ],
   controllers: [ToeicTestController],
   providers: [ToeicTestService],
+  exports: [ToeicTestService],
 })
 export class ToeicTestModule {}
