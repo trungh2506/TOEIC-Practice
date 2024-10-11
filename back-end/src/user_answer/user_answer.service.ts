@@ -7,6 +7,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User_Answer } from './schemas/user_answer.schema';
 import { QuestionService } from 'src/question/question.service';
 import { ToeicTestService } from 'src/toeic_test/toeic_test.service';
+import { paginate } from 'src/common/pagination/pagination.service';
+import { PaginationDto } from 'src/common/pagination/pagination.dto';
 
 @Injectable()
 export class UserAnswerService {
@@ -53,8 +55,18 @@ export class UserAnswerService {
     return new_user_answer;
   }
 
-  async findAllByUserId(user_id: string) {
-    const user_answers = await this.userAnswerModel.find({ user_id: user_id });
+  async findAllByUserId(user_id: string, paginationDto: PaginationDto) {
+    // const user_answers = await this.userAnswerModel.find({ user_id: user_id });
+    const filter = { user_id: user_id }; // Điều kiện lọc theo user_id
+    const projection = {}; // Có thể chỉ định các trường cần lấy nếu muốn
+
+    // Gọi hàm paginate và truyền vào model, DTO phân trang, điều kiện lọc, và projection
+    const user_answers = await paginate(
+      this.userAnswerModel, // Model MongoDB
+      paginationDto, // Thông tin phân trang
+      filter, // Điều kiện lọc theo user_id
+      projection, // Lấy toàn bộ các trường, có thể điều chỉnh nếu cần
+    );
     return user_answers;
   }
 

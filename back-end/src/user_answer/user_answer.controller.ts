@@ -7,26 +7,26 @@ import {
   Param,
   Delete,
   Req,
+  Query,
 } from '@nestjs/common';
 import { UserAnswerService } from './user_answer.service';
 import { CreateUserAnswerDto } from './dto/create-user_answer.dto';
 import { UpdateUserAnswerDto } from './dto/update-user_answer.dto';
 import { Public } from 'src/decorator/public.decorator';
+import { PaginationDto } from 'src/common/pagination/pagination.dto';
 
 @Controller('user-answer')
 export class UserAnswerController {
   constructor(private readonly userAnswerService: UserAnswerService) {}
 
-  @Public()
   @Post()
   create(@Body() createUserAnswerDto: CreateUserAnswerDto) {
     return this.userAnswerService.create(createUserAnswerDto);
   }
 
   @Get('user')
-  findAllByUserId(@Req() req) {
-    console.log(req.user?._id);
-    return this.userAnswerService.findAllByUserId(req.user?._id);
+  findAllByUserId(@Req() req, @Query() paginationDto: PaginationDto) {
+    return this.userAnswerService.findAllByUserId(req.user?._id, paginationDto);
   }
 
   @Get(':id')

@@ -13,6 +13,8 @@ import { Passage } from 'src/interface/passage.interface';
 import { QuestionService } from 'src/question/question.service';
 import { CreateQuestionDto } from 'src/question/dto/create-question.dto';
 import { Question } from 'src/interface/question.interface';
+import { paginate } from 'src/common/pagination/pagination.service';
+import { PaginationDto } from 'src/common/pagination/pagination.dto';
 
 @Injectable()
 export class ToeicTestService {
@@ -106,10 +108,19 @@ export class ToeicTestService {
     return 'This action adds a new toeicTest';
   }
 
-  async findAll() {
-    const toeicTests = await this.toeicTestModel
-      .find()
-      .select('title image meta_data');
+  async findAll(paginationDto: PaginationDto) {
+    // const toeicTests = await this.toeicTestModel
+    //   .find()
+    //   .select('title image meta_data');
+    const projection = { title: 1, image: 1 };
+    const filter = {};
+    const toeicTests = await paginate(
+      this.toeicTestModel,
+      paginationDto,
+      filter,
+      projection,
+    );
+
     return toeicTests;
   }
 
@@ -137,7 +148,7 @@ export class ToeicTestService {
 
     // Nhóm các câu hỏi theo passage_id
     const groupedQuestions = allQuestion.reduce((acc, question) => {
-      const passageId = question.passage_id?._id || 'no-passage'; // Sử dụng passage_id hoặc 'no-passage' nếu null
+      const passageId = question.passage_id?._id || 'no-passage';
       if (!acc[passageId]) {
         acc[passageId] = {
           passage: question.passage_id,
@@ -151,8 +162,8 @@ export class ToeicTestService {
     // Chuyển đổi đối tượng nhóm thành mảng
     const groupedArray = Object.values(groupedQuestions);
 
-    // return groupedArray;
-    return toeicTest;
+    return groupedArray;
+    // return toeicTest;
   }
 
   update(id: number, updateToeicTestDto: UpdateToeicTestDto) {

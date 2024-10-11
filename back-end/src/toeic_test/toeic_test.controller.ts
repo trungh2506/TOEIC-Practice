@@ -9,6 +9,7 @@ import {
   UploadedFiles,
   UseInterceptors,
   Req,
+  Query,
 } from '@nestjs/common';
 import { ToeicTestService } from './toeic_test.service';
 import { CreateToeicTestDto } from './dto/create-toeic_test.dto';
@@ -25,6 +26,7 @@ import { Role } from 'src/enum/role.enum';
 import { plainToClass } from 'class-transformer';
 
 import * as XLSX from 'xlsx';
+import { PaginationDto } from 'src/common/pagination/pagination.dto';
 
 @Controller('toeic-test')
 export class ToeicTestController {
@@ -64,8 +66,8 @@ export class ToeicTestController {
 
   @Public()
   @Get()
-  findAll() {
-    return this.toeicTestService.findAll();
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.toeicTestService.findAll(paginationDto);
   }
 
   @Public()
