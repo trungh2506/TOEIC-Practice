@@ -7,18 +7,22 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Question } from './schemas/question.schema';
 @Injectable()
 export class QuestionService {
-  constructor(@InjectModel(Question.name) private questionModel: Model<Question>) {}
+  constructor(
+    @InjectModel(Question.name) private questionModel: Model<Question>,
+  ) {}
 
   create(createQuestionDto: CreateQuestionDto) {
-    return 'This action adds a new question';
+    const newQuestion = new this.questionModel(createQuestionDto);
+    return newQuestion.save();
   }
 
   findAll() {
     return `This action returns all question`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} question`;
+  async findOne(question_id: string) {
+    const question = await this.questionModel.findById(question_id);
+    return question;
   }
 
   update(id: number, updateQuestionDto: UpdateQuestionDto) {

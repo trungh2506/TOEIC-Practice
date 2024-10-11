@@ -1,14 +1,17 @@
-import { Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 
 import { Vocabulary } from 'src/vocabulary/schemas/vocabulary.schema';
 import { Question } from 'src/question/schemas/question.schema';
 
-import { MetaData, MetaDataSchema  } from 'src/common/meta_data.schema';
+import { MetaData, MetaDataSchema } from 'src/common/meta_data.schema';
+import { Role } from 'src/enum/role.enum';
 
-@Schema({timestamps: true}) // created_at & updated_at was automacally created
-export class User extends Document{
-    @Prop({ required: true })
+import { Exclude, Expose } from 'class-transformer';
+
+@Schema({ timestamps: true }) // created_at & updated_at was automacally created
+export class User extends Document {
+  @Prop({ required: true })
   username: string;
 
   @Prop({ required: true, unique: true })
@@ -19,6 +22,12 @@ export class User extends Document{
 
   @Prop()
   dob: Date;
+
+  @Prop({ required: true, enum: Role, default: Role.User })
+  roles: Role;
+
+  @Prop()
+  fullname: string;
 
   @Prop()
   number_phone: string;

@@ -5,23 +5,74 @@ import { UpdateUserAnswerDto } from './dto/update-user_answer.dto';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { User_Answer } from './schemas/user_answer.schema';
+import { QuestionService } from 'src/question/question.service';
+import { ToeicTestService } from 'src/toeic_test/toeic_test.service';
+import { paginate } from 'src/common/pagination/pagination.service';
+import { PaginationDto } from 'src/common/pagination/pagination.dto';
 
 @Injectable()
 export class UserAnswerService {
   constructor(
+    private readonly questionService: QuestionService,
+    private readonly toeicTestService: ToeicTestService,
     @InjectModel(User_Answer.name) private userAnswerModel: Model<User_Answer>,
   ) {}
 
-  create(createUserAnswerDto: CreateUserAnswerDto) {
-    return 'This action adds a new userAnswer';
+  async create(createUserAnswerDto: CreateUserAnswerDto) {
+    //get total question in toeic test id
+    const total_of_question = await this.toeicTestService.getTotalQuestion(
+      createUserAnswerDto.toeic_test_id,
+    );
+    createUserAnswerDto.correct_answers =
+      createUserAnswerDto.correct_answers || 0;
+    createUserAnswerDto.incorrect_answers =
+      createUserAnswerDto.incorrect_answers || 0;
+    createUserAnswerDto.unanswered_answers = total_of_question;
+    const answers = createUserAnswerDto.answers;
+    for (const answer of answers) {
+      const question = await this.questionService.findOne(answer.question_id);
+      if (!answer.selected_option) {
+        answer.status = 'unanswered';
+      } else if (
+        question &&
+        question.correct_answer.includes(answer.selected_option)
+      ) {
+        answer.status = 'correct';
+        createUserAnswerDto.correct_answers += 1;
+      } else {
+        answer.status = 'incorrect';
+        createUserAnswerDto.incorrect_answers += 1;
+      }
+    }
+    //update unanswered_answers
+    createUserAnswerDto.unanswered_answers =
+      total_of_question -
+      (createUserAnswerDto.correct_answers +
+        createUserAnswerDto.incorrect_answers);
+
+    const new_user_answer = new this.userAnswerModel(createUserAnswerDto);
+    await new_user_answer.save();
+    return new_user_answer;
   }
 
-  findAll() {
-    return `This action returns all userAnswer`;
+  async findAllByUserId(user_id: string, paginationDto: PaginationDto) {
+    // const user_answers = await this.userAnswerModel.find({ user_id: user_id });
+    const filter = { user_id: user_id }; // Điều kiện lọc theo user_id
+    const projection = {}; // Có thể chỉ định các trường cần lấy nếu muốn
+
+    // Gọi hàm paginate và truyền vào model, DTO phân trang, điều kiện lọc, và projection
+    const user_answers = await paginate(
+      this.userAnswerModel, // Model MongoDB
+      paginationDto, // Thông tin phân trang
+      filter, // Điều kiện lọc theo user_id
+      projection, // Lấy toàn bộ các trường, có thể điều chỉnh nếu cần
+    );
+    return user_answers;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} userAnswer`;
+  async findOneById(id: string) {
+    const user_answer = await this.userAnswerModel.findById(id);
+    return user_answer;
   }
 
   update(id: number, updateUserAnswerDto: UpdateUserAnswerDto) {

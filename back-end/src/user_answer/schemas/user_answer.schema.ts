@@ -1,19 +1,39 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 
-import { MetaData, MetaDataSchema  } from 'src/common/meta_data.schema';
+import { MetaData, MetaDataSchema } from 'src/common/meta_data.schema';
 
 @Schema()
 export class User_Answer extends Document {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
   user_id: string;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Test' })
-  test_id: string;
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Toeic_Test' })
+  toeic_test_id: string;
 
-  @Prop({ type: [{ question_id: MongooseSchema.Types.ObjectId, selected_option: String }] })
+  @Prop({
+    type: [
+      {
+        question_id: MongooseSchema.Types.ObjectId,
+        selected_option: String,
+        status: {
+          type: String,
+          enum: ['correct', 'incorrect', 'unanswered'],
+          default: 'unanswered',
+        },
+      },
+    ],
+  })
   answers: { question_id: string; selected_option: string }[];
+  @Prop({ default: 0 })
+  correct_answers: number;
+  @Prop({ default: 0 })
+  incorrect_answers: number;
+  @Prop({ default: 0 })
+  unanswered_answers: number;
 
+  @Prop({ default: Date.now })
+  date_answer: Date;
   @Prop({ type: MetaDataSchema, default: () => ({}) })
   meta_data: MetaData;
 }

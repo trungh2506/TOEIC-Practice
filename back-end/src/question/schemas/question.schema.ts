@@ -1,31 +1,37 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Schema as MongooseSchema, Types } from 'mongoose';
 
-import { MetaData, MetaDataSchema  } from 'src/common/meta_data.schema';
+import { MetaData, MetaDataSchema } from 'src/common/meta_data.schema';
+import { Passage } from 'src/passage/schemas/passage.schema';
 
 @Schema({ timestamps: true })
 export class Question extends Document {
-  
   @Prop({ required: true })
   question_number: number;
 
-  @Prop({ required: true })
+  @Prop()
   question_text: string;
 
-  @Prop({ type: [String], default: [] })
-  question_images: string[];
+  @Prop()
+  question_image: string;
 
   @Prop({ default: null })
-  question_audio_url: string;
+  question_audio: string;
 
   @Prop({ required: true })
   part: number;
+
+  @Prop({ required: true })
+  section: string;
 
   @Prop({ type: [String], required: true })
   options: string[];
 
   @Prop({ required: true })
   correct_answer: string;
+
+  @Prop({ type: String, ref: 'Passage' })
+  passage_id: Passage;
 
   @Prop({ default: null })
   script: string;
