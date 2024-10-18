@@ -15,6 +15,7 @@ import { CreateQuestionDto } from 'src/question/dto/create-question.dto';
 import { Question } from 'src/interface/question.interface';
 import { paginate } from 'src/common/pagination/pagination.service';
 import { PaginationDto } from 'src/common/pagination/pagination.dto';
+import { ToeicTestType } from 'src/enum/toeic-type.enum';
 
 @Injectable()
 export class ToeicTestService {
@@ -33,9 +34,11 @@ export class ToeicTestService {
       audios?: Express.Multer.File[];
     },
     toeic_test_title: string,
+    toeic_test_type: ToeicTestType,
   ) {
     const toeicTestDto = new CreateToeicTestDto();
     toeicTestDto.title = toeic_test_title;
+    toeicTestDto.type = toeic_test_type;
     console.log('files.testImage', files.testImage);
     toeicTestDto.image = files.testImage[0].originalname;
     if (!toeicTestDto.listening) toeicTestDto.listening = [];

@@ -60,8 +60,13 @@ export class ToeicTestController {
     },
   ) {
     const toeic_test_title = body.title;
+    const toeic_test_type = body.type;
     console.log('aaaa', files.testImage);
-    return this.toeicTestService.create(files, toeic_test_title);
+    return this.toeicTestService.create(
+      files,
+      toeic_test_title,
+      toeic_test_type,
+    );
   }
 
   @Public()

@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { PassageService } from './passage.service';
 import { CreatePassageDto } from './dto/create-passage.dto';
 import { UpdatePassageDto } from './dto/update-passage.dto';
@@ -19,7 +27,7 @@ export class PassageController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.passageService.findOne(+id);
+    return this.passageService.findOne(id);
   }
 
   @Patch(':id')

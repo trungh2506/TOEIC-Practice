@@ -4,6 +4,7 @@ import { Question } from '../../question/schemas/question.schema'; // Assuming y
 
 import { MetaData, MetaDataSchema } from 'src/common/meta_data.schema';
 import { Passage } from 'src/passage/schemas/passage.schema';
+import { ToeicTestType } from 'src/enum/toeic-type.enum';
 
 @Schema({ timestamps: true })
 export class Toeic_Test extends Document {
@@ -21,6 +22,9 @@ export class Toeic_Test extends Document {
 
   @Prop({ type: [{ type: String, ref: 'Passage' }] })
   passages: Passage[];
+
+  @Prop({ required: true, enum: ToeicTestType, default: ToeicTestType.FULL })
+  type: ToeicTestType;
 
   @Prop({ type: MetaDataSchema, default: () => ({}) })
   meta_data: MetaData;
