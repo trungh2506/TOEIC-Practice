@@ -88,4 +88,13 @@ export class ToeicTestController {
   remove(@Param('id') id: string) {
     return this.toeicTestService.remove(+id);
   }
+
+  @Public()
+  @Get(':testId/part/:partNumber')
+  async getPart(
+    @Param('testId') testId: string,
+    @Param('partNumber') partNumber: number,
+  ) {
+    return this.toeicTestService.getPart(testId, partNumber);
+  }
 }
