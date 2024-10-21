@@ -61,6 +61,7 @@ export class ToeicTestController {
   ) {
     const toeic_test_title = body.title;
     const toeic_test_type = body.type;
+    console.log('toeic_test_type', toeic_test_type);
     console.log('aaaa', files.testImage);
     return this.toeicTestService.create(
       files,

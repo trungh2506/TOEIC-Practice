@@ -5,5 +5,14 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <h1 className="quicksand-semibold">Hello, Home Page!</h1>;
+  return (
+    <>
+      <h1>Hello, Home Page!</h1>
+      <h1>Hello, Home Page!</h1>
+      <h1>Hello, Home Page!</h1>
+      <h1>Hello, Home Page!</h1>
+      <h1>Hello, Home Page!</h1>
+      <h1>Hello, Home Page!</h1>
+    </>
+  );
 }
