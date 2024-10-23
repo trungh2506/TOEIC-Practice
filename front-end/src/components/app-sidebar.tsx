@@ -11,6 +11,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   SidebarRail,
+  SidebarSeparator,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Switch } from "@/components/ui/switch";
@@ -38,30 +39,19 @@ const items = [
   },
   {
     title: "Tài liệu miễn phí",
-    url: "grammar",
+    url: "/grammar",
     icon: Leaf,
     children: [],
   },
   {
     title: "Luyện các kỹ năng",
-    url: "#",
+    url: "/practice",
     icon: BookOpen,
-    children: [
-      {
-        title: "Kỹ năng nghe",
-        url: "#",
-        // icon: Calendar,
-      },
-      {
-        title: "Kỹ năng đọc",
-        url: "#",
-        // icon: BookOpenText,
-      },
-    ],
+    children: [],
   },
   {
-    title: "Bài kiểm tra",
-    url: "toeic-test",
+    title: "Đề thi",
+    url: "/toeic-test",
     icon: StickyNote,
     children: [],
   },
@@ -95,19 +85,6 @@ export function AppSidebar() {
                       <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
-
-                  <SidebarMenuSub>
-                    {item?.children?.length > 0 &&
-                      item.children.map((children) => (
-                        <SidebarMenuSubItem key={children.title}>
-                          <SidebarMenuSubButton asChild />
-                          <Link href={children.url}>
-                            {/* <children.icon /> */}
-                            <p>{children.title}</p>
-                          </Link>
-                        </SidebarMenuSubItem>
-                      ))}
-                  </SidebarMenuSub>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
