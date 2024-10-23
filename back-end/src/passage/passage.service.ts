@@ -20,7 +20,7 @@ export class PassageService {
     return `This action returns all passage`;
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return `This action returns a #${id} passage`;
   }
 

@@ -60,8 +60,14 @@ export class ToeicTestController {
     },
   ) {
     const toeic_test_title = body.title;
+    const toeic_test_type = body.type;
+    console.log('toeic_test_type', toeic_test_type);
     console.log('aaaa', files.testImage);
-    return this.toeicTestService.create(files, toeic_test_title);
+    return this.toeicTestService.create(
+      files,
+      toeic_test_title,
+      toeic_test_type,
+    );
   }
 
   @Public()
@@ -87,5 +93,14 @@ export class ToeicTestController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.toeicTestService.remove(+id);
+  }
+
+  @Public()
+  @Get(':testId/part/:partNumber')
+  async getPart(
+    @Param('testId') testId: string,
+    @Param('partNumber') partNumber: number,
+  ) {
+    return this.toeicTestService.getPart(testId, partNumber);
   }
 }
