@@ -57,7 +57,7 @@ const items = [
   },
   {
     title: "Quản lý tài khoản",
-    url: "#",
+    url: "/profile",
     icon: UserRound,
     children: [],
   },
