@@ -31,7 +31,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar, CalendarIcon } from "lucide-react";
-import { login } from "@/lib/redux/features/user/userSlice";
+import { login, register } from "@/lib/redux/features/user/userSlice";
 
 import type { AppDispatch, RootState } from "@/lib/store";
 import { useDispatch } from "react-redux";
@@ -98,18 +98,17 @@ export default function Page() {
   function onSubmitRegisterForm(values: z.infer<typeof registerFormSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
+    dispatch(register(values));
+    if (success) router.push("/");
     console.log(values);
   }
 
-  // useEffect(() => {
-  //   if (isAuthenticated) {
-  //     router.push("/");
-  //   }
-  // }, [isAuthenticated]);
-
   return (
     <div className="flex flex-col items-center justify-center">
-      <Tabs defaultValue="signin" className="w-[500px] quicksand-semibold ">
+      <Tabs
+        defaultValue="signin"
+        className="w-full sm:w-[500px]  quicksand-semibold "
+      >
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="signin">Đăng nhập</TabsTrigger>
           <TabsTrigger value="signup">Đăng ký</TabsTrigger>
@@ -154,7 +153,9 @@ export default function Page() {
                       </FormItem>
                     )}
                   />
-                  {errorMessage && <p>{errorMessage}</p>}
+                  {errorMessage && (
+                    <p className="text-red-500">{errorMessage}</p>
+                  )}
                   <Button type="submit">Đăng nhập</Button>
                 </form>
               </Form>
@@ -176,7 +177,7 @@ export default function Page() {
                   className="space-y-8"
                 >
                   {/* Container chia thành 2 cột */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <FormField
                       control={registerForm.control}
                       name="email"
@@ -260,6 +261,7 @@ export default function Page() {
                       )}
                     />
                   </div>
+                  {/* {errorMessage && <p>{errorMessage}</p>} */}
                   <Button type="submit">Đăng ký</Button>
                 </form>
               </Form>

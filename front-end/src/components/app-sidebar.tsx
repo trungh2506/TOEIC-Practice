@@ -55,12 +55,12 @@ const items = [
     icon: StickyNote,
     children: [],
   },
-  {
-    title: "Quản lý tài khoản",
-    url: "/profile",
-    icon: UserRound,
-    children: [],
-  },
+  // {
+  //   title: "Quản lý tài khoản",
+  //   url: "/profile",
+  //   icon: UserRound,
+  //   children: [],
+  // },
   {
     title: "Cài đặt",
     url: "#",

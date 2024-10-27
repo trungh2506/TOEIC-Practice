@@ -64,14 +64,6 @@ export class AuthController {
     // Xử lý logic làm mới refresh token
     const { access_token } = await this.authService.refresh(refreshToken);
 
-    // Lưu refresh token mới vào cookie
-    // res.cookie('refreshToken', access_token, {
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV === 'production',
-    //   sameSite: 'strict',
-    //   expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-    // });
-
     return res.json({ access_token });
   }
 

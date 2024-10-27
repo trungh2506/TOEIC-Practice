@@ -1,13 +1,15 @@
 import Question from "@/components/question";
-import QuestionTable from "@/components/question-table";
+import QuestionBoard from "@/components/question-board";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
 export default function Page() {
   return (
-    <div>
-      <h1 className="text-4xl mb-5 text-black">TOEIC FULL TEST 1 ETS 2024</h1>
-      <div className="flex gap-2 mb-5">
+    <div className="">
+      <h1 className="sm:text-4xl text-xl mb-5 text-black">
+        TOEIC FULL TEST 1 ETS 2024
+      </h1>
+      <div className="flex gap-2 mb-5 overflow-x-auto sm:overflow-x-hidden">
         <Button>Part 1</Button>
         <Button>Part 2</Button>
         <Button>Part 3</Button>
@@ -16,14 +18,8 @@ export default function Page() {
         <Button>Part 6</Button>
         <Button>Part 7</Button>
       </div>
-      <div className="flex flex-row justify-between gap-5">
-        <div className="basis-2/3">
-          <Question />
-          <Question />
-          <Question />
-          <Question />
-        </div>
-        <div className="overflow-y-auto h-[600px]">
+      <div className="flex flex-col sm:flex-row justify-between gap-5">
+        <div className="overflow-y-auto h-auto">
           <Image
             className="shadow rounded-md"
             src="/135-138.png"
@@ -33,13 +29,18 @@ export default function Page() {
             alt="Carousel image 1"
           />
         </div>
+        <div className="basis-2/3">
+          <Question />
+          <Question />
+          <Question />
+          <Question />
+        </div>
         <div className="relative">
-          <div className="sticky top-20">
-            <QuestionTable />
+          <div className="sm:sticky sm:top-28">
+            <QuestionBoard />
           </div>
         </div>
       </div>
-
       <Button className="mt-5">Tiếp theo</Button>
     </div>
   );
