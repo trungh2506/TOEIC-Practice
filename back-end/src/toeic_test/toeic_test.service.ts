@@ -116,7 +116,7 @@ export class ToeicTestService {
     // const toeicTests = await this.toeicTestModel
     //   .find()
     //   .select('title image meta_data');
-    const projection = { title: 1, image: 1 };
+    const projection = { title: 1, image: 1, type: 1 };
     const filter = {};
     const toeicTests = await paginate(
       this.toeicTestModel,
@@ -170,8 +170,8 @@ export class ToeicTestService {
     // Chuyển đổi đối tượng nhóm thành mảng
     const groupedArray = Object.values(groupedQuestions);
 
-    return groupedArray;
-    // return toeicTest;
+    // return groupedArray;
+    return toeicTest;
   }
 
   update(id: number, updateToeicTestDto: UpdateToeicTestDto) {

@@ -1,5 +1,5 @@
 "use client";
-import PracticeCard from "@/components/practice-card";
+import PracticeCard from "@/components/toeic-card";
 import { Separator } from "@/components/ui/separator";
 
 const listeningCards = [
