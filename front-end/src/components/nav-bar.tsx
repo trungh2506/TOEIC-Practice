@@ -8,12 +8,14 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 import { fetchUserProfile, logout } from "@/lib/redux/features/user/userSlice";
 import { AppDispatch, RootState } from "@/lib/store";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
@@ -22,7 +24,10 @@ import {
   ChevronDown,
   MessageCircle,
   MessageCircleMore,
+  Moon,
   ShoppingCart,
+  Sun,
+  SunMoon,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -58,6 +63,9 @@ export function NavBar() {
   }, [dispatch]);
   return (
     <div className="flex flex-row gap-3 items-center">
+      <Moon></Moon>
+      <Switch id="dark-mode" />
+      <Sun></Sun>
       {!isAuthenticated && (
         <Button asChild>
           <Link href="/auth">Đăng nhập</Link>
@@ -87,7 +95,13 @@ export function NavBar() {
           <DropdownMenu>
             <DropdownMenuTrigger className="hover:opacity-70">
               <Avatar className="cursor-pointer border border-b-2">
-                <AvatarImage src="https://github.com/shadcn.png" />
+                <AvatarImage
+                  src={
+                    user?.avatar
+                      ? user?.avatar
+                      : "https://github.com/shadcn.png"
+                  }
+                />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>

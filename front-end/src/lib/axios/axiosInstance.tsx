@@ -18,6 +18,7 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = getCookie("jwt");
+    console.log(process.env.NEXT_PUBLIC_API_BASE_URL);
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     } else {
@@ -67,7 +68,7 @@ axiosInstance.interceptors.response.use(
         // Gửi yêu cầu để làm mới token
         try {
           const response = await axios.post(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/refresh`,
+            `${process.env.NEST_PUBLIC_API_BASE_URL}/auth/refresh`,
             {},
             {
               withCredentials: true, // Cho phép gửi cookie

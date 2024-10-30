@@ -71,7 +71,7 @@ const items = [
 
 export function AppSidebar() {
   return (
-    <Sidebar variant="floating" collapsible="icon" className="text-white">
+    <Sidebar variant="sidebar" collapsible="icon" className="text-white">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>TOEIC AREA LOGO</SidebarGroupLabel>

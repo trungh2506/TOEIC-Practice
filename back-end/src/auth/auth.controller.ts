@@ -48,8 +48,8 @@ export class AuthController {
     return res.json({ user, access_token });
   }
 
-  @Post('register')
   @Public()
+  @Post('register')
   async register(@Body() registerDto: RegisterDTO) {
     return this.authService.register(registerDto);
   }

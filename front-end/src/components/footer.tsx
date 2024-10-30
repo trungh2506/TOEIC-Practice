@@ -2,7 +2,7 @@ import { Mail, MapPin, Phone } from "lucide-react";
 
 export default function Footer() {
   return (
-    <div className="absolute flex flex-col sm:flex-row bg-blue-400 p-12 text-white gap-5">
+    <div className="absolute flex flex-col sm:flex-row bg-primary p-12 text-white gap-5">
       <div>
         <span className="text-3xl quicksand-regular">TOEIC AREA LOGO</span>
         <p className="mt-5 quicksand-light">

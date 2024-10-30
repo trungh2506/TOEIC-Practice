@@ -120,9 +120,22 @@ export default function Page() {
   ) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    await dispatch(register(values));
-    if (success) router.push("/");
-    console.log(values);
+    const result = await dispatch(register(values));
+    // Kiểm tra kết quả từ đăng nhập
+    if (result.meta.requestStatus === "fulfilled") {
+      // Nếu đăng nhập thành công, điều hướng ngay lập tức
+      toast({
+        title: "Đăng ký thành công",
+      });
+      router.push("/");
+    } else {
+      // Hiển thị thông báo lỗi
+      toast({
+        variant: "destructive",
+        title: "Lỗi đăng ký",
+        description: message,
+      });
+    }
   }
 
   function signInGoogle() {
@@ -228,7 +241,7 @@ export default function Page() {
                       d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"
                     ></path>
                   </svg>
-                  Sign in with Google
+                  Đăng nhập bằng Google
                 </Button>
               </div>
             </CardContent>

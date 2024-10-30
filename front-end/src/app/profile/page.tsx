@@ -73,7 +73,11 @@ export default function Page() {
       <div className="flex flex-col sm:flex-row item-center sm:items-start sm:justify-around justify-center gap-5">
         <div className="flex flex-col sm:flex-row gap-5 items-center">
           <Avatar className="w-[150px] h-[150px]">
-            <AvatarImage src="https://github.com/shadcn.png" />
+            <AvatarImage
+              src={
+                user?.avatar ? user?.avatar : "https://github.com/shadcn.png"
+              }
+            />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <div className="flex flex-col gap-2 sm:items-start items-center">

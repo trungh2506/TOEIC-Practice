@@ -52,7 +52,7 @@ export const register = createAsyncThunk<string, IRegister>(
       }`; // Cookie sẽ tồn tại trong 7 ngày
       return jwt;
     } catch (error: any) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response.data.message);
     }
   }
 );
@@ -131,6 +131,8 @@ const userSlice = createSlice({
     builder.addCase(register.pending, (state) => {
       state.message = "";
       state.loading = true;
+      state.success = false;
+      state.error = false;
     });
     builder.addCase(
       register.fulfilled,
@@ -142,8 +144,9 @@ const userSlice = createSlice({
     );
     builder.addCase(register.rejected, (state, action) => {
       state.loading = false;
+      state.success = false;
       state.error = true;
-      state.message = "register rejected";
+      state.message = action.payload;
     });
     builder.addCase(fetchUserProfile.pending, (state) => {
       state.message = "pending with fetch user profile";
