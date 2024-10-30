@@ -10,6 +10,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { NavBar } from "@/components/nav-bar";
 import Footer from "@/components/footer";
 import StoreProvider from "@/lib/redux/providers";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -57,6 +58,7 @@ export default function RootLayout({
               <div className="p-16">{children}</div>
               <Footer />
             </main>
+            <Toaster />
           </SidebarProvider>
         </StoreProvider>
       </body>

@@ -1,4 +1,5 @@
 import axios, { AxiosError } from "axios";
+import { jwtDecode } from "jwt-decode";
 
 function getCookie(name: string): string | undefined {
   const cookieMatch = document.cookie.match(
@@ -17,7 +18,6 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = getCookie("jwt");
-    // console.log(token);
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     } else {
@@ -35,11 +35,35 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   async (error: AxiosError) => {
-    // Kiểm tra nếu token hết hạn (có thể dựa vào mã lỗi)
     if (error.response?.status === 401) {
       const originalRequest = error.config;
 
       if (originalRequest) {
+        // Lấy token từ cookie
+        const cookie = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("jwt="));
+        const token = cookie ? cookie.split("=")[1] : null;
+
+        if (!token) {
+          // Xử lý khi không có token
+          console.error("No token found, redirecting to login...");
+          // Redirect to login or show an error message
+          return Promise.reject(error);
+        }
+
+        // Giải mã token và kiểm tra thời gian hết hạn
+        const decodedToken = jwtDecode(token);
+        const isExpired = decodedToken?.exp
+          ? decodedToken.exp * 1000 < Date.now()
+          : true;
+
+        if (!isExpired) {
+          // Nếu token chưa hết hạn, tiếp tục gọi lại yêu cầu
+          originalRequest.headers["Authorization"] = `Bearer ${token}`;
+          return axiosInstance(originalRequest);
+        }
+
         // Gửi yêu cầu để làm mới token
         try {
           const response = await axios.post(
@@ -61,7 +85,7 @@ axiosInstance.interceptors.response.use(
 
           return axiosInstance(originalRequest); // Gửi lại yêu cầu ban đầu
         } catch (err) {
-          // Xử lý nếu có lỗi trong khi làm mới token
+          console.error("Error refreshing token:", err);
           return Promise.reject(err);
         }
       }

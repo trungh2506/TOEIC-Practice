@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -31,12 +31,18 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar, CalendarIcon } from "lucide-react";
-import { login, register } from "@/lib/redux/features/user/userSlice";
+import {
+  login,
+  register,
+  signInWithGoogle,
+} from "@/lib/redux/features/user/userSlice";
 
 import type { AppDispatch, RootState } from "@/lib/store";
 import { useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/hooks/use-toast";
 
 const loginFormSchema = z.object({
   email: z.string().email(),
@@ -60,10 +66,11 @@ const registerFormSchema = z
 export default function Page() {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
-  const errorMessage = useSelector(
-    (state: RootState) => state.user.message.message
-  );
   const success = useSelector((state: RootState) => state.user.success);
+  const message = useSelector((state: RootState) => state.user.message);
+  const loading = useSelector((state: RootState) => state.user.loading);
+  const error = useSelector((state: RootState) => state.user.error);
+  const { toast } = useToast();
   const isAuthenticated = useSelector(
     (state: RootState) => state.user.isAuthenticated
   );
@@ -87,20 +94,39 @@ export default function Page() {
     },
   });
 
-  function onSubmitLoginForm(values: z.infer<typeof loginFormSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    dispatch(login(values));
-    if (success) router.push("/");
-    // console.log(values);
+  async function onSubmitLoginForm(values: z.infer<typeof loginFormSchema>) {
+    // Thực hiện đăng nhập
+    const result = await dispatch(login(values));
+
+    // Kiểm tra kết quả từ đăng nhập
+    if (result.meta.requestStatus === "fulfilled") {
+      // Nếu đăng nhập thành công, điều hướng ngay lập tức
+      toast({
+        title: "Đăng nhập thành công",
+      });
+      router.push("/");
+    } else {
+      // Hiển thị thông báo lỗi
+      toast({
+        variant: "destructive",
+        title: "Lỗi đăng nhập",
+        description: message,
+      });
+    }
   }
 
-  function onSubmitRegisterForm(values: z.infer<typeof registerFormSchema>) {
+  async function onSubmitRegisterForm(
+    values: z.infer<typeof registerFormSchema>
+  ) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    dispatch(register(values));
+    await dispatch(register(values));
     if (success) router.push("/");
     console.log(values);
+  }
+
+  function signInGoogle() {
+    window.location.href = "http://localhost:3001/auth/google";
   }
 
   return (
@@ -127,6 +153,7 @@ export default function Page() {
                   onSubmit={loginForm.handleSubmit(onSubmitLoginForm)}
                   className="space-y-8"
                 >
+                  {/* Email Field */}
                   <FormField
                     control={loginForm.control}
                     name="email"
@@ -134,12 +161,14 @@ export default function Page() {
                       <FormItem>
                         <FormLabel>Email</FormLabel>
                         <FormControl>
-                          <Input placeholder="example@example.com" {...field} />
+                          <Input placeholder="Nhập email" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+
+                  {/* Password Field */}
                   <FormField
                     control={loginForm.control}
                     name="password"
@@ -147,18 +176,61 @@ export default function Page() {
                       <FormItem>
                         <FormLabel>Mật khẩu</FormLabel>
                         <FormControl>
-                          <Input type="password" {...field} />
+                          <Input
+                            type="password"
+                            placeholder="Nhập mật khẩu"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  {errorMessage && (
-                    <p className="text-red-500">{errorMessage}</p>
-                  )}
-                  <Button type="submit">Đăng nhập</Button>
+
+                  {/* Submit Button */}
+                  <div className="flex items-center justify-center">
+                    <Button type="submit" disabled={loading}>
+                      Đăng nhập
+                    </Button>
+                  </div>
                 </form>
               </Form>
+
+              <div className="flex flex-col gap-3 items-center justify-center">
+                <div className="flex items-center justify-center gap-2">
+                  <Separator className="w-[100px]" />
+                  <span className="text-gray-400">hoặc</span>
+                  <Separator className="w-[100px]" />
+                </div>
+                <Button variant="outline" onClick={() => signInGoogle()}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    x="0px"
+                    y="0px"
+                    width="100"
+                    height="100"
+                    viewBox="0 0 48 48"
+                  >
+                    <path
+                      fill="#FFC107"
+                      d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"
+                    ></path>
+                    <path
+                      fill="#FF3D00"
+                      d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"
+                    ></path>
+                    <path
+                      fill="#4CAF50"
+                      d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"
+                    ></path>
+                    <path
+                      fill="#1976D2"
+                      d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"
+                    ></path>
+                  </svg>
+                  Sign in with Google
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -261,7 +333,6 @@ export default function Page() {
                       )}
                     />
                   </div>
-                  {/* {errorMessage && <p>{errorMessage}</p>} */}
                   <Button type="submit">Đăng ký</Button>
                 </form>
               </Form>

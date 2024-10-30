@@ -1,15 +1,15 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { loginApi, profileApi, registerApi } from "@/api/userApi";
+import { googleApi, loginApi, profileApi, registerApi } from "@/api/userApi";
 import { ILogin } from "@/interfaces/ILogin";
 import { IRegister } from "@/interfaces/IRegister";
 import { IUser } from "@/interfaces/IUser";
 
-export const login = createAsyncThunk<string, ILogin>(
-  "user/login",
-  async (payload: ILogin, { rejectWithValue }) => {
+export const signInWithGoogle = createAsyncThunk<{ jwt: string; user: any }>(
+  "user/google",
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await loginApi(payload);
-      console.log("login response", response.data);
+      const response = await googleApi();
+      const user = response.data.user;
       const jwt = response.data.access_token;
       // localStorage.setItem("jwt", jwt);
       document.cookie = `jwt=${jwt}; path=/; secure; samesite=strict; max-age=${
@@ -22,12 +22,29 @@ export const login = createAsyncThunk<string, ILogin>(
   }
 );
 
+export const login = createAsyncThunk<{ jwt: string; user: any }, any>(
+  "user/login",
+  async (payload: ILogin, { rejectWithValue }) => {
+    try {
+      const response = await loginApi(payload);
+      const user = response.data.user;
+      const jwt = response.data.access_token;
+      // localStorage.setItem("jwt", jwt);
+      document.cookie = `jwt=${jwt}; path=/; secure; samesite=strict; max-age=${
+        60 * 60 * 24 * 7
+      }`; // Cookie sẽ tồn tại trong 7 ngày
+      return { jwt, user };
+    } catch (error: any) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
 export const register = createAsyncThunk<string, IRegister>(
   "user/register",
   async (payload: IRegister, { rejectWithValue }) => {
     try {
       const response = await registerApi(payload);
-      console.log("register response", response.data);
       const jwt = response.data.access_token;
       // localStorage.setItem("jwt", jwt);
       document.cookie = `jwt=${jwt}; path=/; secure; samesite=strict; max-age=${
@@ -62,7 +79,7 @@ interface UserState {
   loading: boolean;
   success: boolean;
   error: boolean;
-  message: any;
+  message?: any;
 }
 
 const initialState: UserState = {
@@ -72,7 +89,7 @@ const initialState: UserState = {
   loading: false,
   success: false,
   error: false,
-  message: "",
+  message: null,
 };
 
 const userSlice = createSlice({
@@ -86,25 +103,30 @@ const userSlice = createSlice({
       state.error = false;
       // localStorage.removeItem("jwt");
       document.cookie = "jwt=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
+      document.cookie =
+        "refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
     },
   },
   extraReducers: (builder) => {
     builder.addCase(login.pending, (state) => {
       state.message = "";
       state.loading = true;
+      state.success = false;
+      state.error = false;
     });
-    builder.addCase(login.fulfilled, (state, action: PayloadAction<string>) => {
+    builder.addCase(login.fulfilled, (state, action) => {
       state.loading = false;
-      state.jwt = action.payload;
+      state.jwt = action.payload.jwt;
+      state.user = action.payload.user;
       state.isAuthenticated = true;
       state.success = true;
       state.error = false;
-      state.message = "";
     });
-    builder.addCase(login.rejected, (state, action) => {
+    builder.addCase(login.rejected, (state, action: PayloadAction<any>) => {
       state.loading = false;
-      state.error = true;
+      state.success = false;
       state.message = action.payload;
+      state.error = true;
     });
     builder.addCase(register.pending, (state) => {
       state.message = "";
@@ -114,8 +136,6 @@ const userSlice = createSlice({
       register.fulfilled,
       (state, action: PayloadAction<string>) => {
         state.loading = false;
-        state.jwt = action.payload;
-        state.isAuthenticated = true;
         state.success = true;
         state.error = false;
       }
@@ -123,22 +143,41 @@ const userSlice = createSlice({
     builder.addCase(register.rejected, (state, action) => {
       state.loading = false;
       state.error = true;
-      state.message = action.payload;
+      state.message = "register rejected";
     });
     builder.addCase(fetchUserProfile.pending, (state) => {
-      state.message = "";
+      state.message = "pending with fetch user profile";
       state.loading = true;
     });
     builder.addCase(fetchUserProfile.fulfilled, (state, action) => {
       state.loading = false;
       state.user = action.payload;
+      state.isAuthenticated = true;
       state.success = true;
       state.error = false;
     });
     builder.addCase(fetchUserProfile.rejected, (state, action) => {
       state.loading = false;
       state.error = true;
-      state.message = action.payload;
+      state.message = "rejected when fetch user profile";
+    });
+    builder.addCase(signInWithGoogle.pending, (state) => {
+      state.message = "pending to sign in wigh google";
+      state.loading = true;
+    });
+    builder.addCase(signInWithGoogle.fulfilled, (state, action) => {
+      state.loading = false;
+      state.user = action.payload.user;
+      state.jwt = action.payload.jwt;
+      state.isAuthenticated = true;
+      state.success = true;
+      console.log(action.payload);
+      state.error = false;
+    });
+    builder.addCase(signInWithGoogle.rejected, (state, action) => {
+      state.loading = false;
+      state.error = true;
+      state.message = "rejected sign in with google";
     });
   },
 });

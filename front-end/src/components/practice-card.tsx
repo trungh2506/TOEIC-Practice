@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,7 +10,21 @@ import {
 } from "@/components/ui/card";
 import Image from "next/image";
 
-export default function PracticeCard() {
+interface PracticeCardProps {
+  title: string;
+  type: string;
+  description: string;
+  image: string;
+  onClick: () => void;
+}
+
+export default function PracticeCard({
+  title,
+  image,
+  description,
+  type,
+  onClick,
+}: PracticeCardProps) {
   return (
     <Card className="w-[300px]">
       <Image
@@ -21,19 +36,14 @@ export default function PracticeCard() {
         alt="Carousel image 1"
       />
       <CardHeader>
-        <CardTitle>Part 1</CardTitle>
-        <CardDescription>Photographs</CardDescription>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{type}</CardDescription>
       </CardHeader>
       <CardContent className="quicksand-regular text-sm">
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Eveniet ullam
-          blanditiis facere rerum distinctio dignissimos necessitatibus
-          inventore consectetur. Omnis, voluptatibus soluta vel beatae
-          perspiciatis ea. Velit possimus exercitationem ex. Esse.
-        </p>
+        <p className="text-base">{description}</p>
       </CardContent>
       <CardFooter>
-        <Button>Xem chi tiết</Button>
+        <Button onClick={onClick}>Xem chi tiết</Button>
       </CardFooter>
     </Card>
   );

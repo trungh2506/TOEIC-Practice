@@ -1,4 +1,6 @@
 import {
+  BadRequestException,
+  ForbiddenException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -30,7 +32,7 @@ export class AuthService {
     return null;
   }
 
-  async register(registerDto: RegisterDTO): Promise<{ access_token: string }> {
+  async register(registerDto: RegisterDTO) {
     const { username, email, password } = registerDto;
     console.log(registerDto);
     const existingUser = await this.userService.findOneByEmail(email);
@@ -50,29 +52,27 @@ export class AuthService {
 
     const payload = { email: user.email, sub: user._id, roles: user.roles };
 
-    return { access_token: this.jwtService.sign(payload) };
+    return { user: user };
   }
 
-  async login(
-    loginDto: LoginDTO,
-  ): Promise<{ access_token: string; refresh_token: string }> {
+  async login(loginDto: LoginDTO) {
     const { email, password } = loginDto;
 
     const user = await this.userService.findOneByEmail(loginDto.email);
 
     if (!user) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new BadRequestException('Invalid email or password');
     }
 
     const isPasswordMatched = await bcrypt.compare(password, user.password);
 
     if (!isPasswordMatched) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new BadRequestException('Invalid email or password');
     }
-
     const payload = { email: user.email, sub: user._id, roles: user.roles };
 
     return {
+      user: user,
       access_token: this.jwtService.sign(payload),
       refresh_token: this.jwtService.sign(payload, {
         secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
@@ -101,5 +101,17 @@ export class AuthService {
   async profile(id: string) {
     const user = await this.userService.findOne(id);
     return user;
+  }
+
+  async signInWithGoogle(data: any) {
+    if (!data) throw new BadRequestException();
+
+    const user = await this.userService.findOneByEmail(data?.email);
+    // NOT EXISTING
+    if (!user) {
+      // console.log('not existing');
+      await this.register(data);
+    }
+    return await this.login(data);
   }
 }

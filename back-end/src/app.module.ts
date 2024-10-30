@@ -18,6 +18,8 @@ import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { MulterModule } from '@nestjs/platform-express';
 import { PassageModule } from './passage/passage.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -27,6 +29,10 @@ import { PassageModule } from './passage/passage.module';
     }),
     MulterModule.register({
       dest: './uploads', // Đường dẫn lưu trữ file mặc định
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads',
     }),
     UserModule,
     QuestionModule,

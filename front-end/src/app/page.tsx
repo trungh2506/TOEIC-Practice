@@ -7,9 +7,14 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { fetchUserProfile } from "@/lib/redux/features/user/userSlice";
+import { AppDispatch, RootState } from "@/lib/store";
 import { BookOpen, Leaf, MessageCircleMore, UserRound } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function Page() {
   return (

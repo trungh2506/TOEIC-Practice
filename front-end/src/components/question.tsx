@@ -7,7 +7,7 @@ import Image from "next/image";
 
 export default function Question() {
   return (
-    <div className="flex flex-row gap-5 mb-5">
+    <div className="flex flex-col sm:flex-row gap-5 mb-5">
       <div className="mt-3">
         <Button
           size={"icon"}
@@ -17,14 +17,14 @@ export default function Question() {
         </Button>
       </div>
       <div>
-        <Image
+        {/* <Image
           className="rounded-md mb-3"
           src="/1.png"
-          width={550}
-          height={300}
+          width={700}
+          height={400}
           quality={100}
           alt="Carousel image 1"
-        />
+        /> */}
         <span>How did this _____ broken ?</span>
         <RadioGroup className="mt-3 ml-3 flex flex-col ">
           <div className="flex items-center space-x-2 hover:text-primary">

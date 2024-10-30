@@ -14,7 +14,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
-import { logout } from "@/lib/redux/features/user/userSlice";
+import { fetchUserProfile, logout } from "@/lib/redux/features/user/userSlice";
 import { AppDispatch, RootState } from "@/lib/store";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import {
@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 
@@ -35,11 +36,26 @@ export function NavBar() {
     (state: RootState) => state.user.isAuthenticated
   );
   const dispatch = useDispatch<AppDispatch>();
+  const user = useSelector((state: RootState) => state.user.user);
 
   const handleLogout = () => {
     dispatch(logout());
     router.push("/");
   };
+  useEffect(() => {
+    const getCookie = (name: any) => {
+      const cookieMatch = document.cookie.match(
+        "(^|;)\\s*" + name + "\\s*=\\s*([^;]+)"
+      );
+      return cookieMatch ? cookieMatch.pop() : undefined;
+    };
+
+    const token = getCookie("jwt"); // Lấy token từ cookie
+
+    if (token) {
+      dispatch(fetchUserProfile());
+    }
+  }, [dispatch]);
   return (
     <div className="flex flex-row gap-3 items-center">
       {!isAuthenticated && (

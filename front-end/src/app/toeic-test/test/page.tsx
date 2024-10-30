@@ -23,7 +23,7 @@ export default function Page() {
           <Image
             className="shadow rounded-md"
             src="/135-138.png"
-            width={1000}
+            width={1200}
             height={450}
             quality={100}
             alt="Carousel image 1"

@@ -21,6 +21,7 @@ import { RegisterDTO } from './dto/register.dto';
 import { LoginDTO } from './dto/login.dto';
 import { Roles } from 'src/decorator/roles.decorator';
 import { Role } from 'src/enum/role.enum';
+import { GoogleOAuthGuard } from 'src/auth/passport/google.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -32,19 +33,19 @@ export class AuthController {
   async login(@Body() loginDto: LoginDTO, @Res() res: Response) {
     // return this.authService.login(loginDto);
 
-    const { access_token, refresh_token } =
+    const { user, access_token, refresh_token } =
       await this.authService.login(loginDto);
 
     // Lưu refresh token vào cookie
     res.cookie('refreshToken', refresh_token, {
-      httpOnly: true, // Ngăn chặn truy cập qua JavaScript
+      httpOnly: false, // Ngăn chặn truy cập qua JavaScript
       secure: process.env.NODE_ENV === 'production', // Chỉ gửi cookie qua HTTPS
       sameSite: 'strict', // Ngăn chặn CSRF
       expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Thời gian hết hạn (30 ngày)
     });
 
     // Gửi token truy cập về phía client
-    return res.json({ access_token });
+    return res.json({ user, access_token });
   }
 
   @Post('register')
@@ -67,8 +68,40 @@ export class AuthController {
     return res.json({ access_token });
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Req() req) {
     return this.authService.profile(req.user?._id);
+  }
+
+  @Public()
+  @Get('google')
+  @UseGuards(GoogleOAuthGuard)
+  async googleAuth(@Req() req) {}
+
+  @Public()
+  @Get('google-redirect')
+  @UseGuards(GoogleOAuthGuard)
+  async googleAuthRedirect(@Req() req, @Res() res: Response) {
+    // console.log('controller req.user with google', req.user);
+    const { access_token, refresh_token } =
+      await this.authService.signInWithGoogle(req.user);
+
+    // Lưu access token vào cookie
+    res.cookie('jwt', access_token, {
+      httpOnly: false, // Ngăn chặn truy cập qua JavaScript
+      secure: process.env.NODE_ENV === 'production', // Chỉ gửi cookie qua HTTPS
+      sameSite: 'strict', // Ngăn chặn CSRF
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Thời gian hết hạn (30 ngày)
+    });
+
+    // Lưu refresh token vào cookie
+    res.cookie('refreshToken', refresh_token, {
+      httpOnly: false, // Ngăn chặn truy cập qua JavaScript
+      secure: process.env.NODE_ENV === 'production', // Chỉ gửi cookie qua HTTPS
+      sameSite: 'strict', // Ngăn chặn CSRF
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Thời gian hết hạn (30 ngày)
+    });
+    res.redirect(process.env.NEXTJS_CLIENT);
   }
 }
