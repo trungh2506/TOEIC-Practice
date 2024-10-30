@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import Image from "next/image";
 
-interface PracticeCardProps {
+interface ToeicCardProps {
   title: string;
   type: string;
   description: string;
@@ -18,13 +18,13 @@ interface PracticeCardProps {
   onClick: () => void;
 }
 
-export default function PracticeCard({
+export default function ToeicCard({
   title,
   image,
   description,
   type,
   onClick,
-}: PracticeCardProps) {
+}: ToeicCardProps) {
   return (
     <Card className="w-[300px]">
       <Image
@@ -43,7 +43,7 @@ export default function PracticeCard({
         <p className="text-base">{description}</p>
       </CardContent>
       <CardFooter>
-        <Button onClick={onClick}>Xem chi tiết</Button>
+        <Button onClick={onClick}>Vào thi</Button>
       </CardFooter>
     </Card>
   );
