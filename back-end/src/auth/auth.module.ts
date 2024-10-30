@@ -10,6 +10,7 @@ import { JwtStrategy } from './passport/jwt.strategy';
 
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RefreshTokenStrategy } from './passport/refreshToken.strategy';
+import { GoogleStrategy } from 'src/auth/passport/google.strategy';
 
 @Module({
   imports: [
@@ -26,7 +27,13 @@ import { RefreshTokenStrategy } from './passport/refreshToken.strategy';
       }),
     }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy, RefreshTokenStrategy],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    JwtStrategy,
+    RefreshTokenStrategy,
+    GoogleStrategy,
+  ],
   controllers: [AuthController],
 })
 export class AuthModule {}

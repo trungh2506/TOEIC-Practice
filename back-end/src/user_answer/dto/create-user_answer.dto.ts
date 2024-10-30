@@ -50,4 +50,10 @@ export class CreateUserAnswerDto {
 
   @IsOptional()
   date_answer: Date;
+
+  @IsOptional()
+  score: number;
+
+  @IsOptional()
+  duration: number;
 }

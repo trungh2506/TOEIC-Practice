@@ -20,7 +20,7 @@ export class Toeic_Test extends Document {
   @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Question' }] })
   reading: Question[];
 
-  @Prop({ type: [{ type: String, ref: 'Passage' }] })
+  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Passage' }] })
   passages: Passage[];
 
   @Prop({ required: true, enum: ToeicTestType, default: ToeicTestType.FULL })

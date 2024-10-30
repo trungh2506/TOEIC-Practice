@@ -34,6 +34,13 @@ export class User_Answer extends Document {
 
   @Prop({ default: Date.now })
   date_answer: Date;
+
+  @Prop({ default: 0 })
+  score: number;
+
+  @Prop({ default: 0 })
+  duration: number;
+
   @Prop({ type: MetaDataSchema, default: () => ({}) })
   meta_data: MetaData;
 }

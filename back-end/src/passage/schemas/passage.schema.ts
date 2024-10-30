@@ -6,7 +6,7 @@ import { Question } from 'src/question/schemas/question.schema';
 @Schema()
 export class Passage extends Document {
   @Prop({ required: true })
-  _id: string;
+  id: string;
 
   @Prop()
   title: string;
@@ -16,6 +16,9 @@ export class Passage extends Document {
 
   @Prop()
   content: string;
+
+  @Prop({ required: true })
+  part: number;
 
   @Prop({ default: null })
   audio: string;

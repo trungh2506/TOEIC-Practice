@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateToeicTestDto } from './dto/create-toeic_test.dto';
 import { UpdateToeicTestDto } from './dto/update-toeic_test.dto';
 
@@ -53,9 +53,10 @@ export class ToeicTestService {
 
       for (const passage of passagesData) {
         const passageDto = new CreatePassageDto();
-        passageDto._id = passage._id || '';
+        passageDto.id = passage.id || '';
         passageDto.title = passage.title || '';
         passageDto.content = passage.content || '';
+        passageDto.part = passage.part || 0;
 
         // Kiểm tra xem images có tồn tại và là chuỗi không
         if (typeof passage.images === 'string') {
@@ -133,25 +134,29 @@ export class ToeicTestService {
       .populate({
         path: 'listening',
         model: 'Question',
-        populate: {
-          path: 'passage_id',
-          model: 'Passage',
-        },
+        // populate: {
+        //   path: 'passage_id',
+        //   model: 'Passage',
+        // },
       })
       .populate({
         path: 'reading',
         model: 'Question',
-        populate: {
-          path: 'passage_id',
-          model: 'Passage',
-        },
+        // populate: {
+        //   path: 'passage_id',
+        //   model: 'Passage',
+        // },
+      })
+      .populate({
+        path: 'passages',
+        model: 'Passage',
       });
 
     const allQuestion = [...toeicTest.listening, ...toeicTest.reading];
 
     // Nhóm các câu hỏi theo passage_id
     const groupedQuestions = allQuestion.reduce((acc, question) => {
-      const passageId = question.passage_id?._id || 'no-passage';
+      const passageId = question.passage_id?.id || 'no-passage';
       if (!acc[passageId]) {
         acc[passageId] = {
           passage: question.passage_id,
@@ -165,8 +170,8 @@ export class ToeicTestService {
     // Chuyển đổi đối tượng nhóm thành mảng
     const groupedArray = Object.values(groupedQuestions);
 
-    // return groupedArray;
-    return toeicTest;
+    return groupedArray;
+    // return toeicTest;
   }
 
   update(id: number, updateToeicTestDto: UpdateToeicTestDto) {
@@ -192,12 +197,15 @@ export class ToeicTestService {
       .populate({
         path: 'listening',
         match: { part: part_number },
-        populate: { path: 'passage_id', select: 'title content images' }, // Lấy thông tin của passage
+        // populate: { path: 'passage_id', select: 'title content images' }, // Lấy thông tin của passage
       })
       .populate({
         path: 'reading',
         match: { part: part_number },
-        populate: { path: 'passage_id', select: 'title content images' }, // Lấy thông tin của passage
+        // populate: { path: 'passage_id', select: 'title content images' }, // Lấy thông tin của passage
+      })
+      .populate({
+        path: 'passages',
       })
       .exec();
 

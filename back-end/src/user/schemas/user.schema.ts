@@ -41,6 +41,13 @@ export class User extends Document {
   @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Question' }] })
   favorites: Question[];
 
+  @Prop()
+  avatar: string;
+  @Prop()
+  google_id: string;
+  @Prop()
+  facebook_id: string;
+
   @Prop({ type: MetaDataSchema, default: () => ({}) })
   meta_data: MetaData;
 }

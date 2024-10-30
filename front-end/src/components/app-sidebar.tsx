@@ -55,12 +55,12 @@ const items = [
     icon: StickyNote,
     children: [],
   },
-  {
-    title: "Quản lý tài khoản",
-    url: "#",
-    icon: UserRound,
-    children: [],
-  },
+  // {
+  //   title: "Quản lý tài khoản",
+  //   url: "/profile",
+  //   icon: UserRound,
+  //   children: [],
+  // },
   {
     title: "Cài đặt",
     url: "#",
@@ -71,7 +71,7 @@ const items = [
 
 export function AppSidebar() {
   return (
-    <Sidebar variant="floating" collapsible="icon" className="text-white">
+    <Sidebar variant="sidebar" collapsible="icon" className="text-white">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>TOEIC AREA LOGO</SidebarGroupLabel>

@@ -23,7 +23,7 @@ export const storage = diskStorage({
     cb(null, uploadPath);
   },
   filename: (req, file, callback) => {
-    callback(null, `${req.body.title}-${generateFilename(file)}`);
+    callback(null, `${generateFilename(file)}`);
   },
 });
 

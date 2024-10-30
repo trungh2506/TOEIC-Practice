@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { Providers } from "@/redux/providers";
 import {
   Sidebar,
   SidebarProvider,
@@ -10,6 +9,8 @@ import {
 import { AppSidebar } from "@/components/app-sidebar";
 import { NavBar } from "@/components/nav-bar";
 import Footer from "@/components/footer";
+import StoreProvider from "@/lib/redux/providers";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -46,10 +47,9 @@ export default function RootLayout({
         className="quicksand-bold"
         // className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Providers>
+        <StoreProvider>
           <SidebarProvider>
             <AppSidebar />
-
             <main className="w-full">
               <div className="p-5 flex items-center justify-between">
                 <SidebarTrigger />
@@ -58,8 +58,9 @@ export default function RootLayout({
               <div className="p-16">{children}</div>
               <Footer />
             </main>
+            <Toaster />
           </SidebarProvider>
-        </Providers>
+        </StoreProvider>
       </body>
     </html>
   );
