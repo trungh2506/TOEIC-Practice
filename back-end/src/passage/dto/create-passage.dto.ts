@@ -27,5 +27,5 @@ export class CreatePassageDto {
   images: string[];
 
   @IsArray()
-  questions: Question[];
+  questions: number[];
 }

@@ -57,6 +57,11 @@ export class ToeicTestService {
         passageDto.title = passage.title || '';
         passageDto.content = passage.content || '';
         passageDto.part = passage.part || 0;
+        // passageDto.questions = passage.questions;
+        passageDto.questions = passage.questions
+          ?.split(',')
+          .map((question) => Number(question.trim()))
+          .filter((num) => !isNaN(num));
 
         // Kiểm tra xem images có tồn tại và là chuỗi không
         if (typeof passage.images === 'string') {
@@ -206,6 +211,7 @@ export class ToeicTestService {
       })
       .populate({
         path: 'passages',
+        match: { part: part_number },
       })
       .exec();
 
