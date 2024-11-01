@@ -67,7 +67,8 @@ interface ToeicTestState {
 
   //part thi hiện tại
   currentPart: number;
-
+  //câu hỏi đang chọn
+  selectedQuestion: number;
   //pagination
   totalPages: number;
   totalToeicTest: number;
@@ -88,6 +89,7 @@ const initialState: ToeicTestState = {
   totalToeicTest: 0,
   currentPage: 1,
   currentPart: 1,
+  selectedQuestion: 1,
   loading: false,
   success: false,
   error: false,
@@ -115,6 +117,34 @@ const toeicTestSlice = createSlice({
           (passage: any) => passage.part === action.payload
         ),
       };
+    },
+    navigateToSelectedQuestion: (state, action: PayloadAction<number>) => {
+      let part: number = 0;
+      const questionNumber = action.payload;
+      const allQuestions = [
+        ...state.currentToeicTest.listening,
+        ...state.currentToeicTest.reading,
+      ];
+      // Tìm câu hỏi với question_number tương ứng
+      const foundQuestion = allQuestions.find(
+        (question: any) => question.question_number === questionNumber
+      );
+
+      // Nếu tìm thấy câu hỏi, lấy ra part và gọi lại hàn filterByPart
+      if (foundQuestion) {
+        part = foundQuestion.part;
+        state.filteredToeicTest = {
+          listening: state.currentToeicTest?.listening?.filter(
+            (question: any) => question.part === part
+          ),
+          reading: state.currentToeicTest?.reading?.filter(
+            (question: any) => question.part === part
+          ),
+          passages: state.currentToeicTest?.passages?.filter(
+            (passage: any) => passage.part === part
+          ),
+        };
+      }
     },
   },
   extraReducers: (builder) => {
@@ -177,6 +207,10 @@ const toeicTestSlice = createSlice({
   },
 });
 
-export const { setCurrentPage, increaseCurrentPart, filterByPart } =
-  toeicTestSlice.actions;
+export const {
+  setCurrentPage,
+  increaseCurrentPart,
+  filterByPart,
+  navigateToSelectedQuestion,
+} = toeicTestSlice.actions;
 export default toeicTestSlice.reducer;

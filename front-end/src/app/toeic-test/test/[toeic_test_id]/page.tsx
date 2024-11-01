@@ -125,6 +125,7 @@ export default function Page() {
                       return question ? (
                         <Question
                           key={`question-${questionIndex}`}
+                          question_id={question.question_id}
                           question_number={question.question_number}
                           question_text={question.question_text}
                           question_image={
@@ -151,6 +152,7 @@ export default function Page() {
             ].map((question: any, index: number) => {
               return (
                 <Question
+                  question_id={question._id}
                   key={`question-${question.question_number}-${index}`}
                   question_number={question?.question_number}
                   question_text={question?.question_text}
