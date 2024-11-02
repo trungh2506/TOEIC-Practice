@@ -29,7 +29,7 @@ export default function ToeicCard({
     <Card className="w-[300px]">
       <Image
         className="rounded-t-md"
-        src="/carousel.jpg"
+        src={image}
         width={400}
         height={300}
         quality={100}

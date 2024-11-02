@@ -29,13 +29,16 @@ import {
   Sun,
   SunMoon,
 } from "lucide-react";
+import { useTheme } from "next-themes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 
 export function NavBar() {
+  const { setTheme } = useTheme();
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const router = useRouter();
   const isAuthenticated = useSelector(
     (state: RootState) => state.user.isAuthenticated
@@ -46,6 +49,11 @@ export function NavBar() {
   const handleLogout = () => {
     dispatch(logout());
     router.push("/");
+  };
+
+  const handleDarkMode = (checked: any) => {
+    if (checked) setTheme("dark");
+    else setTheme("light");
   };
   useEffect(() => {
     const getCookie = (name: any) => {
@@ -63,9 +71,9 @@ export function NavBar() {
   }, [dispatch]);
   return (
     <div className="flex flex-row gap-3 items-center">
-      <Moon></Moon>
-      <Switch id="dark-mode" />
-      <Sun></Sun>
+      <Moon />
+      <Switch id="dark-mode" value="a" onCheckedChange={handleDarkMode} />
+      <Sun />
       {!isAuthenticated && (
         <Button asChild>
           <Link href="/auth">Đăng nhập</Link>
@@ -79,7 +87,6 @@ export function NavBar() {
 
           <Popover>
             <PopoverTrigger>
-              {" "}
               <Button variant="outline" size="icon">
                 <Bell size={20} />
               </Button>

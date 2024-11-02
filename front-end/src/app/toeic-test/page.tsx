@@ -23,6 +23,7 @@ export default function Page() {
     dispatch(setCurrentPage(page));
     dispatch(getAllToeicTest(page));
   };
+
   useEffect(() => {
     dispatch(getAllToeicTest(currentPage));
   }, [dispatch, currentPage]);
@@ -39,7 +40,7 @@ export default function Page() {
                 key={index}
                 title={toeicTest?.title}
                 type={toeicTest?.type}
-                image={toeicTest?.image}
+                image={`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/${toeicTest.title}/images/${toeicTest?.image}`}
                 description={`Mô tả cho ${toeicTest?.title}`}
                 onClick={() => {
                   handleSelectedToeicTest(toeicTest._id);

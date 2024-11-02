@@ -68,7 +68,7 @@ export default function Page() {
       {/* About Us  */}
       <div className="flex flex-col sm:flex-row justify-between gap-20">
         <div className="basis-2/3 flex flex-col gap-2">
-          <span className="text-black text-2xl">About Us</span>
+          <span className="text-2xl">About Us</span>
           <p className="quicksand-regular">
             Lorem ipsum dolor, sit amet consectetur adipisicing elit. Incidunt
             quis saepe repellendus. Quod consequatur porro, ea laudantium non
@@ -101,9 +101,7 @@ export default function Page() {
 
       {/* TOEIC AREA ENGLISH  */}
       <div className="flex flex-col items-center justify-center gap-6">
-        <span className="text-black text-3xl text-center">
-          TOEIC AREA ENGLISH
-        </span>
+        <span className="text-3xl text-center">TOEIC AREA ENGLISH</span>
         <p className="text-center">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis
           aspernatur aliquid alias, quisquam maiores dolores eum sunt quae eos
@@ -131,7 +129,7 @@ export default function Page() {
 
       <div className="flex sm:flex-row flex-col justify-between gap-20">
         <div className="basis-2/3 flex flex-col gap-2">
-          <span className="text-black text-2xl">Làm bài kiểm tra thử</span>
+          <span className=" text-2xl">Làm bài kiểm tra thử</span>
           <p className="quicksand-regular">
             Lorem ipsum dolor, sit amet consectetur adipisicing elit. Incidunt
             quis saepe repellendus. Quod consequatur porro, ea laudantium non

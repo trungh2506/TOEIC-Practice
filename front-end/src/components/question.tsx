@@ -8,8 +8,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
+import { AppDispatch, RootState } from "@/lib/store";
 import { AccordionItem } from "@radix-ui/react-accordion";
 import Image from "next/image";
+import { useDispatch, useSelector } from "react-redux";
+import { addAnswer } from "@/lib/redux/features/user-answer/userAnswerSlice";
 
 interface QuestionProps {
   question_id: string;
@@ -28,9 +31,13 @@ export default function Question({
   question_audio,
   options,
 }: QuestionProps) {
+  const dispatch = useDispatch<AppDispatch>();
+  const { answers } = useSelector((state: RootState) => state.userAnswer);
   const handleValueChange = (value: string) => {
-    console.log(value);
-    console.log(question_id);
+    // console.log(value);
+    // console.log(question_id);
+    dispatch(addAnswer({ question_id: question_id, selected_option: value }));
+    // console.log(answers);
   };
   return (
     <div
@@ -61,7 +68,7 @@ export default function Question({
           <Accordion defaultValue="item-1" type="single" collapsible>
             <AccordionItem value="item-1">
               <AccordionTrigger className="quicksand-semibold">
-                <span className="text-xl text-black">{question_text}</span>
+                <span className="text-xl ">{question_text}</span>
               </AccordionTrigger>
               <AccordionContent className="text-base">
                 <RadioGroup

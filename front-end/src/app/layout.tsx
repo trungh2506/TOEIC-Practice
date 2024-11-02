@@ -11,6 +11,8 @@ import { NavBar } from "@/components/nav-bar";
 import Footer from "@/components/footer";
 import StoreProvider from "@/lib/redux/providers";
 import { Toaster } from "@/components/ui/toaster";
+import Script from "next/script";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -48,18 +50,25 @@ export default function RootLayout({
         // className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <StoreProvider>
-          <SidebarProvider>
-            <AppSidebar />
-            <main className="w-full">
-              <div className="p-5 flex items-center justify-between">
-                <SidebarTrigger />
-                <NavBar />
-              </div>
-              <div className="p-16">{children}</div>
-              <Footer />
-            </main>
-            <Toaster />
-          </SidebarProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <SidebarProvider>
+              <AppSidebar />
+              <main className="w-full">
+                <div className="p-5 flex items-center justify-between">
+                  <SidebarTrigger />
+                  <NavBar />
+                </div>
+                <div className="p-16">{children}</div>
+                <Footer />
+              </main>
+              <Toaster />
+            </SidebarProvider>
+          </ThemeProvider>
         </StoreProvider>
       </body>
     </html>

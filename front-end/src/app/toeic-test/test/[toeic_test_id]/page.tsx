@@ -22,17 +22,20 @@ const DURATION_TEST = 120 * 60;
 
 export default function Page() {
   const [time, setTime] = useState(DURATION_TEST);
+  const [activePart, setActivePart] = useState<string | null>(null);
   const param = useParams();
   const dispatch = useDispatch<AppDispatch>();
   const { currentToeicTest, currentPart, filteredToeicTest } = useSelector(
     (state: RootState) => state.toeicTest
   );
+  const { answers } = useSelector((state: RootState) => state.userAnswer);
 
   const handlePartButtonClick = (
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
     const buttonValue = event.currentTarget.value;
     dispatch(filterByPart(parseInt(buttonValue, 10)));
+    setActivePart(buttonValue);
   };
 
   useEffect(() => {
@@ -43,6 +46,7 @@ export default function Page() {
     }
   }, [dispatch, param?.toeic_test_id, currentPart]);
 
+  ///Countdown Timer
   useEffect(() => {
     const timer = setInterval(() => {
       setTime((prevState) => {
@@ -59,29 +63,57 @@ export default function Page() {
 
   return (
     <div className="">
-      <h1 className="sm:text-4xl text-xl mb-5 text-black">
+      <span className="sm:text-4xl text-xl mb-5">
         {currentToeicTest?.title}
-      </h1>
+      </span>
       <div className="flex gap-2 mb-5 overflow-x-auto sm:overflow-x-hidden">
-        <Button value="1" onClick={handlePartButtonClick}>
+        <Button
+          value="1"
+          onClick={handlePartButtonClick}
+          variant={activePart === "1" ? "default" : "outline"}
+        >
           Part 1
         </Button>
-        <Button value="2" onClick={handlePartButtonClick}>
+        <Button
+          value="2"
+          onClick={handlePartButtonClick}
+          variant={activePart === "2" ? "default" : "outline"}
+        >
           Part 2
         </Button>
-        <Button value="3" onClick={handlePartButtonClick}>
+        <Button
+          value="3"
+          onClick={handlePartButtonClick}
+          variant={activePart === "3" ? "default" : "outline"}
+        >
           Part 3
         </Button>
-        <Button value="4" onClick={handlePartButtonClick}>
+        <Button
+          value="4"
+          onClick={handlePartButtonClick}
+          variant={activePart === "4" ? "default" : "outline"}
+        >
           Part 4
         </Button>
-        <Button value="5" onClick={handlePartButtonClick}>
+        <Button
+          value="5"
+          onClick={handlePartButtonClick}
+          variant={activePart === "5" ? "default" : "outline"}
+        >
           Part 5
         </Button>
-        <Button value="6" onClick={handlePartButtonClick}>
+        <Button
+          value="6"
+          onClick={handlePartButtonClick}
+          variant={activePart === "6" ? "default" : "outline"}
+        >
           Part 6
         </Button>
-        <Button value="7" onClick={handlePartButtonClick}>
+        <Button
+          value="7"
+          onClick={handlePartButtonClick}
+          variant={activePart === "7" ? "default" : "outline"}
+        >
           Part 7
         </Button>
       </div>
@@ -96,7 +128,7 @@ export default function Page() {
               >
                 {/* Duyệt qua từng hình ảnh trong passage */}
                 <div className="sm:w-[600px] w-auto">
-                  <h1>{passage.title}</h1>
+                  <span className="text-xl">{passage.title}</span>
                   {passage.images.map((image: any, imageIndex: number) => (
                     <Image
                       key={`passage-image-${imageIndex}`}
@@ -125,7 +157,7 @@ export default function Page() {
                       return question ? (
                         <Question
                           key={`question-${questionIndex}`}
-                          question_id={question.question_id}
+                          question_id={question._id}
                           question_number={question.question_number}
                           question_text={question.question_text}
                           question_image={

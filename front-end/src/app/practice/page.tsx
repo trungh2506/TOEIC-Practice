@@ -6,7 +6,7 @@ const listeningCards = [
   {
     id: 1,
     title: "Part 1",
-    image: "",
+    image: "/part-1.webp",
     type: "Mô Tả Hình Ảnh",
     description:
       "Four short statements regarding a photograph will be spoken only one time. Of these four statements, select the one. that best describes the photograph.",
@@ -14,7 +14,7 @@ const listeningCards = [
   {
     id: 2,
     title: "Part 2",
-    image: "",
+    image: "/part-2.webp",
     type: "Hỏi Và Trả Lời",
     description:
       "Three responses to one question or statement will be spoken only one time. Select the best response for the question.",
@@ -22,7 +22,7 @@ const listeningCards = [
   {
     id: 3,
     title: "Part 3",
-    image: "",
+    image: "/part-3.webp",
     type: "Đoạn Hội Thoại",
     description:
       "Conversations between two or three people will be spoken only one time. Listen to each conversation and select the best response for the question. There are three questions for each conversation.",
@@ -30,7 +30,7 @@ const listeningCards = [
   {
     id: 4,
     title: "Part 4",
-    image: "",
+    image: "/part-4.webp",
     type: "Bài Nói Chuyện",
     description:
       "Short talks such as announcements or narrations will be spoken only one time. Listen to each talk and select the best response for the question There are three questions for each talk.",
@@ -41,7 +41,7 @@ const readingCards = [
   {
     id: 5,
     title: "Part 5",
-    image: "",
+    image: "/part-5.webp",
     type: "Hoàn thành câu",
     description:
       "Select the best answer of the four choices to complete the sentence.",
@@ -49,7 +49,7 @@ const readingCards = [
   {
     id: 6,
     title: "Part 6",
-    image: "",
+    image: "/part-6.webp",
     type: "Hoàn Thành Đoạn Văn",
     description:
       "Select the best answer of the four choices (words, phrases, or a sentence) to complete the text. There are four questions for each text.",
@@ -57,7 +57,7 @@ const readingCards = [
   {
     id: 7,
     title: "Part 7",
-    image: "",
+    image: "/part-7.webp",
     type: "Đọc Hiểu",
     description:
       "Read a range of different texts and select the best answer of the four choices. There are multiple questions for each text.",

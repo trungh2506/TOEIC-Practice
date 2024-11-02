@@ -12,9 +12,11 @@ import {
   setCurrentPage,
   navigateToSelectedQuestion,
 } from "@/lib/redux/features/toeic-test/toeicTestSlice";
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import SubmitAlertDialog from "@/components/sumbit-alert-dialog";
+import { Progress } from "@/components/ui/progress";
 
 interface QuestionBoardProps {
   minutes: string;
@@ -56,12 +58,14 @@ const ButtonQuestionList = React.memo(
     );
   }
 );
+
 export default function QuestionBoard({ minutes, second }: QuestionBoardProps) {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const { currentToeicTest, currentPart, filteredToeicTest } = useSelector(
     (state: RootState) => state.toeicTest
   );
+  const { answers } = useSelector((state: RootState) => state.userAnswer);
 
   const handleQuestionButtonClick = (
     event: React.MouseEvent<HTMLButtonElement>
@@ -83,17 +87,19 @@ export default function QuestionBoard({ minutes, second }: QuestionBoardProps) {
 
   return (
     <div className="border p-5 rounded-lg flex flex-col gap-5 items-center justify-center w-full sm:w-[200px]">
-      <span className="text-xl text-black">Thời gian còn lại</span>
-      <span className="text-primary text-4xl">
+      <span className="text-xl">Thời gian còn lại</span>
+      <span className="text-red-500 text-4xl">
         {minutes}:{second}
       </span>
+      <div className="w-[150px] flex flex-col items-center">
+        {answers.length}/200
+        <Progress value={answers.length} />
+      </div>
       <ScrollArea className="p-2 rounded-xl sm:h-[400px] h-full sm:w-[200px] w-full">
         <ButtonQuestionList onButtonClick={handleQuestionButtonClick} />
       </ScrollArea>
       <div className="flex gap-2">
-        <Button className="hover:text-secondary hover:bg-primary">
-          Nộp bài
-        </Button>
+        <SubmitAlertDialog />
         <Button
           className=" text-white hover:text-red-500 hover:bg-white hover:border-red-500 hover:border-b"
           variant={"destructive"}

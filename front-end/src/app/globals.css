@@ -87,7 +87,7 @@ body {
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
+    --primary: 201.19 100% 42.75%;
     --primary-foreground: 222.2 47.4% 11.2%;
     --secondary: 53 98% 50%;
     --secondary-foreground: 210 40% 98%;
@@ -124,6 +124,6 @@ body {
     @apply bg-background text-foreground;
   }
   h1 {
-    @apply text-2xl text-black;
+    @apply text-2xl;
   }
 }

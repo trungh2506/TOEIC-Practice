@@ -57,16 +57,27 @@ import { useDispatch } from "react-redux";
 import { z } from "zod";
 import Image from "next/image";
 import { BadgeCheck, ShieldCheck } from "lucide-react";
+import {
+  getAllUserAnswer,
+  setCurrentPage,
+} from "@/lib/redux/features/user-answer/userAnswerSlice";
 
 export default function Page() {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => state.user.user);
+  const { userAnswerList, currentPage, loading } = useSelector(
+    (state: RootState) => state.userAnswer
+  );
 
-  // useEffect(() => {
-  //   dispatch(fetchUserProfile());
-  //   console.log(user);
-  // }, []);
+  const handlePageChange = (page: number) => {
+    dispatch(setCurrentPage(page));
+    dispatch(getAllUserAnswer(page));
+  };
+
+  useEffect(() => {
+    dispatch(getAllUserAnswer(currentPage));
+  }, [dispatch, currentPage]);
 
   return (
     <div className="flex flex-col gap-10">
@@ -81,7 +92,7 @@ export default function Page() {
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <div className="flex flex-col gap-2 sm:items-start items-center">
-            <span className="text-4xl text-black">{user?.username}</span>
+            <span className="text-4xl ">{user?.username}</span>
             <span className="text-gray-500">{user?.email}</span>
             <span>{user?.fullname}</span>
             <div>
@@ -126,34 +137,38 @@ export default function Page() {
                 <TableHead>Số câu sai</TableHead>
                 <TableHead>Số câu chưa làm</TableHead>
                 <TableHead>Thời gian làm</TableHead>
+                <TableHead>Điểm</TableHead>
                 <TableHead className="text-right">Ngày thi</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow>
-                <TableCell className="font-medium">TEST 1</TableCell>
-                <TableCell className="text-green-500">150</TableCell>
-                <TableCell className="text-red-500">50</TableCell>
-                <TableCell className="text-gray-500">0</TableCell>
-                <TableCell>100 phút</TableCell>
-                <TableCell className="text-right">25/06/2002</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">TEST 1</TableCell>
-                <TableCell className="text-green-500">150</TableCell>
-                <TableCell className="text-red-500">50</TableCell>
-                <TableCell className="text-gray-500">0</TableCell>
-                <TableCell>100 phút</TableCell>
-                <TableCell className="text-right">25/06/2002</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">TEST 1</TableCell>
-                <TableCell className="text-green-500">150</TableCell>
-                <TableCell className="text-red-500">50</TableCell>
-                <TableCell className="text-gray-500">0</TableCell>
-                <TableCell>100 phút</TableCell>
-                <TableCell className="text-right">25/06/2002</TableCell>
-              </TableRow>
+              {userAnswerList && userAnswerList.length > 0 ? (
+                userAnswerList.map((result: any, index: number) => {
+                  return (
+                    <TableRow key={index}>
+                      <TableCell className="font-medium">TEST 1</TableCell>
+                      <TableCell className="text-green-500">
+                        {result?.correct_answers}
+                      </TableCell>
+                      <TableCell className="text-red-500">
+                        {result?.incorrect_answers}
+                      </TableCell>
+                      <TableCell className="text-gray-500">
+                        {result?.unanswered_answers}
+                      </TableCell>
+                      <TableCell>{result?.duration} phút</TableCell>
+                      <TableCell>{result?.score}</TableCell>
+                      <TableCell className="text-right">
+                        {result?.date_answer}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              ) : (
+                <TableRow>
+                  <TableCell>Bạn chưa làm bài thi thử nào!</TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </TabsContent>
