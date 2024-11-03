@@ -14,6 +14,8 @@ import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
 import { addAnswer } from "@/lib/redux/features/user-answer/userAnswerSlice";
 
+const ANSWER_LABELS = ["A", "B", "C", "D"];
+
 interface QuestionProps {
   question_id: string;
   question_number: number;
@@ -75,22 +77,19 @@ export default function Question({
                   onValueChange={handleValueChange}
                   className="mt-3 ml-3 flex flex-col "
                 >
-                  <div className="flex items-center space-x-2 hover:text-primary">
-                    <RadioGroupItem value="A" id="option-a" />
-                    <span>A. {options[0]}</span>
-                  </div>
-                  <div className="flex items-center space-x-2 hover:text-primary">
-                    <RadioGroupItem value="B" id="option-b" />
-                    <span>B. {options[1]}</span>
-                  </div>
-                  <div className="flex items-center space-x-2 hover:text-primary">
-                    <RadioGroupItem value="C" id="option-c" />
-                    <span>C. {options[2]}</span>
-                  </div>
-                  <div className="flex items-center space-x-2 hover:text-primary">
-                    <RadioGroupItem value="D" id="option-d" />
-                    <span>D. {options[3]}</span>
-                  </div>
+                  {options.map((option, index) => {
+                    if (option && option.length > 0) {
+                      return (
+                        <div className="flex items-center space-x-2 hover:text-primary">
+                          <RadioGroupItem
+                            value={ANSWER_LABELS[index]}
+                            id={`option-${ANSWER_LABELS[index]}`}
+                          />
+                          <span>{options[index]}</span>
+                        </div>
+                      );
+                    }
+                  })}
                 </RadioGroup>
               </AccordionContent>
             </AccordionItem>
@@ -102,22 +101,19 @@ export default function Question({
               onValueChange={handleValueChange}
               className="mt-3 ml-3 flex flex-col "
             >
-              <div className="flex items-center space-x-2 hover:text-primary">
-                <RadioGroupItem value="A" id="option-a" />
-                <span>A. {options[0]}</span>
-              </div>
-              <div className="flex items-center space-x-2 hover:text-primary">
-                <RadioGroupItem value="B" id="option-b" />
-                <span>B. {options[1]}</span>
-              </div>
-              <div className="flex items-center space-x-2 hover:text-primary">
-                <RadioGroupItem value="C" id="option-c" />
-                <span>C. {options[2]}</span>
-              </div>
-              <div className="flex items-center space-x-2 hover:text-primary">
-                <RadioGroupItem value="D" id="option-d" />
-                <span>D. {options[3]}</span>
-              </div>
+              {options.map((option, index) => {
+                if (option && option.length > 0) {
+                  return (
+                    <div className="flex items-center space-x-2 hover:text-primary">
+                      <RadioGroupItem
+                        value={ANSWER_LABELS[index]}
+                        id={`option-${ANSWER_LABELS[index]}`}
+                      />
+                      <span>{options[index]}</span>
+                    </div>
+                  );
+                }
+              })}
             </RadioGroup>
           </>
         )}

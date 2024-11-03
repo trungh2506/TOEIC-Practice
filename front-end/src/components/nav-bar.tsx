@@ -52,8 +52,8 @@ export function NavBar() {
   };
 
   const handleDarkMode = (checked: any) => {
-    if (checked) setTheme("dark");
-    else setTheme("light");
+    if (checked) setTheme("light");
+    else setTheme("dark");
   };
   useEffect(() => {
     const getCookie = (name: any) => {

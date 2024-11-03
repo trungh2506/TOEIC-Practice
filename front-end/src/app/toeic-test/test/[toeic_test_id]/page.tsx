@@ -66,6 +66,12 @@ export default function Page() {
       <span className="sm:text-4xl text-xl mb-5">
         {currentToeicTest?.title}
       </span>
+      <audio
+        autoPlay={true}
+        hidden
+        controls
+        src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/${currentToeicTest?.title}/audios/${currentToeicTest?.full_audio}`}
+      ></audio>
       <div className="flex gap-2 mb-5 overflow-x-auto sm:overflow-x-hidden">
         <Button
           value="1"
@@ -129,17 +135,24 @@ export default function Page() {
                 {/* Duyệt qua từng hình ảnh trong passage */}
                 <div className="sm:w-[600px] w-auto">
                   <span className="text-xl">{passage.title}</span>
-                  {passage.images.map((image: any, imageIndex: number) => (
-                    <Image
-                      key={`passage-image-${imageIndex}`}
-                      className="rounded-md mb-3"
-                      src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/${currentToeicTest.title}/images/${image}`}
-                      width={600}
-                      height={400}
-                      quality={100}
-                      alt={`Image for passage ${index}`}
-                    />
-                  ))}
+                  {/*Duyệt qua content nếu không thấy thì duyệt qua hình ảnh */}
+                  {passage.content && (
+                    <div className="border-primary border p-3">
+                      {parse(passage.content)}
+                    </div>
+                  )}
+                  {!passage.content &&
+                    passage.images.map((image: any, imageIndex: number) => (
+                      <Image
+                        key={`passage-image-${imageIndex}`}
+                        className="rounded-md mb-3"
+                        src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/${currentToeicTest.title}/images/${image}`}
+                        width={600}
+                        height={400}
+                        quality={100}
+                        alt={`Image for passage ${index}`}
+                      />
+                    ))}
                 </div>
 
                 {/* Duyệt qua từng câu hỏi trong passage */}

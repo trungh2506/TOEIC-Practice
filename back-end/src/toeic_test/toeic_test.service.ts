@@ -32,6 +32,7 @@ export class ToeicTestService {
       passages?: Express.Multer.File;
       images?: Express.Multer.File[];
       audios?: Express.Multer.File[];
+      fullAudio?: Express.Multer.File;
     },
     toeic_test_title: string,
     toeic_test_type: ToeicTestType,
@@ -40,7 +41,9 @@ export class ToeicTestService {
     toeicTestDto.title = toeic_test_title;
     toeicTestDto.type = toeic_test_type;
     console.log('files.testImage', files.testImage);
-    toeicTestDto.image = files.testImage[0].originalname;
+    toeicTestDto.image = files.testImage[0]?.originalname;
+    toeicTestDto.full_audio = files.fullAudio[0]?.originalname;
+    console.log(files.fullAudio);
     if (!toeicTestDto.listening) toeicTestDto.listening = [];
     if (!toeicTestDto.reading) toeicTestDto.reading = [];
     if (!toeicTestDto.passages) toeicTestDto.passages = [];
@@ -57,7 +60,6 @@ export class ToeicTestService {
         passageDto.title = passage.title || '';
         passageDto.content = passage.content || '';
         passageDto.part = passage.part || 0;
-        // passageDto.questions = passage.questions;
         passageDto.questions = passage.questions
           ?.split(',')
           .map((question) => Number(question.trim()))

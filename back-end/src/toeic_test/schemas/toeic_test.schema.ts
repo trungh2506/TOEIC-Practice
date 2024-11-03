@@ -26,6 +26,9 @@ export class Toeic_Test extends Document {
   @Prop({ required: true, enum: ToeicTestType, default: ToeicTestType.FULL })
   type: ToeicTestType;
 
+  @Prop({ default: '' })
+  full_audio: string;
+
   @Prop({ type: MetaDataSchema, default: () => ({}) })
   meta_data: MetaData;
 }

@@ -43,6 +43,7 @@ export class ToeicTestController {
         { name: 'images', maxCount: 100 },
         { name: 'audios', maxCount: 100 },
         { name: 'testImage', maxCount: 1 },
+        { name: 'fullAudio', maxCount: 1 },
       ],
       { storage },
     ),
@@ -57,12 +58,13 @@ export class ToeicTestController {
       passages?: Express.Multer.File;
       images?: Express.Multer.File[];
       audios?: Express.Multer.File[];
+      fullAudio?: Express.Multer.File;
     },
   ) {
     const toeic_test_title = body.title;
     const toeic_test_type = body.type;
-    console.log('toeic_test_type', toeic_test_type);
-    console.log('aaaa', files.testImage);
+    // console.log('toeic_test_type', toeic_test_type);
+    // console.log('aaaa', files.testImage);
     return this.toeicTestService.create(
       files,
       toeic_test_title,

@@ -27,6 +27,10 @@ export class CreateToeicTestDto {
   @IsArray()
   reading: Question[];
 
+  @IsString()
+  @IsOptional()
+  full_audio: string;
+
   @IsArray()
   passages: Passage[];
 
