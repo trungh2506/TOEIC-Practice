@@ -5,5 +5,6 @@ export const submitAnswerApi = (answerData: any) =>
 
 export const getAllResultByUserIdApi = (page: number = 1) =>
   axiosInstance.get(`/user-answer/user?page=${page}`);
+
 export const getAnswerByAnswerIdApi = (answerId: string) =>
   axiosInstance.post(`/user-answer/${answerId}`);

@@ -20,8 +20,8 @@ export class UserAnswerController {
   constructor(private readonly userAnswerService: UserAnswerService) {}
 
   @Post()
-  create(@Body() createUserAnswerDto: CreateUserAnswerDto) {
-    return this.userAnswerService.create(createUserAnswerDto);
+  create(@Req() req, @Body() createUserAnswerDto: CreateUserAnswerDto) {
+    return this.userAnswerService.create(req.user._id, createUserAnswerDto);
   }
 
   @Get('user')

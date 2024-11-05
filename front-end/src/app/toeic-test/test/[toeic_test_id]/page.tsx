@@ -8,26 +8,33 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  decrementTimer,
   filterByPart,
   getAllToeicTest,
   getPartToeicTest,
   getToeicTestById,
   increaseCurrentPart,
   setCurrentPage,
+  startTimer,
 } from "@/lib/redux/features/toeic-test/toeicTestSlice";
 
 import parse from "html-react-parser";
+import { clearCurrentUserAnswer } from "@/lib/redux/features/user-answer/userAnswerSlice";
+import AnswerReview from "@/components/answer-review";
 
 const DURATION_TEST = 120 * 60;
 
 export default function Page() {
-  const [time, setTime] = useState(DURATION_TEST);
-  const [activePart, setActivePart] = useState<string | null>(null);
+  const [activePart, setActivePart] = useState<string | null>("1");
   const param = useParams();
   const dispatch = useDispatch<AppDispatch>();
-  const { currentToeicTest, currentPart, filteredToeicTest } = useSelector(
-    (state: RootState) => state.toeicTest
-  );
+  const {
+    currentToeicTest,
+    currentPart,
+    filteredToeicTest,
+    timer,
+    isTimerRunning,
+  } = useSelector((state: RootState) => state.toeicTest);
   const { answers } = useSelector((state: RootState) => state.userAnswer);
 
   const handlePartButtonClick = (
@@ -43,35 +50,37 @@ export default function Page() {
       dispatch(getToeicTestById(param?.toeic_test_id)).then(() => {
         dispatch(filterByPart(1));
       });
+      dispatch(startTimer());
     }
   }, [dispatch, param?.toeic_test_id, currentPart]);
 
   ///Countdown Timer
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTime((prevState) => {
-        if (prevState <= 1) {
-          clearInterval(timer);
-          return 0;
-        }
-        return prevState - 1;
-      });
-    }, 1000);
+    let interval: NodeJS.Timeout | null = null;
 
-    return () => clearInterval(timer);
-  }, []);
+    if (isTimerRunning) {
+      interval = setInterval(() => {
+        dispatch(decrementTimer());
+      }, 1000); // Giảm thời gian mỗi giây
+    } else if (!isTimerRunning && interval) {
+      clearInterval(interval);
+    }
 
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isTimerRunning, dispatch]);
   return (
     <div className="">
       <span className="sm:text-4xl text-xl mb-5">
         {currentToeicTest?.title}
       </span>
       <audio
+        className="w-[500px]"
         autoPlay={true}
-        hidden
         controls
         src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/${currentToeicTest?.title}/audios/${currentToeicTest?.full_audio}`}
-      ></audio>
+      />
       <div className="flex gap-2 mb-5 overflow-x-auto sm:overflow-x-hidden">
         <Button
           value="1"
@@ -178,8 +187,11 @@ export default function Page() {
                               ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/${currentToeicTest.title}/images/${question.question_image}`
                               : undefined
                           }
+                          correct_answer=""
                           question_audio={question.question_audio}
                           options={question.options}
+                          isAnswerShowing={false}
+                          script={""}
                         />
                       ) : null;
                     }
@@ -201,6 +213,7 @@ export default function Page() {
                   key={`question-${question.question_number}-${index}`}
                   question_number={question?.question_number}
                   question_text={question?.question_text}
+                  correct_answer=""
                   question_image={
                     question?.question_image
                       ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/${currentToeicTest.title}/images/${question?.question_image}`
@@ -208,6 +221,8 @@ export default function Page() {
                   }
                   question_audio={question?.question_audio}
                   options={question?.options}
+                  isAnswerShowing={false}
+                  script={""}
                 />
               );
             })}
@@ -216,8 +231,8 @@ export default function Page() {
         <div className="relative">
           <div className="sm:sticky sm:top-28">
             <QuestionBoard
-              minutes={`${Math.floor(time / 60)}`.padStart(2, "0")}
-              second={`${time % 60}`.padStart(2, "0")}
+              minutes={`${Math.floor(timer / 60)}`.padStart(2, "0")}
+              second={`${timer % 60}`.padStart(2, "0")}
             />
           </div>
         </div>

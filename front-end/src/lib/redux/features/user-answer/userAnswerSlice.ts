@@ -1,4 +1,4 @@
-import { getAllResultByUserIdApi } from "@/api/userAnswer-api";
+import { getAllResultByUserIdApi, submitAnswerApi } from "@/api/userAnswer-api";
 import { createAsyncThunk, createSlice, current } from "@reduxjs/toolkit";
 
 const STATUS_CORRECT = "correct";
@@ -12,6 +12,20 @@ export const getAllUserAnswer = createAsyncThunk<any, any>(
       const response = await getAllResultByUserIdApi(page);
       console.log(response.data);
       const data = response.data;
+      return data;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+export const submitAnswer = createAsyncThunk<any, any>(
+  "userAnswer/submitAnswer",
+  async (answerData: any, { rejectWithValue }) => {
+    try {
+      const response = await submitAnswerApi(answerData);
+      const data = response.data;
+      console.log("data when submit answer", data);
       return data;
     } catch (error: any) {
       return rejectWithValue(error.response.data.message);
@@ -56,7 +70,6 @@ const initialState: UserAnswerState = {
   userAnswerList: [],
   currentUserAnswer: null,
   answers: [],
-
   totalPages: 0,
   totalToeicTest: 0,
   currentPage: 1,
@@ -87,6 +100,12 @@ const userAnswerSlice = createSlice({
       }
       console.log("answer của người dùng: ", current(state.answers));
     },
+    clearAnswer: (state) => {
+      state.answers = [];
+    },
+    clearCurrentUserAnswer: (state) => {
+      state.currentUserAnswer = null;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getAllUserAnswer.pending, (state) => {
@@ -108,8 +127,31 @@ const userAnswerSlice = createSlice({
       state.success = false;
       state.error = true;
     });
+
+    //submit answer
+    builder.addCase(submitAnswer.pending, (state) => {
+      state.loading = true;
+      state.success = false;
+      state.error = false;
+    });
+    builder.addCase(submitAnswer.fulfilled, (state, action) => {
+      state.loading = false;
+      state.success = true;
+      state.error = false;
+      state.currentUserAnswer = action.payload;
+    });
+    builder.addCase(submitAnswer.rejected, (state, action) => {
+      state.loading = false;
+      state.success = false;
+      state.error = true;
+    });
   },
 });
 
-export const { addAnswer, setCurrentPage } = userAnswerSlice.actions;
+export const {
+  addAnswer,
+  setCurrentPage,
+  clearAnswer,
+  clearCurrentUserAnswer,
+} = userAnswerSlice.actions;
 export default userAnswerSlice.reducer;

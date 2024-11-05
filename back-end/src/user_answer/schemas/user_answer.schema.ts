@@ -36,7 +36,13 @@ export class User_Answer extends Document {
   date_answer: Date;
 
   @Prop({ default: 0 })
-  score: number;
+  total_score: number;
+
+  @Prop({ default: 0 })
+  listening_score: number;
+
+  @Prop({ default: 0 })
+  reading_score: number;
 
   @Prop({ default: 0 })
   duration: number;

@@ -23,6 +23,9 @@ interface QuestionProps {
   question_image?: string;
   question_audio: string;
   options: any[];
+  correct_answer: string;
+  isAnswerShowing: boolean;
+  script: string;
 }
 
 export default function Question({
@@ -32,19 +35,26 @@ export default function Question({
   question_image,
   question_audio,
   options,
+  correct_answer,
+  script,
+  isAnswerShowing = false,
 }: QuestionProps) {
   const dispatch = useDispatch<AppDispatch>();
   const { answers } = useSelector((state: RootState) => state.userAnswer);
+  const { currentToeicTest } = useSelector(
+    (state: RootState) => state.toeicTest
+  );
   const handleValueChange = (value: string) => {
     // console.log(value);
     // console.log(question_id);
     dispatch(addAnswer({ question_id: question_id, selected_option: value }));
     // console.log(answers);
   };
+
   return (
     <div
       className="flex flex-col sm:flex-row gap-5 mb-5"
-      id={question_number.toString()}
+      id={question_number?.toString()}
     >
       <div className="mt-3">
         <Button
@@ -66,6 +76,14 @@ export default function Question({
           />
         )}
 
+        {isAnswerShowing && question_audio && (
+          <audio
+            className=""
+            controls
+            src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/${currentToeicTest?.title}/audios/${question_audio}`}
+          />
+        )}
+
         {question_text ? (
           <Accordion defaultValue="item-1" type="single" collapsible>
             <AccordionItem value="item-1">
@@ -77,11 +95,15 @@ export default function Question({
                   onValueChange={handleValueChange}
                   className="mt-3 ml-3 flex flex-col "
                 >
-                  {options.map((option, index) => {
-                    if (option && option.length > 0) {
+                  {options?.map((option, index) => {
+                    if (option && option?.length > 0) {
                       return (
-                        <div className="flex items-center space-x-2 hover:text-primary">
+                        <div
+                          key={index}
+                          className="flex items-center space-x-2 hover:text-primary"
+                        >
                           <RadioGroupItem
+                            disabled={isAnswerShowing}
                             value={ANSWER_LABELS[index]}
                             id={`option-${ANSWER_LABELS[index]}`}
                           />
@@ -101,11 +123,15 @@ export default function Question({
               onValueChange={handleValueChange}
               className="mt-3 ml-3 flex flex-col "
             >
-              {options.map((option, index) => {
-                if (option && option.length > 0) {
+              {options?.map((option, index) => {
+                if (option && option?.length > 0) {
                   return (
-                    <div className="flex items-center space-x-2 hover:text-primary">
+                    <div
+                      key={index}
+                      className="flex items-center space-x-2 hover:text-primary"
+                    >
                       <RadioGroupItem
+                        disabled={isAnswerShowing}
                         value={ANSWER_LABELS[index]}
                         id={`option-${ANSWER_LABELS[index]}`}
                       />
@@ -118,6 +144,16 @@ export default function Question({
           </>
         )}
         <Separator className="mt-5" />
+
+        {/* nếu isAnswerShowing thì hiển thị đáp án */}
+        {isAnswerShowing && correct_answer && (
+          <div className="flex flex-col">
+            <span className="text-green-600 text-2xl">
+              Đáp án đúng: {correct_answer}
+            </span>
+            <span className="text-xl">{script}</span>
+          </div>
+        )}
       </div>
     </div>
   );

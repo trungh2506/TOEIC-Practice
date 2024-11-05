@@ -93,6 +93,7 @@ export class ToeicTestService {
         questionDto.question_text = question.question_text;
         questionDto.question_image = question.question_image;
         questionDto.question_audio = question.question_audio;
+        console.log('audio file', question.question_audio);
         questionDto.part = question.part;
         questionDto.options = [
           question.option_a || '',

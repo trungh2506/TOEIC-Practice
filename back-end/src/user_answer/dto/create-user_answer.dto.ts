@@ -52,7 +52,13 @@ export class CreateUserAnswerDto {
   date_answer: Date;
 
   @IsOptional()
-  score: number;
+  total_score: number;
+
+  @IsOptional()
+  listening_score: number;
+
+  @IsOptional()
+  reading_score: number;
 
   @IsOptional()
   duration: number;

@@ -157,7 +157,7 @@ export default function Page() {
                         {result?.unanswered_answers}
                       </TableCell>
                       <TableCell>{result?.duration} phút</TableCell>
-                      <TableCell>{result?.score}</TableCell>
+                      <TableCell>{result?.total_score}</TableCell>
                       <TableCell className="text-right">
                         {result?.date_answer}
                       </TableCell>

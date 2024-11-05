@@ -5,6 +5,8 @@ import {
 } from "@/api/toeicTest-api";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+const DURATION_TEST = 120 * 60;
+
 export const getPartToeicTest = createAsyncThunk<
   any,
   { toeic_test_id: string; part_number: number }
@@ -77,6 +79,10 @@ interface ToeicTestState {
   loading: boolean;
   success: boolean;
   error: boolean;
+
+  //timer
+  timer: number;
+  isTimerRunning: boolean;
 }
 
 const initialState: ToeicTestState = {
@@ -93,12 +99,32 @@ const initialState: ToeicTestState = {
   loading: false,
   success: false,
   error: false,
+
+  timer: DURATION_TEST,
+  isTimerRunning: false,
 };
 
 const toeicTestSlice = createSlice({
   name: "toeicTest",
   initialState,
   reducers: {
+    startTimer: (state) => {
+      state.isTimerRunning = true;
+    },
+    stopTimer: (state) => {
+      state.isTimerRunning = false;
+    },
+    resetTimer: (state) => {
+      state.timer = DURATION_TEST;
+      state.isTimerRunning = false;
+    },
+    decrementTimer: (state) => {
+      if (state.timer > 0) {
+        state.timer -= 1;
+      } else {
+        state.isTimerRunning = false;
+      }
+    },
     setCurrentPage: (state, action) => {
       state.currentPage = action.payload;
     },
@@ -212,5 +238,9 @@ export const {
   increaseCurrentPart,
   filterByPart,
   navigateToSelectedQuestion,
+  startTimer,
+  stopTimer,
+  resetTimer,
+  decrementTimer,
 } = toeicTestSlice.actions;
 export default toeicTestSlice.reducer;

@@ -9,12 +9,51 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { RootState } from "@/lib/store";
+import {
+  resetTimer,
+  stopTimer,
+} from "@/lib/redux/features/toeic-test/toeicTestSlice";
+import {
+  clearAnswer,
+  submitAnswer,
+} from "@/lib/redux/features/user-answer/userAnswerSlice";
+import { AppDispatch, RootState } from "@/lib/store";
 import { AlertDialogTrigger } from "@radix-ui/react-alert-dialog";
-import { useSelector } from "react-redux";
+import { useParams, useRouter } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
+
+const DURATION_TEST = 120 * 60;
 
 export default function SubmitAlertDialog() {
-  const { answers } = useSelector((state: RootState) => state.userAnswer);
+  const router = useRouter();
+  const { answers, currentUserAnswer } = useSelector(
+    (state: RootState) => state.userAnswer
+  );
+  const { timer } = useSelector((state: RootState) => state.toeicTest);
+  const param = useParams();
+  const dispatch = useDispatch<AppDispatch>();
+
+  const handleSubmitButton = () => {
+    dispatch(stopTimer());
+    const duration: number = DURATION_TEST - timer;
+    const toeic_test_id = param?.toeic_test_id;
+    router.push(`/toeic-test/test/${toeic_test_id}/result`);
+    console.log("Submitted", {
+      toeic_test_id: toeic_test_id,
+      answers: answers,
+      duration: duration,
+    });
+    dispatch(
+      submitAnswer({
+        toeic_test_id: toeic_test_id,
+        answers: answers,
+        duration: duration,
+      })
+    );
+    dispatch(resetTimer());
+    dispatch(clearAnswer());
+  };
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -32,7 +71,11 @@ export default function SubmitAlertDialog() {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          {answers.length > 0 && <AlertDialogAction>Nộp bài</AlertDialogAction>}
+          {answers.length > 0 && (
+            <AlertDialogAction onClick={handleSubmitButton}>
+              Nộp bài
+            </AlertDialogAction>
+          )}
           <AlertDialogCancel>Tiếp tục làm</AlertDialogCancel>
         </AlertDialogFooter>
       </AlertDialogContent>
