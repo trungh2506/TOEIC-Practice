@@ -5,4 +5,6 @@ export interface Passage {
   content: string;
   images?: string;
   part: number;
+  questions: string;
+  audio?: string;
 }

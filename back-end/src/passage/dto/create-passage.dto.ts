@@ -26,6 +26,10 @@ export class CreatePassageDto {
   @IsOptional()
   images: string[];
 
+  @IsString()
+  @IsOptional()
+  audio: string;
+
   @IsArray()
-  questions: Question[];
+  questions: number[];
 }

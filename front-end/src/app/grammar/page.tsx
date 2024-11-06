@@ -1,3 +1,7 @@
 export default function Page() {
-  return <h1>Grammar Page</h1>;
+  return (
+    <div>
+      <span className="text-4xl">Grammar Page</span>
+    </div>
+  );
 }

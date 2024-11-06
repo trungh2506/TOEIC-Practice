@@ -26,8 +26,8 @@ export class Passage extends Document {
   @Prop({ type: [String], default: [] })
   images: string[];
 
-  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Question' }] })
-  questions: Question[];
+  @Prop({ type: [Number] })
+  questions: number[];
 
   @Prop({ type: MetaDataSchema, default: () => ({}) })
   meta_data: MetaData;

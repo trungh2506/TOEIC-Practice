@@ -32,6 +32,7 @@ export class ToeicTestService {
       passages?: Express.Multer.File;
       images?: Express.Multer.File[];
       audios?: Express.Multer.File[];
+      fullAudio?: Express.Multer.File;
     },
     toeic_test_title: string,
     toeic_test_type: ToeicTestType,
@@ -40,7 +41,9 @@ export class ToeicTestService {
     toeicTestDto.title = toeic_test_title;
     toeicTestDto.type = toeic_test_type;
     console.log('files.testImage', files.testImage);
-    toeicTestDto.image = files.testImage[0].originalname;
+    toeicTestDto.image = files.testImage[0]?.originalname;
+    toeicTestDto.full_audio = files.fullAudio[0]?.originalname;
+    console.log(files.fullAudio);
     if (!toeicTestDto.listening) toeicTestDto.listening = [];
     if (!toeicTestDto.reading) toeicTestDto.reading = [];
     if (!toeicTestDto.passages) toeicTestDto.passages = [];
@@ -57,6 +60,10 @@ export class ToeicTestService {
         passageDto.title = passage.title || '';
         passageDto.content = passage.content || '';
         passageDto.part = passage.part || 0;
+        passageDto.questions = passage.questions
+          ?.split(',')
+          .map((question) => Number(question.trim()))
+          .filter((num) => !isNaN(num));
 
         // Kiểm tra xem images có tồn tại và là chuỗi không
         if (typeof passage.images === 'string') {
@@ -86,6 +93,7 @@ export class ToeicTestService {
         questionDto.question_text = question.question_text;
         questionDto.question_image = question.question_image;
         questionDto.question_audio = question.question_audio;
+        console.log('audio file', question.question_audio);
         questionDto.part = question.part;
         questionDto.options = [
           question.option_a || '',
@@ -206,6 +214,7 @@ export class ToeicTestService {
       })
       .populate({
         path: 'passages',
+        match: { part: part_number },
       })
       .exec();
 
