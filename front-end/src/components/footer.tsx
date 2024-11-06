@@ -2,18 +2,19 @@ import { Mail, MapPin, Phone } from "lucide-react";
 
 export default function Footer() {
   return (
-    <div className="absolute flex flex-col sm:flex-row bg-primary p-12 text-white gap-5">
+    <div className="absolute flex flex-col sm:flex-row justify-center bg-primary p-12 text-white gap-5">
       <div>
         <span className="text-3xl quicksand-regular">TOEIC AREA LOGO</span>
-        <p className="mt-5 quicksand-light">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut ipsa
-          unde harum nam ipsum culpa recusandae, eligendi ea molestiae voluptate
-          ad facere quaerat praesentium eius natus odio ducimus officiis
-          consequatur.
+        <p className="mt-5 quicksand-medium">
+          Chào mừng bạn đến với <strong>Trang Web Luyện Thi TOEIC</strong> – nền
+          tảng trực tuyến giúp bạn chuẩn bị cho kỳ thi TOEIC một cách hiệu quả
+          và toàn diện. Với các bài tập mô phỏng, ngân hàng câu hỏi phong phú,
+          và các công cụ luyện nghe, luyện đọc, chúng tôi cam kết mang đến trải
+          nghiệm học tập tuyệt vời giúp bạn đạt điểm số cao nhất.
         </p>
       </div>
       <div className="border-b-2 sm:border-l-2"></div>
-      <div className="basis-1/2 flex flex-col justify-around gap-2">
+      <div className="flex flex-col justify-around gap-2">
         <div className="flex flex-row gap-5">
           <Phone />
           <span className="hidden sm:block">Liên hệ</span>

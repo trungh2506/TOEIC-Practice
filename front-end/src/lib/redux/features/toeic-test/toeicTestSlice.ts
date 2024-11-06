@@ -71,6 +71,13 @@ interface ToeicTestState {
   currentPart: number;
   //câu hỏi đang chọn
   selectedQuestion: number;
+
+  //part mà người dùng chọn trong practice
+  selectedPart: number;
+
+  //thời gian người dùng lựa chọn trong practice
+  selectedTimer: number;
+  isPractice: boolean;
   //pagination
   totalPages: number;
   totalToeicTest: number;
@@ -96,11 +103,14 @@ const initialState: ToeicTestState = {
   currentPage: 1,
   currentPart: 1,
   selectedQuestion: 1,
+  selectedPart: 0,
+  selectedTimer: 0,
+  isPractice: false,
   loading: false,
   success: false,
   error: false,
 
-  timer: DURATION_TEST,
+  timer: 0,
   isTimerRunning: false,
 };
 
@@ -108,14 +118,15 @@ const toeicTestSlice = createSlice({
   name: "toeicTest",
   initialState,
   reducers: {
-    startTimer: (state) => {
+    startTimer: (state, action) => {
+      state.timer = action.payload;
       state.isTimerRunning = true;
     },
     stopTimer: (state) => {
       state.isTimerRunning = false;
     },
-    resetTimer: (state) => {
-      state.timer = DURATION_TEST;
+    resetTimer: (state, action) => {
+      state.timer = action.payload;
       state.isTimerRunning = false;
     },
     decrementTimer: (state) => {
@@ -127,6 +138,15 @@ const toeicTestSlice = createSlice({
     },
     setCurrentPage: (state, action) => {
       state.currentPage = action.payload;
+    },
+    setSelectedPart: (state, action) => {
+      state.selectedPart = action.payload;
+    },
+    setSelectedTimer: (state, action) => {
+      state.selectedTimer = action.payload;
+    },
+    setIsPractice: (state, action) => {
+      state.isPractice = action.payload;
     },
     increaseCurrentPart: (state) => {
       state.currentPart += 1;
@@ -242,5 +262,8 @@ export const {
   stopTimer,
   resetTimer,
   decrementTimer,
+  setSelectedTimer,
+  setSelectedPart,
+  setIsPractice,
 } = toeicTestSlice.actions;
 export default toeicTestSlice.reducer;

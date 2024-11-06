@@ -50,7 +50,7 @@ export default function SubmitAlertDialog() {
         duration: duration,
       })
     );
-    dispatch(resetTimer());
+    dispatch(resetTimer(DURATION_TEST));
     dispatch(clearAnswer());
   };
 

@@ -156,7 +156,14 @@ export default function Page() {
                       <TableCell className="text-gray-500">
                         {result?.unanswered_answers}
                       </TableCell>
-                      <TableCell>{result?.duration} phút</TableCell>
+                      <TableCell>
+                        {" "}
+                        {`${Math.floor(result?.duration / 60)
+                          .toString()
+                          .padStart(2, "0")}:${(result?.duration % 60)
+                          .toString()
+                          .padStart(2, "0")}`}
+                      </TableCell>
                       <TableCell>{result?.total_score}</TableCell>
                       <TableCell className="text-right">
                         {result?.date_answer}

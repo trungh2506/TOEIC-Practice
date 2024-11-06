@@ -15,6 +15,7 @@ import {
   getToeicTestById,
   increaseCurrentPart,
   setCurrentPage,
+  setIsPractice,
   startTimer,
 } from "@/lib/redux/features/toeic-test/toeicTestSlice";
 
@@ -50,7 +51,8 @@ export default function Page() {
       dispatch(getToeicTestById(param?.toeic_test_id)).then(() => {
         dispatch(filterByPart(1));
       });
-      dispatch(startTimer());
+      dispatch(startTimer(DURATION_TEST));
+      dispatch(setIsPractice(false));
     }
   }, [dispatch, param?.toeic_test_id, currentPart]);
 
@@ -192,6 +194,7 @@ export default function Page() {
                           options={question.options}
                           isAnswerShowing={false}
                           script={""}
+                          isPractice={false}
                         />
                       ) : null;
                     }
@@ -223,6 +226,7 @@ export default function Page() {
                   options={question?.options}
                   isAnswerShowing={false}
                   script={""}
+                  isPractice={false}
                 />
               );
             })}

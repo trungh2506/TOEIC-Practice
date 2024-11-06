@@ -1,6 +1,10 @@
 "use client";
-import PracticeCard from "@/components/toeic-card";
+import PracticeCard from "@/components/practice-card";
 import { Separator } from "@/components/ui/separator";
+import { getAllToeicTest } from "@/lib/redux/features/toeic-test/toeicTestSlice";
+import { AppDispatch, RootState } from "@/lib/store";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 const listeningCards = [
   {
@@ -65,20 +69,27 @@ const readingCards = [
 ];
 
 export default function Page() {
+  const dispatch = useDispatch<AppDispatch>();
+  const { toeicTestList, currentPage, loading } = useSelector(
+    (state: RootState) => state.toeicTest
+  );
+  useEffect(() => {
+    dispatch(getAllToeicTest(currentPage));
+  }, [dispatch, currentPage]);
   return (
     <div className="flex flex-col items-center sm:items-start gap-10">
       <div className="flex flex-col gap-5">
         <span className="text-4xl">Listening</span>
         <Separator />
         <div className="flex flex-col sm:flex-row gap-5">
-          {listeningCards.map((card) => (
+          {listeningCards.map((card: any, index: number) => (
             <PracticeCard
-              key={card.id}
+              selectedPart={card.id}
+              key={index}
               title={card.title}
               type={card.type}
               description={card.description}
               image={card.image}
-              onClick={() => console.log(card.title)}
             />
           ))}
         </div>
@@ -88,16 +99,14 @@ export default function Page() {
         <span className="text-4xl">Reading</span>
         <Separator />
         <div className="flex flex-col sm:flex-row gap-5">
-          {readingCards.map((card) => (
+          {readingCards.map((card: any, index: number) => (
             <PracticeCard
-              key={card.id}
+              selectedPart={card.id}
+              key={index}
               title={card.title}
               type={card.type}
               description={card.description}
               image={card.image}
-              onClick={() => {
-                console.log(card.title);
-              }}
             />
           ))}
         </div>

@@ -13,6 +13,7 @@ import { AccordionItem } from "@radix-ui/react-accordion";
 import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
 import { addAnswer } from "@/lib/redux/features/user-answer/userAnswerSlice";
+import { useState } from "react";
 
 const ANSWER_LABELS = ["A", "B", "C", "D"];
 
@@ -26,6 +27,7 @@ interface QuestionProps {
   correct_answer: string;
   isAnswerShowing: boolean;
   script: string;
+  isPractice: boolean;
 }
 
 export default function Question({
@@ -37,18 +39,20 @@ export default function Question({
   options,
   correct_answer,
   script,
+  isPractice = false,
   isAnswerShowing = false,
 }: QuestionProps) {
+  //lựa chọn của người dùng
+  const [optionUser, setOptionUser] = useState("");
+
   const dispatch = useDispatch<AppDispatch>();
   const { answers } = useSelector((state: RootState) => state.userAnswer);
   const { currentToeicTest } = useSelector(
     (state: RootState) => state.toeicTest
   );
   const handleValueChange = (value: string) => {
-    // console.log(value);
-    // console.log(question_id);
+    setOptionUser(value);
     dispatch(addAnswer({ question_id: question_id, selected_option: value }));
-    // console.log(answers);
   };
 
   return (
@@ -65,6 +69,13 @@ export default function Question({
         </Button>
       </div>
       <div>
+        {isPractice && question_audio && (
+          <audio
+            className=""
+            controls
+            src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/${currentToeicTest?.title}/audios/${question_audio}`}
+          />
+        )}
         {question_image && (
           <Image
             className="rounded-md mb-3"
@@ -142,6 +153,15 @@ export default function Question({
               })}
             </RadioGroup>
           </>
+        )}
+
+        {isPractice && optionUser && (
+          <div className="flex flex-col">
+            <span className="text-green-600 text-2xl">
+              Đáp án đúng: {correct_answer}
+            </span>
+            <span className="text-xl">{script}</span>
+          </div>
         )}
         <Separator className="mt-5" />
 

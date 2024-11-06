@@ -39,13 +39,17 @@ const MemoizedButton = React.memo(({ value, onClick }: MemoizedButtonProps) => (
 // Tạo ButtonQuestionList với React.memo
 const ButtonQuestionList = React.memo(
   ({
+    fromQuestion,
+    toQuestion,
     onButtonClick,
   }: {
+    fromQuestion: number;
+    toQuestion: number;
     onButtonClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
   }) => {
     const buttons = [];
 
-    for (let i = 1; i <= 200; i++) {
+    for (let i = fromQuestion; i <= toQuestion; i++) {
       buttons.push(
         <MemoizedButton onClick={onButtonClick} value={i} key={i} />
       );
@@ -62,9 +66,8 @@ const ButtonQuestionList = React.memo(
 export default function QuestionBoard({ minutes, second }: QuestionBoardProps) {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
-  const { currentToeicTest, currentPart, filteredToeicTest } = useSelector(
-    (state: RootState) => state.toeicTest
-  );
+  const { currentToeicTest, currentPart, filteredToeicTest, isPractice } =
+    useSelector((state: RootState) => state.toeicTest);
   const { answers } = useSelector((state: RootState) => state.userAnswer);
 
   const handleQuestionButtonClick = (
@@ -96,7 +99,37 @@ export default function QuestionBoard({ minutes, second }: QuestionBoardProps) {
         <Progress value={answers.length} />
       </div>
       <ScrollArea className="p-2 rounded-xl sm:h-[400px] h-full sm:w-[200px] w-full">
-        <ButtonQuestionList onButtonClick={handleQuestionButtonClick} />
+        <ButtonQuestionList
+          fromQuestion={
+            !isPractice
+              ? 1
+              : filteredToeicTest?.listening.length > 0 &&
+                filteredToeicTest?.listening[0].question_number
+              ? filteredToeicTest?.listening[0].question_number
+              : filteredToeicTest?.reading.length > 0 &&
+                filteredToeicTest?.reading[0].question_number
+              ? filteredToeicTest?.reading[0].question_number
+              : 1
+          }
+          toQuestion={
+            !isPractice
+              ? 200
+              : filteredToeicTest?.listening?.length > 0 &&
+                filteredToeicTest?.listening[
+                  filteredToeicTest.listening.length - 1
+                ]?.question_number
+              ? filteredToeicTest?.listening[
+                  filteredToeicTest.listening.length - 1
+                ]?.question_number
+              : filteredToeicTest?.reading?.length > 0 &&
+                filteredToeicTest?.reading[filteredToeicTest.reading.length - 1]
+                  ?.question_number
+              ? filteredToeicTest?.reading[filteredToeicTest.reading.length - 1]
+                  ?.question_number
+              : 1
+          }
+          onButtonClick={handleQuestionButtonClick}
+        />
       </ScrollArea>
       <div className="flex gap-2">
         <SubmitAlertDialog />

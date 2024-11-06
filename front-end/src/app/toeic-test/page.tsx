@@ -1,5 +1,5 @@
 "use client";
-import PracticeCard from "@/components/toeic-card";
+import ToeicCard from "@/components/toeic-card";
 import { Separator } from "@/components/ui/separator";
 import {
   getAllToeicTest,
@@ -34,14 +34,14 @@ export default function Page() {
         <span className="text-4xl">Đề thi</span>
         <Separator />
         <div className="flex flex-col sm:flex-row gap-5">
-          {toeicTestList.map((toeicTest, index) => {
+          {toeicTestList.map((toeicTest: any, index: number) => {
             return (
-              <PracticeCard
+              <ToeicCard
                 key={index}
                 title={toeicTest?.title}
-                type={toeicTest?.type}
+                type={""}
                 image={`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/${toeicTest.title}/images/${toeicTest?.image}`}
-                description={`Mô tả cho ${toeicTest?.title}`}
+                description={``}
                 onClick={() => {
                   handleSelectedToeicTest(toeicTest._id);
                 }}
