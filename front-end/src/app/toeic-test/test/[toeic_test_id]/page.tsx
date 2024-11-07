@@ -233,7 +233,7 @@ export default function Page() {
         </div>
 
         <div className="relative">
-          <div className="sm:sticky sm:top-28">
+          <div className="sm:sticky sm:top-10">
             <QuestionBoard
               minutes={`${Math.floor(timer / 60)}`.padStart(2, "0")}
               second={`${timer % 60}`.padStart(2, "0")}

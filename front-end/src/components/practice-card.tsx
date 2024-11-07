@@ -41,6 +41,7 @@ import {
   setSelectedPart,
   setSelectedTimer,
 } from "@/lib/redux/features/toeic-test/toeicTestSlice";
+import { clearAnswer } from "@/lib/redux/features/user-answer/userAnswerSlice";
 import { AppDispatch, RootState } from "@/lib/store";
 import { Description } from "@radix-ui/react-toast";
 import Image from "next/image";
@@ -92,6 +93,7 @@ export default function PracticeCard({
     );
     dispatch(setSelectedPart(selectedPart));
     dispatch(setSelectedTimer(selectedTime));
+    dispatch(clearAnswer());
     router.push(`/practice/test/${selectedToeicTest}`);
   };
   return (

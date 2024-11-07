@@ -64,13 +64,9 @@ interface ToeicTestState {
   filteredToeicTest: any;
   //lưu câu hỏi hiện đang làm của người dùng
   currentQuestion: any;
-  //các câu hỏi đánh dấu
-  markedQuestions: [];
 
   //part thi hiện tại
   currentPart: number;
-  //câu hỏi đang chọn
-  selectedQuestion: number;
 
   //part mà người dùng chọn trong practice
   selectedPart: number;
@@ -97,12 +93,10 @@ const initialState: ToeicTestState = {
   currentToeicTest: null,
   filteredToeicTest: null,
   currentQuestion: null,
-  markedQuestions: [],
   totalPages: 0,
   totalToeicTest: 0,
   currentPage: 1,
   currentPart: 1,
-  selectedQuestion: 1,
   selectedPart: 0,
   selectedTimer: 0,
   isPractice: false,
