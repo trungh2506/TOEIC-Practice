@@ -115,7 +115,11 @@ export default function PracticeCard({
       </CardContent>
       <CardFooter>
         <AlertDialog>
-          <AlertDialogTrigger>Xem Chi Tiết</AlertDialogTrigger>
+          <AlertDialogTrigger>
+            <span className="bg-primary p-1 rounded-sm text-sm">
+              Xem Chi Tiết
+            </span>
+          </AlertDialogTrigger>
           <AlertDialogContent className="w-full">
             <AlertDialogHeader>
               <AlertDialogTitle>Danh sách bài thi</AlertDialogTitle>

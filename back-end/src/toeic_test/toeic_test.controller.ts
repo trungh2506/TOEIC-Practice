@@ -19,7 +19,7 @@ import {
   FileInterceptor,
   FilesInterceptor,
 } from '@nestjs/platform-express';
-import { storage } from 'src/config/storage.config';
+import { storage, storageMemory } from 'src/config/storage.config';
 import { Public } from 'src/decorator/public.decorator';
 import { Roles } from 'src/decorator/roles.decorator';
 import { Role } from 'src/enum/role.enum';
@@ -45,7 +45,7 @@ export class ToeicTestController {
         { name: 'testImage', maxCount: 1 },
         { name: 'fullAudio', maxCount: 1 },
       ],
-      { storage },
+      // { storageMemory },
     ),
   )
   create(
@@ -63,8 +63,6 @@ export class ToeicTestController {
   ) {
     const toeic_test_title = body.title;
     const toeic_test_type = body.type;
-    // console.log('toeic_test_type', toeic_test_type);
-    // console.log('aaaa', files.testImage);
     return this.toeicTestService.create(
       files,
       toeic_test_title,
@@ -94,7 +92,7 @@ export class ToeicTestController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.toeicTestService.remove(+id);
+    return this.toeicTestService.remove(id);
   }
 
   @Public()

@@ -42,7 +42,7 @@ export default function Page() {
                 key={index}
                 title={toeicTest?.title}
                 type={""}
-                image={`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/${toeicTest.title}/images/${toeicTest?.image}`}
+                image={`${toeicTest?.image}&raw=1`}
                 description={``}
                 onClick={() => {
                   handleSelectedToeicTest(toeicTest._id);

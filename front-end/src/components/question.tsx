@@ -83,16 +83,12 @@ export default function Question({
       </div>
       <div>
         {isPractice && question_audio && (
-          <audio
-            className=""
-            controls
-            src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/${currentToeicTest?.title}/audios/${question_audio}`}
-          />
+          <audio className="" controls src={`${question_audio}&raw=1`} />
         )}
         {question_image && (
           <Image
             className="rounded-md mb-3"
-            src={question_image}
+            src={question_image + "&raw=1"}
             width={600}
             height={400}
             quality={100}
@@ -100,11 +96,7 @@ export default function Question({
           />
         )}
         {isAnswerShowing && question_audio && (
-          <audio
-            className=""
-            controls
-            src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/${currentToeicTest?.title}/audios/${question_audio}`}
-          />
+          <audio className="" controls src={`${question_audio}&raw=1`} />
         )}
 
         {question_text ? (

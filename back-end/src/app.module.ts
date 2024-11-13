@@ -20,6 +20,8 @@ import { MulterModule } from '@nestjs/platform-express';
 import { PassageModule } from './passage/passage.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { DropboxModule } from './dropbox/dropbox.module';
+import multer from 'multer';
 
 @Module({
   imports: [
@@ -43,6 +45,7 @@ import { join } from 'path';
     UserAnswerModule,
     AuthModule,
     PassageModule,
+    DropboxModule,
   ],
   controllers: [AppController],
   providers: [
