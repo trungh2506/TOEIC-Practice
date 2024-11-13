@@ -86,13 +86,24 @@ export default function Page() {
                         <Image
                           key={`passage-image-${imageIndex}`}
                           className="rounded-md mb-3"
-                          src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/${currentToeicTest.title}/images/${image}`}
+                          src={`${image}`}
                           width={600}
                           height={400}
                           quality={100}
                           alt={`Image for passage ${index}`}
                         />
                       ))}
+                    {/* Hiển thị audio cho phần passage listening */}
+                    {passage.audio && (
+                      <div className="border-primary border rounded-full p-3 w-auto flex items-center justify-center">
+                        <audio
+                          className="w-full"
+                          autoPlay={false}
+                          controls
+                          src={`${passage.audio}&raw=1`}
+                        />
+                      </div>
+                    )}
                   </div>
 
                   {/* Duyệt qua từng câu hỏi trong passage */}
@@ -117,7 +128,7 @@ export default function Page() {
                             question_text={question.question_text}
                             question_image={
                               question.question_image
-                                ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/${currentToeicTest.title}/images/${question.question_image}`
+                                ? `${question.question_image}`
                                 : undefined
                             }
                             correct_answer=""
@@ -150,7 +161,7 @@ export default function Page() {
                     correct_answer={question?.correct_answer}
                     question_image={
                       question?.question_image
-                        ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/${currentToeicTest.title}/images/${question?.question_image}`
+                        ? `${question?.question_image}`
                         : undefined
                     }
                     question_audio={question?.question_audio}

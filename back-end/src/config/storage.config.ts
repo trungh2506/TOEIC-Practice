@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync } from 'fs';
-import { diskStorage } from 'multer';
+import { diskStorage, memoryStorage } from 'multer';
 import { extname } from 'path';
 
 export const storage = diskStorage({
@@ -26,6 +26,9 @@ export const storage = diskStorage({
     callback(null, `${generateFilename(file)}`);
   },
 });
+
+// Cấu hình lưu trữ vào bộ nhớ
+export const storageMemory = memoryStorage();
 
 function generateFilename(file) {
   return file.originalname;

@@ -81,7 +81,7 @@ export default function Page() {
         className="w-[500px]"
         autoPlay={true}
         controls
-        src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/${currentToeicTest?.title}/audios/${currentToeicTest?.full_audio}`}
+        src={`${currentToeicTest?.full_audio}&raw=1`}
       />
       <div className="flex gap-2 mb-5 overflow-x-auto sm:overflow-x-hidden">
         <Button
@@ -157,7 +157,7 @@ export default function Page() {
                       <Image
                         key={`passage-image-${imageIndex}`}
                         className="rounded-md mb-3"
-                        src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/${currentToeicTest.title}/images/${image}`}
+                        src={`${image}`}
                         width={600}
                         height={400}
                         quality={100}
@@ -186,7 +186,7 @@ export default function Page() {
                           question_text={question.question_text}
                           question_image={
                             question.question_image
-                              ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/${currentToeicTest.title}/images/${question.question_image}`
+                              ? `${question.question_image}`
                               : undefined
                           }
                           correct_answer=""
@@ -219,7 +219,7 @@ export default function Page() {
                   correct_answer=""
                   question_image={
                     question?.question_image
-                      ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/${currentToeicTest.title}/images/${question?.question_image}`
+                      ? `${question?.question_image}`
                       : undefined
                   }
                   question_audio={question?.question_audio}
@@ -233,7 +233,7 @@ export default function Page() {
         </div>
 
         <div className="relative">
-          <div className="sm:sticky sm:top-28">
+          <div className="sm:sticky sm:top-10">
             <QuestionBoard
               minutes={`${Math.floor(timer / 60)}`.padStart(2, "0")}
               second={`${timer % 60}`.padStart(2, "0")}

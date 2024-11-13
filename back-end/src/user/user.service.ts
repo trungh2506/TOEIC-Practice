@@ -6,6 +6,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './schemas/user.schema';
 import { RegisterDTO } from 'src/auth/dto/register.dto';
+import { paginate } from 'src/common/pagination/pagination.service';
+import { PaginationDto } from 'src/common/pagination/pagination.dto';
 
 @Injectable()
 export class UserService {
@@ -23,8 +25,17 @@ export class UserService {
     return newUser.save();
   }
 
-  findAll() {
-    return `This action returns all user`;
+  async findAll(paginationDto: PaginationDto) {
+    const projection = {};
+    const filter = {};
+    const users = await paginate(
+      this.userModel,
+      paginationDto,
+      filter,
+      projection,
+    );
+
+    return users;
   }
 
   findOne(id: string) {

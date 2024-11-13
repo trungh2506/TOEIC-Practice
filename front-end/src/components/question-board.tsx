@@ -26,15 +26,24 @@ interface QuestionBoardProps {
 // Định nghĩa kiểu cho props của MemoizedButton
 interface MemoizedButtonProps {
   value: number;
+  isAnswered: boolean;
+  isMarked: boolean;
   onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 // Tạo MemoizedButton
-const MemoizedButton = React.memo(({ value, onClick }: MemoizedButtonProps) => (
-  <Button onClick={onClick} size={"icon"} variant={"outline"} value={value}>
-    {value}
-  </Button>
-));
+const MemoizedButton = React.memo(
+  ({ isAnswered, isMarked, value, onClick }: MemoizedButtonProps) => (
+    <Button
+      onClick={onClick}
+      size={"icon"}
+      variant={isMarked ? "destructive" : isAnswered ? "default" : "outline"}
+      value={value}
+    >
+      {value}
+    </Button>
+  )
+);
 
 // Tạo ButtonQuestionList với React.memo
 const ButtonQuestionList = React.memo(
@@ -42,19 +51,30 @@ const ButtonQuestionList = React.memo(
     fromQuestion,
     toQuestion,
     onButtonClick,
+    questionNumberList,
+    markedQuestions,
   }: {
     fromQuestion: number;
     toQuestion: number;
+    questionNumberList: number[];
+    markedQuestions: number[];
     onButtonClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
   }) => {
     const buttons = [];
-
     for (let i = fromQuestion; i <= toQuestion; i++) {
+      // Kiểm tra nếu questionNumberList có i
+      const isAnswered = questionNumberList.includes(i);
+      const isMarked = markedQuestions.includes(i);
       buttons.push(
-        <MemoizedButton onClick={onButtonClick} value={i} key={i} />
+        <MemoizedButton
+          isMarked={isMarked}
+          isAnswered={isAnswered}
+          onClick={onButtonClick}
+          value={i}
+          key={i} // Đảm bảo key là duy nhất
+        />
       );
     }
-
     return (
       <div className="flex items-center justify-center gap-2 flex-wrap">
         {buttons}
@@ -68,7 +88,9 @@ export default function QuestionBoard({ minutes, second }: QuestionBoardProps) {
   const dispatch = useDispatch<AppDispatch>();
   const { currentToeicTest, currentPart, filteredToeicTest, isPractice } =
     useSelector((state: RootState) => state.toeicTest);
-  const { answers } = useSelector((state: RootState) => state.userAnswer);
+  const { answers, questionNumberList, markedQuestions } = useSelector(
+    (state: RootState) => state.userAnswer
+  );
 
   const handleQuestionButtonClick = (
     event: React.MouseEvent<HTMLButtonElement>
@@ -98,8 +120,14 @@ export default function QuestionBoard({ minutes, second }: QuestionBoardProps) {
         {answers.length}/200
         <Progress value={answers.length} />
       </div>
+      <div className="text-foreground">
+        Chú ý: Bạn có thể click vào số thứ tự câu hỏi trong bài để đánh dấu
+        review
+      </div>
       <ScrollArea className="p-2 rounded-xl sm:h-[400px] h-full sm:w-[200px] w-full">
         <ButtonQuestionList
+          questionNumberList={questionNumberList}
+          markedQuestions={markedQuestions}
           fromQuestion={
             !isPractice
               ? 1

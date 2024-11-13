@@ -61,6 +61,10 @@ interface UserAnswerState {
   totalToeicTest: number;
   currentPage: any;
 
+  //danh sách question_number các câu hỏi mà người dùng đã trả lời để đánh dấu câu hỏi đó là đã làm
+  questionNumberList: number[];
+  //các câu hỏi người dùng đánh dấu
+  markedQuestions: number[];
   loading: boolean;
   success: boolean;
   error: boolean;
@@ -68,6 +72,8 @@ interface UserAnswerState {
 
 const initialState: UserAnswerState = {
   userAnswerList: [],
+  questionNumberList: [],
+  markedQuestions: [],
   currentUserAnswer: null,
   answers: [],
   totalPages: 0,
@@ -82,6 +88,30 @@ const userAnswerSlice = createSlice({
   name: "userAnswer",
   initialState,
   reducers: {
+    addMarkedQuestions: (state, action) => {
+      const question = action.payload;
+      if (state.markedQuestions.includes(question)) {
+        state.markedQuestions = state.markedQuestions.filter(
+          (q) => q !== question
+        );
+      } else {
+        state.markedQuestions.push(question);
+      }
+    },
+    addQuestionNumberList: (state, action) => {
+      if (state.questionNumberList.length === 0) {
+        state.questionNumberList = [
+          ...state.questionNumberList,
+          action.payload,
+        ];
+      } else {
+        if (!state.questionNumberList?.includes(action.payload))
+          state.questionNumberList = [
+            ...state.questionNumberList,
+            action.payload,
+          ];
+      }
+    },
     setCurrentPage: (state, action) => {
       state.currentPage = action.payload;
     },
@@ -102,6 +132,8 @@ const userAnswerSlice = createSlice({
     },
     clearAnswer: (state) => {
       state.answers = [];
+      state.markedQuestions = [];
+      state.questionNumberList = [];
     },
     clearCurrentUserAnswer: (state) => {
       state.currentUserAnswer = null;
@@ -153,5 +185,7 @@ export const {
   setCurrentPage,
   clearAnswer,
   clearCurrentUserAnswer,
+  addQuestionNumberList,
+  addMarkedQuestions,
 } = userAnswerSlice.actions;
 export default userAnswerSlice.reducer;

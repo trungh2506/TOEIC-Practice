@@ -5,6 +5,7 @@ import {
   getAllToeicTest,
   setCurrentPage,
 } from "@/lib/redux/features/toeic-test/toeicTestSlice";
+import { clearAnswer } from "@/lib/redux/features/user-answer/userAnswerSlice";
 import { AppDispatch, RootState } from "@/lib/store";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -17,6 +18,7 @@ export default function Page() {
     (state: RootState) => state.toeicTest
   );
   const handleSelectedToeicTest = (toeic_test_id: string) => {
+    dispatch(clearAnswer());
     router.push(`/toeic-test/test/${toeic_test_id}`);
   };
   const handlePageChange = (page: number) => {
@@ -40,7 +42,7 @@ export default function Page() {
                 key={index}
                 title={toeicTest?.title}
                 type={""}
-                image={`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/${toeicTest.title}/images/${toeicTest?.image}`}
+                image={`${toeicTest?.image}&raw=1`}
                 description={``}
                 onClick={() => {
                   handleSelectedToeicTest(toeicTest._id);

@@ -41,6 +41,7 @@ import {
   setSelectedPart,
   setSelectedTimer,
 } from "@/lib/redux/features/toeic-test/toeicTestSlice";
+import { clearAnswer } from "@/lib/redux/features/user-answer/userAnswerSlice";
 import { AppDispatch, RootState } from "@/lib/store";
 import { Description } from "@radix-ui/react-toast";
 import Image from "next/image";
@@ -92,6 +93,7 @@ export default function PracticeCard({
     );
     dispatch(setSelectedPart(selectedPart));
     dispatch(setSelectedTimer(selectedTime));
+    dispatch(clearAnswer());
     router.push(`/practice/test/${selectedToeicTest}`);
   };
   return (
@@ -113,7 +115,11 @@ export default function PracticeCard({
       </CardContent>
       <CardFooter>
         <AlertDialog>
-          <AlertDialogTrigger>Xem Chi Tiết</AlertDialogTrigger>
+          <AlertDialogTrigger>
+            <span className="bg-primary p-1 rounded-sm text-sm">
+              Xem Chi Tiết
+            </span>
+          </AlertDialogTrigger>
           <AlertDialogContent className="w-full">
             <AlertDialogHeader>
               <AlertDialogTitle>Danh sách bài thi</AlertDialogTitle>

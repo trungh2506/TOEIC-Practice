@@ -12,8 +12,13 @@ import { AppDispatch, RootState } from "@/lib/store";
 import { AccordionItem } from "@radix-ui/react-accordion";
 import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
-import { addAnswer } from "@/lib/redux/features/user-answer/userAnswerSlice";
+import {
+  addAnswer,
+  addMarkedQuestions,
+  addQuestionNumberList,
+} from "@/lib/redux/features/user-answer/userAnswerSlice";
 import { useState } from "react";
+import { Bookmark, BookMarked, Pin } from "lucide-react";
 
 const ANSWER_LABELS = ["A", "B", "C", "D"];
 
@@ -46,13 +51,19 @@ export default function Question({
   const [optionUser, setOptionUser] = useState("");
 
   const dispatch = useDispatch<AppDispatch>();
-  const { answers } = useSelector((state: RootState) => state.userAnswer);
+  const { answers, markedQuestions } = useSelector(
+    (state: RootState) => state.userAnswer
+  );
   const { currentToeicTest } = useSelector(
     (state: RootState) => state.toeicTest
   );
   const handleValueChange = (value: string) => {
     setOptionUser(value);
     dispatch(addAnswer({ question_id: question_id, selected_option: value }));
+    dispatch(addQuestionNumberList(question_number));
+  };
+  const handleMarkQuestion = () => {
+    dispatch(addMarkedQuestions(question_number));
   };
 
   return (
@@ -60,8 +71,10 @@ export default function Question({
       className="flex flex-col sm:flex-row gap-5 mb-5"
       id={question_number?.toString()}
     >
+      {markedQuestions.includes(question_number) && <Bookmark color="red" />}
       <div className="mt-3">
         <Button
+          onClick={handleMarkQuestion}
           size={"icon"}
           className="text-white text-sm p-1 rounded-full bg-primary"
         >
@@ -70,29 +83,20 @@ export default function Question({
       </div>
       <div>
         {isPractice && question_audio && (
-          <audio
-            className=""
-            controls
-            src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/${currentToeicTest?.title}/audios/${question_audio}`}
-          />
+          <audio className="" controls src={`${question_audio}&raw=1`} />
         )}
         {question_image && (
           <Image
             className="rounded-md mb-3"
-            src={question_image}
+            src={question_image + "&raw=1"}
             width={600}
             height={400}
             quality={100}
             alt="Carousel image 1"
           />
         )}
-
         {isAnswerShowing && question_audio && (
-          <audio
-            className=""
-            controls
-            src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/${currentToeicTest?.title}/audios/${question_audio}`}
-          />
+          <audio className="" controls src={`${question_audio}&raw=1`} />
         )}
 
         {question_text ? (

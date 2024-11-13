@@ -7,6 +7,7 @@ import { Toeic_Test, ToeicTestSchema } from './schemas/toeic_test.schema';
 import { PassageService } from 'src/passage/passage.service';
 import { PassageModule } from 'src/passage/passage.module';
 import { QuestionModule } from 'src/question/question.module';
+import { DropboxModule } from 'src/dropbox/dropbox.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { QuestionModule } from 'src/question/question.module';
     ]),
     PassageModule,
     QuestionModule,
+    DropboxModule,
   ],
   controllers: [ToeicTestController],
   providers: [ToeicTestService],

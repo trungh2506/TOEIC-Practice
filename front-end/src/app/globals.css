@@ -126,4 +126,7 @@ body {
   h1 {
     @apply text-2xl;
   }
+  b {
+    @apply text-primary;
+  }
 }

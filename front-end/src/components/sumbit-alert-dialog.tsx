@@ -26,7 +26,7 @@ const DURATION_TEST = 120 * 60;
 
 export default function SubmitAlertDialog() {
   const router = useRouter();
-  const { answers, currentUserAnswer } = useSelector(
+  const { answers, currentUserAnswer, markedQuestions } = useSelector(
     (state: RootState) => state.userAnswer
   );
   const { timer } = useSelector((state: RootState) => state.toeicTest);
@@ -65,6 +65,9 @@ export default function SubmitAlertDialog() {
             {answers.length > 0 ? "Xác Nhận Nộp Bài?" : "Không Thể Nộp Bài"}
           </AlertDialogTitle>
           <AlertDialogDescription>
+            {markedQuestions.length > 0 &&
+              "Bạn có câu hỏi đang đánh dấu, bạn có chắc muốn nộp bài không?"}
+            <br />
             {answers.length > 0
               ? "Bạn có chắc chắn muốn nộp bài không? Hành động này sẽ không thể hoàn tác."
               : "Bạn chưa làm bất kỳ câu hỏi nào. Vui lòng trả lời ít nhất một câu trước khi nộp bài."}
