@@ -37,6 +37,6 @@ export class PassageController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.passageService.remove(+id);
+    return this.passageService.remove(id);
   }
 }

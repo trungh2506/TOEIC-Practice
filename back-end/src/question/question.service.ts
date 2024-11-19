@@ -29,7 +29,7 @@ export class QuestionService {
     return `This action updates a #${id} question`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} question`;
+  async remove(id: string) {
+    return await this.questionModel.findByIdAndDelete(id);
   }
 }

@@ -14,7 +14,7 @@ export default function ToeicTestList() {
   );
   useEffect(() => {
     dispatch(getAllToeicTest(currentPage));
-  }, []);
+  }, [currentPage, dispatch]);
   return (
     <div className="container mx-auto py-10">
       <DataTable columns={columns} data={toeicTestList} />

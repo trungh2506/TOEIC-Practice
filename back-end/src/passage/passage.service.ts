@@ -28,7 +28,7 @@ export class PassageService {
     return `This action updates a #${id} passage`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} passage`;
+  async remove(id: string) {
+    return await this.passageModel.findByIdAndDelete(id);
   }
 }

@@ -27,7 +27,9 @@ import {
 } from "@/components/ui/sidebar";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/lib/redux/store";
-import { logout } from "@/lib/redux/features/auth/authSlice";
+import { fetchUserProfile, logout } from "@/lib/redux/features/auth/authSlice";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export function NavUser({
   user,
@@ -38,11 +40,16 @@ export function NavUser({
     avatar: string;
   };
 }) {
+  const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const { isMobile } = useSidebar();
   const handleLogout = () => {
     dispatch(logout());
+    router.push("/");
   };
+  useEffect(() => {
+    dispatch(fetchUserProfile());
+  }, []);
   return (
     <SidebarMenu>
       <SidebarMenuItem>

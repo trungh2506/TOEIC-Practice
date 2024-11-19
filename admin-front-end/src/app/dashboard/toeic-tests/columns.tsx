@@ -11,6 +11,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/lib/redux/store";
+import {
+  deleteToeicTest,
+  getAllToeicTest,
+  removeToeicTest,
+} from "@/lib/redux/features/toeic-tests/toeicTestSlice";
+import { toast } from "@/hooks/use-toast";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -82,7 +90,15 @@ export const columns: ColumnDef<ToeicTest>[] = [
     id: "actions",
     cell: ({ row }) => {
       const toeicTest = row.original;
-
+      const dispatch = useDispatch<AppDispatch>();
+      const handleDelete = async () => {
+        await dispatch(deleteToeicTest(toeicTest._id));
+        dispatch(removeToeicTest(toeicTest._id));
+        toast({
+          description: <span>Xóa thành công!</span>,
+        });
+        // dispatch(getAllToeicTest(1));
+      };
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -99,10 +115,14 @@ export const columns: ColumnDef<ToeicTest>[] = [
               Copy payment ID
             </DropdownMenuItem> */}
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                console.log(`Xem chi tiết ${toeicTest._id}`);
+              }}
+            >
               <Info /> Xem chi tiết
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleDelete}>
               <Trash /> Xóa đề thi
             </DropdownMenuItem>
           </DropdownMenuContent>

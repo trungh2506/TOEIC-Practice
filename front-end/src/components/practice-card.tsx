@@ -116,7 +116,7 @@ export default function PracticeCard({
       <CardFooter>
         <AlertDialog>
           <AlertDialogTrigger>
-            <span className="bg-primary p-1 rounded-sm text-sm">
+            <span className="bg-primary p-2 rounded-sm text-sm text-foreground">
               Xem Chi Tiết
             </span>
           </AlertDialogTrigger>

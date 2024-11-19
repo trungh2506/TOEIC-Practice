@@ -1,6 +1,22 @@
-import { loginApi } from "@/api/auth/api";
+import { loginApi, profileApi } from "@/api/auth/api";
 import { ILogin } from "@/interface/ILogin";
+import { IUser } from "@/interface/IUser";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+export const fetchUserProfile = createAsyncThunk<
+  IUser,
+  void,
+  { rejectValue: string }
+>("auth/fetchUserProfile", async (_, { rejectWithValue }) => {
+  try {
+    const response = await profileApi();
+    return response.data;
+  } catch (error: any) {
+    return rejectWithValue(
+      error.response?.data?.message || "Error fetching profile"
+    );
+  }
+});
 
 export const login = createAsyncThunk<{ jwt: string; user: any }, any>(
   "auth/login",
@@ -80,8 +96,36 @@ const authSlice = createSlice({
       state.message = action.payload;
       state.error = true;
     });
+
+    // get profile
+    builder.addCase(fetchUserProfile.pending, (state) => {
+      state.message = "pending with fetch user profile";
+      state.loading = true;
+      state.success = false;
+      state.error = false;
+    });
+    builder.addCase(fetchUserProfile.fulfilled, (state, action) => {
+      state.loading = false;
+      state.user = action.payload;
+      state.isAuthenticated = true;
+      state.success = true;
+      state.error = false;
+    });
+    builder.addCase(fetchUserProfile.rejected, (state, action) => {
+      state.loading = false;
+      state.error = true;
+      state.success = false;
+      state.message = "rejected when fetch user profile";
+    });
   },
 });
+
+function getCookie(name: string): string | undefined {
+  const cookieMatch = document.cookie.match(
+    "(^|;)\\s*" + name + "\\s*=\\s*([^;]+)"
+  );
+  return cookieMatch ? cookieMatch.pop() : undefined;
+}
 
 export const { logout } = authSlice.actions;
 export default authSlice.reducer;
