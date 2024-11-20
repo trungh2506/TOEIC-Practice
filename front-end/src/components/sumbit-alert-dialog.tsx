@@ -16,6 +16,7 @@ import {
 import {
   clearAnswer,
   submitAnswer,
+  submitTest,
 } from "@/lib/redux/features/user-answer/userAnswerSlice";
 import { AppDispatch, RootState } from "@/lib/store";
 import { AlertDialogTrigger } from "@radix-ui/react-alert-dialog";
@@ -43,11 +44,18 @@ export default function SubmitAlertDialog() {
       answers: answers,
       duration: duration,
     });
+    // dispatch(
+    //   submitAnswer({
+    //     toeic_test_id: toeic_test_id,
+    //     answers: answers,
+    //     duration: duration,
+    //   })
+    // );
+
     dispatch(
-      submitAnswer({
+      submitTest({
         toeic_test_id: toeic_test_id,
         answers: answers,
-        duration: duration,
       })
     );
     dispatch(resetTimer(DURATION_TEST));

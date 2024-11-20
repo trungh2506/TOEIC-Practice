@@ -121,7 +121,7 @@ export default function TestResult() {
                       <AnswerReview
                         question_image={
                           question?.question_image
-                            ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/${currentToeicTest.title}/images/${question?.question_image}`
+                            ? question?.question_image
                             : undefined
                         }
                         question_id={question._id}

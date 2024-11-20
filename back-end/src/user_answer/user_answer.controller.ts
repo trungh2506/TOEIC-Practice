@@ -46,4 +46,18 @@ export class UserAnswerController {
   remove(@Param('id') id: string) {
     return this.userAnswerService.remove(+id);
   }
+
+  @Post('/start/:toeic_test_id')
+  startTest(@Req() req, @Param('toeic_test_id') test_id: string) {
+    return this.userAnswerService.startTest(req.user?._id, test_id);
+  }
+
+  @Post('/submit/:toeic_test_id')
+  submitTest(
+    @Req() req,
+    @Param('toeic_test_id') test_id: string,
+    @Body() answers: any[],
+  ) {
+    return this.userAnswerService.submitTest(req.user?._id, test_id, answers);
+  }
 }

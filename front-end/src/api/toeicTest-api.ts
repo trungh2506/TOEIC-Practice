@@ -12,3 +12,4 @@ export const getPartToeicTestApi = (id: string, part_number: number) =>
 export const uploadToeicTestApi = (toeic_test_data: any, files: File) => {
   axiosInstance.post(`/toeic-test`, toeic_test_data);
 };
+
