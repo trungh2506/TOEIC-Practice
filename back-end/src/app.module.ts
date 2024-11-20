@@ -25,7 +25,7 @@ import multer from 'multer';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost:27017/toeic-practice'),
+    MongooseModule.forRoot('mongodb://0.0.0.0:27017/toeic-practice'),
     ConfigModule.forRoot({
       isGlobal: true, // Để module này có thể được sử dụng ở mọi nơi trong dự án
     }),
