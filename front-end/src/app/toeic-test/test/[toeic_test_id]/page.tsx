@@ -72,6 +72,19 @@ export default function Page() {
       if (interval) clearInterval(interval);
     };
   }, [isTimerRunning, dispatch]);
+
+  //Bắt sự kiện người dùng ấn F5
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
   return (
     <div className="">
       <span className="sm:text-4xl text-xl mb-5">
@@ -180,6 +193,11 @@ export default function Page() {
                       // Chỉ hiển thị nếu tìm thấy câu hỏi
                       return question ? (
                         <Question
+                          defaultValue={
+                            answers.find(
+                              (answer) => answer.question_id === question._id
+                            )?.selected_option || ""
+                          }
                           key={`question-${questionIndex}`}
                           question_id={question._id}
                           question_number={question.question_number}
@@ -212,6 +230,11 @@ export default function Page() {
             ].map((question: any, index: number) => {
               return (
                 <Question
+                  defaultValue={
+                    answers.find(
+                      (answer) => answer.question_id === question._id
+                    )?.selected_option || ""
+                  }
                   question_id={question._id}
                   key={`question-${question.question_number}-${index}`}
                   question_number={question?.question_number}
