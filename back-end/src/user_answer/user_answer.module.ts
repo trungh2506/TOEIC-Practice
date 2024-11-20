@@ -8,6 +8,7 @@ import { Question } from 'src/question/schemas/question.schema';
 import { QuestionService } from 'src/question/question.service';
 import { QuestionModule } from 'src/question/question.module';
 import { ToeicTestModule } from 'src/toeic_test/toeic_test.module';
+import { TestExpiredGateway } from 'src/user_answer/gateways/test_expired.gateway';
 
 @Module({
   imports: [
@@ -18,6 +19,6 @@ import { ToeicTestModule } from 'src/toeic_test/toeic_test.module';
     ToeicTestModule,
   ],
   controllers: [UserAnswerController],
-  providers: [UserAnswerService],
+  providers: [UserAnswerService, TestExpiredGateway],
 })
 export class UserAnswerModule {}

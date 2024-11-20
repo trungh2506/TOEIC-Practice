@@ -10,6 +10,7 @@ import { ToeicTestService } from 'src/toeic_test/toeic_test.service';
 import { paginate } from 'src/common/pagination/pagination.service';
 import { PaginationDto } from 'src/common/pagination/pagination.dto';
 import { read } from 'fs';
+import { TestExpiredGateway } from 'src/user_answer/gateways/test_expired.gateway';
 
 const STATUS_CORRECT = 'correct';
 const STATUS_INCORRECT = 'incorrect';
@@ -22,6 +23,7 @@ export class UserAnswerService {
   constructor(
     private readonly questionService: QuestionService,
     private readonly toeicTestService: ToeicTestService,
+    private readonly testExpiredGateway: TestExpiredGateway,
     @InjectModel(User_Answer.name) private userAnswerModel: Model<User_Answer>,
   ) {}
 
@@ -87,6 +89,111 @@ export class UserAnswerService {
       //   path: 'passage_id',
       //   model: 'Passage',
       // },
+    });
+  }
+
+  async startTest(user_id: string, toeic_test_id: string) {
+    const newUserAnswer = new this.userAnswerModel({
+      user_id: user_id,
+      toeic_test_id: toeic_test_id,
+      start_time: new Date(),
+      status: 'in_progress',
+      unanswered_answers: 0,
+    });
+
+    await newUserAnswer.save();
+
+    return newUserAnswer;
+  }
+
+  async submitTest(user_id: string, toeic_test_id: string, answers: any[]) {
+    // Tìm bản ghi bài thi của người dùng
+    const userAnswer = await this.userAnswerModel.findOne({
+      user_id: user_id,
+      toeic_test_id: toeic_test_id,
+      status: 'in_progress', // Chỉ cho phép submit khi bài thi đang trong tiến trình
+    });
+
+    // Cập nhật câu trả lời và trạng thái bài thi
+    userAnswer.answers = answers; // Cập nhật danh sách câu trả lời của người dùng
+    userAnswer.end_time = new Date(); // Cập nhật thời gian kết thúc bài thi
+    userAnswer.status = 'completed'; // Đánh dấu bài thi đã hoàn thành
+
+    if (!userAnswer) {
+      throw new Error('Bài thi không tồn tại hoặc đã bị hết thời gian.');
+    }
+
+    let listening = 0;
+    let reading = 0;
+    const total_of_question =
+      await this.toeicTestService.getTotalQuestion(toeic_test_id);
+
+    let correct_answers = 0; // Biến để lưu số câu trả lời đúng
+    let incorrect_answers = 0; // Biến để lưu số câu trả lời sai
+
+    // Lặp qua từng câu trả lời của người dùng
+    for (const answer of answers) {
+      const question = await this.questionService.findOne(answer.question_id);
+      if (!question) {
+        throw new Error(`Câu hỏi với ID ${answer.question_id} không tồn tại.`);
+      }
+      // compare actual answer with user answer
+      if (!answer.selected_option) {
+        answer.status = STATUS_UNANSWERED;
+      } else if (
+        question &&
+        question.correct_answer.includes(answer.selected_option)
+      ) {
+        // check question section
+        if (question.section === LISTENING_SECTION) {
+          listening += 1;
+        } else if (question.section === READING_SECTION) {
+          reading += 1;
+        }
+        answer.status = STATUS_CORRECT;
+        correct_answers += 1;
+      } else {
+        answer.status = STATUS_INCORRECT;
+        incorrect_answers += 1;
+      }
+    }
+
+    // Cập nhật số câu trả lời đúng, sai và chưa trả lời
+    userAnswer.correct_answers = correct_answers;
+    userAnswer.incorrect_answers = incorrect_answers;
+    userAnswer.unanswered_answers =
+      total_of_question - (correct_answers + incorrect_answers);
+
+    // Tính toán thời gian làm bài
+    const durationInSeconds = Math.floor(
+      (userAnswer.end_time.getTime() - userAnswer.start_time.getTime()) / 1000,
+    );
+    userAnswer.duration = durationInSeconds;
+
+    // Tính điểm (giả sử bạn có hàm calculateScore để tính điểm)
+    const { listeningScore, readingScore } = this.calculateScore({
+      correctListening: listening,
+      correctReading: reading,
+    });
+
+    userAnswer.listening_score = listeningScore;
+    userAnswer.reading_score = readingScore;
+    userAnswer.total_score = listeningScore + readingScore;
+
+    // Lưu bản ghi đã cập nhật
+    await userAnswer.save();
+
+    // return {
+    //   status: userAnswer.status,
+    //   total_score: userAnswer.total_score,
+    //   listening_score: userAnswer.listening_score,
+    //   reading_score: userAnswer.reading_score,
+    //   duration: userAnswer.duration,
+    //   answers: userAnswer.answers,
+    // };
+    return userAnswer.populate({
+      path: 'answers.question_id',
+      model: 'Question',
     });
   }
 

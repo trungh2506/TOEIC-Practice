@@ -4,6 +4,7 @@ import { Separator } from "@/components/ui/separator";
 import {
   getAllToeicTest,
   setCurrentPage,
+  startTest,
 } from "@/lib/redux/features/toeic-test/toeicTestSlice";
 import { clearAnswer } from "@/lib/redux/features/user-answer/userAnswerSlice";
 import { AppDispatch, RootState } from "@/lib/store";
@@ -19,6 +20,7 @@ export default function Page() {
   );
   const handleSelectedToeicTest = (toeic_test_id: string) => {
     dispatch(clearAnswer());
+    dispatch(startTest(toeic_test_id));
     router.push(`/toeic-test/test/${toeic_test_id}`);
   };
   const handlePageChange = (page: number) => {

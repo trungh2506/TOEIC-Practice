@@ -47,6 +47,18 @@ export class User_Answer extends Document {
   @Prop({ default: 0 })
   duration: number;
 
+  @Prop({ default: Date.now })
+  start_time: Date;
+
+  @Prop()
+  end_time: Date;
+
+  @Prop({
+    default: 'in_progress',
+    enum: ['in_progress', 'completed', 'expired'],
+  })
+  status: string;
+
   @Prop({ type: MetaDataSchema, default: () => ({}) })
   meta_data: MetaData;
 }

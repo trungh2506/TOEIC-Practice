@@ -3,9 +3,23 @@ import {
   getPartToeicTestApi,
   getToeicTestByIdApi,
 } from "@/api/toeicTest-api";
+import { startTestApi } from "@/api/userAnswer-api";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const DURATION_TEST = 120 * 60;
+
+export const startTest = createAsyncThunk<any, any>(
+  "toeicTest/startTest",
+  async (toeic_test_id: string, { rejectWithValue }) => {
+    try {
+      const response = await startTestApi(toeic_test_id);
+      const data = response.data;
+      return data;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+);
 
 export const getPartToeicTest = createAsyncThunk<
   any,
@@ -244,6 +258,8 @@ const toeicTestSlice = createSlice({
       state.success = false;
       state.error = true;
     });
+
+    //start toeic test
   },
 });
 

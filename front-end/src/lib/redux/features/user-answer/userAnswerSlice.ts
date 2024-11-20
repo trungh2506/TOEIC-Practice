@@ -1,4 +1,8 @@
-import { getAllResultByUserIdApi, submitAnswerApi } from "@/api/userAnswer-api";
+import {
+  getAllResultByUserIdApi,
+  submitAnswerApi,
+  submitTestApi,
+} from "@/api/userAnswer-api";
 import { createAsyncThunk, createSlice, current } from "@reduxjs/toolkit";
 
 const STATUS_CORRECT = "correct";
@@ -26,6 +30,19 @@ export const submitAnswer = createAsyncThunk<any, any>(
       const response = await submitAnswerApi(answerData);
       const data = response.data;
       console.log("data when submit answer", data);
+      return data;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+export const submitTest = createAsyncThunk<any, any>(
+  "userAnswer/submitTest",
+  async ({ toeic_test_id, answers }, { rejectWithValue }) => {
+    try {
+      const response = await submitTestApi(toeic_test_id, answers);
+      const data = response.data;
       return data;
     } catch (error: any) {
       return rejectWithValue(error.response.data.message);
@@ -175,18 +192,18 @@ const userAnswerSlice = createSlice({
     });
 
     //submit answer
-    builder.addCase(submitAnswer.pending, (state) => {
+    builder.addCase(submitTest.pending, (state) => {
       state.loading = true;
       state.success = false;
       state.error = false;
     });
-    builder.addCase(submitAnswer.fulfilled, (state, action) => {
+    builder.addCase(submitTest.fulfilled, (state, action) => {
       state.loading = false;
       state.success = true;
       state.error = false;
       state.currentUserAnswer = action.payload;
     });
-    builder.addCase(submitAnswer.rejected, (state, action) => {
+    builder.addCase(submitTest.rejected, (state, action) => {
       state.loading = false;
       state.success = false;
       state.error = true;
