@@ -1,4 +1,5 @@
 import {
+  deleteToeicTestApi,
   getAllToeicTestApi,
   getPartToeicTestApi,
   getToeicTestByIdApi,
@@ -7,6 +8,19 @@ import {
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const DURATION_TEST = 120 * 60;
+
+export const deleteToeicTest = createAsyncThunk<any, any>(
+  "toeicTest/deleteToeicTest",
+  async (toeic_test_id, { rejectWithValue }) => {
+    try {
+      const response = await deleteToeicTestApi(toeic_test_id);
+      const data = response.data;
+      return data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message);
+    }
+  }
+);
 
 export const getPartToeicTest = createAsyncThunk<
   any,
@@ -55,7 +69,7 @@ type ToeicTestData = {
 };
 export const uploadToeicTest = createAsyncThunk<any, any>(
   "toeicTest/uploadToeicTest",
-  async (formData, { rejectWithValue }) => {
+  async (formData: FormData, { rejectWithValue }) => {
     try {
       // Make sure uploadToeicTestApi accepts toeic_test_data and files correctly
       const response = await uploadToeicTestApi(formData);
@@ -131,6 +145,16 @@ const toeicTestSlice = createSlice({
   name: "toeicTest",
   initialState,
   reducers: {
+    resetStatus: (state) => {
+      state.success = false;
+      state.error = false;
+      state.loading = false;
+    },
+    removeToeicTest: (state, action) => {
+      state.toeicTestList = state.toeicTestList.filter(
+        (test) => test._id !== action.payload
+      );
+    },
     startTimer: (state, action) => {
       state.timer = action.payload;
       state.isTimerRunning = true;
@@ -280,6 +304,23 @@ const toeicTestSlice = createSlice({
       state.success = false;
       state.error = true;
     });
+
+    // Delete Toeic Test
+    builder.addCase(deleteToeicTest.pending, (state) => {
+      state.loading = true;
+      state.success = false;
+      state.error = false;
+    });
+    builder.addCase(deleteToeicTest.fulfilled, (state, action) => {
+      state.loading = false;
+      state.success = true;
+      state.error = false;
+    });
+    builder.addCase(deleteToeicTest.rejected, (state, action) => {
+      state.loading = false;
+      state.success = false;
+      state.error = true;
+    });
   },
 });
 
@@ -295,5 +336,7 @@ export const {
   setSelectedTimer,
   setSelectedPart,
   setIsPractice,
+  removeToeicTest,
+  resetStatus,
 } = toeicTestSlice.actions;
 export default toeicTestSlice.reducer;

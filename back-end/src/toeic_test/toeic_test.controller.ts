@@ -32,8 +32,8 @@ import { PaginationDto } from 'src/common/pagination/pagination.dto';
 export class ToeicTestController {
   constructor(private readonly toeicTestService: ToeicTestService) {}
 
-  @Public()
-  // @Roles(Role.Admin)
+  // @Public()
+  @Roles(Role.Admin)
   @Post()
   @UseInterceptors(
     FileFieldsInterceptor(
@@ -90,6 +90,7 @@ export class ToeicTestController {
     return this.toeicTestService.update(+id, updateToeicTestDto);
   }
 
+  @Roles(Role.Admin)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.toeicTestService.remove(id);

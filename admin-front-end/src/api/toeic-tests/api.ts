@@ -1,18 +1,24 @@
 import axiosInstance from "@/lib/axios/axiosInstance";
 
+const NAMESPACE = "/toeic-test";
+
 export const getAllToeicTestApi = (page: number = 1) =>
-  axiosInstance.get(`/toeic-test?page=${page}`);
+  axiosInstance.get(`${NAMESPACE}?page=${page}`);
 
 export const getToeicTestByIdApi = (id: string) =>
-  axiosInstance.get(`/toeic-test/${id}`);
+  axiosInstance.get(`${NAMESPACE}/${id}`);
 
 export const getPartToeicTestApi = (id: string, part_number: number) =>
-  axiosInstance.get(`/toeic-test/${id}/part/${part_number}`);
+  axiosInstance.get(`${NAMESPACE}/${id}/part/${part_number}`);
 
-export const uploadToeicTestApi = (formData: File) => {
-  return axiosInstance.post(`/toeic-test`, formData, {
+export const uploadToeicTestApi = (formData: FormData) => {
+  return axiosInstance.post(`${NAMESPACE}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
+    timeout: 600000, //10 phút
   });
 };
+
+export const deleteToeicTestApi = (id: string) =>
+  axiosInstance.delete(`${NAMESPACE}/${id}`);

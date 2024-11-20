@@ -8,6 +8,8 @@ import { PassageService } from 'src/passage/passage.service';
 import { PassageModule } from 'src/passage/passage.module';
 import { QuestionModule } from 'src/question/question.module';
 import { DropboxModule } from 'src/dropbox/dropbox.module';
+import { UploadGateway } from 'src/toeic_test/gateways/upload.gateway';
+import { Question } from 'src/question/schemas/question.schema';
 
 @Module({
   imports: [
@@ -19,7 +21,7 @@ import { DropboxModule } from 'src/dropbox/dropbox.module';
     DropboxModule,
   ],
   controllers: [ToeicTestController],
-  providers: [ToeicTestService],
+  providers: [ToeicTestService, UploadGateway],
   exports: [ToeicTestService],
 })
 export class ToeicTestModule {}

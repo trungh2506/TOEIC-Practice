@@ -1,4 +1,4 @@
-export interface Passage {
+export interface IPassage {
   id: string;
   _id: string;
   title: string;

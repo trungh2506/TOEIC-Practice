@@ -9,14 +9,17 @@ import * as fs from 'fs';
 import * as XLSX from 'xlsx';
 import { PassageService } from 'src/passage/passage.service';
 import { CreatePassageDto } from 'src/passage/dto/create-passage.dto';
-import { Passage } from 'src/interface/passage.interface';
+import { IPassage } from 'src/interface/passage.interface';
 import { QuestionService } from 'src/question/question.service';
 import { CreateQuestionDto } from 'src/question/dto/create-question.dto';
-import { Question } from 'src/interface/question.interface';
+import { IQuestion } from 'src/interface/question.interface';
 import { paginate } from 'src/common/pagination/pagination.service';
 import { PaginationDto } from 'src/common/pagination/pagination.dto';
 import { ToeicTestType } from 'src/enum/toeic-type.enum';
 import { DropboxService } from 'src/dropbox/dropbox.service';
+import { UploadGateway } from 'src/toeic_test/gateways/upload.gateway';
+import { Question } from 'src/question/schemas/question.schema';
+import { Passage } from 'src/passage/schemas/passage.schema';
 
 @Injectable()
 export class ToeicTestService {
@@ -24,6 +27,7 @@ export class ToeicTestService {
     private readonly passageService: PassageService,
     private readonly questionService: QuestionService,
     private readonly dropBoxService: DropboxService,
+    private readonly uploadGateway: UploadGateway,
     @InjectModel(Toeic_Test.name) private toeicTestModel: Model<Toeic_Test>,
   ) {}
 
@@ -43,6 +47,9 @@ export class ToeicTestService {
     toeicTestDto.title = toeic_test_title;
     toeicTestDto.type = toeic_test_type;
 
+    // Thông báo bắt đầu quá trình upload
+    this.uploadGateway.sendUploadingNotification('Bắt đầu tải lên...');
+
     // Upload các file testImage và fullAudio lên Dropbox
     if (files.testImage) {
       console.log(
@@ -54,6 +61,9 @@ export class ToeicTestService {
         `/toeic_tests/${toeic_test_title}/testImage/${files.testImage[0].originalname}`,
       );
       console.log('Toeic Test Image uploaded:', toeicTestDto.image);
+      this.uploadGateway.sendUploadingNotification(
+        `Tải lên thành công file: ${files.testImage[0].originalname}.`,
+      );
     }
     if (files.fullAudio) {
       console.log(
@@ -65,6 +75,9 @@ export class ToeicTestService {
         `/toeic_tests/${toeic_test_title}/fullAudio/${files.fullAudio[0].originalname}`,
       );
       console.log('Full Audio uploaded:', toeicTestDto.full_audio);
+      this.uploadGateway.sendUploadingNotification(
+        `Tải lên thành công file: ${files.fullAudio[0].originalname}.`,
+      );
     }
 
     // Khởi tạo các trường nếu chưa có
@@ -78,7 +91,7 @@ export class ToeicTestService {
         type: 'buffer',
       });
       const worksheet1 = workbook1.Sheets[workbook1.SheetNames[0]];
-      const passagesData: Passage[] = XLSX.utils.sheet_to_json(worksheet1);
+      const passagesData: IPassage[] = XLSX.utils.sheet_to_json(worksheet1);
 
       // Lặp qua tất cả các passage và xử lý
       for (const passage of passagesData) {
@@ -105,6 +118,9 @@ export class ToeicTestService {
                 console.log(
                   `Uploading images for passage: ${imgFile.originalname}`,
                 );
+                this.uploadGateway.sendUploadingNotification(
+                  `Tải lên thành công file: ${imgFile.originalname}.`,
+                );
                 return this.dropBoxService.uploadFile(
                   imgFile.buffer,
                   `/toeic_tests/${toeic_test_title}/images/${imgFile.originalname}`,
@@ -122,9 +138,13 @@ export class ToeicTestService {
             console.log(
               `Uploading audio for passage: ${audioFile.originalname}`,
             );
+
             passageDto.audio = await this.dropBoxService.uploadFile(
               audioFile.buffer,
               `/toeic_tests/${toeic_test_title}/audios/${audioFile.originalname}`,
+            );
+            this.uploadGateway.sendUploadingNotification(
+              `Tải lên thành công file: ${audioFile.originalname}`,
             );
           }
         }
@@ -143,7 +163,7 @@ export class ToeicTestService {
         type: 'buffer',
       });
       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-      const questionsData: Question[] = XLSX.utils.sheet_to_json(worksheet);
+      const questionsData: IQuestion[] = XLSX.utils.sheet_to_json(worksheet);
 
       // Lặp qua tất cả các câu hỏi và xử lý
       for (const question of questionsData) {
@@ -175,6 +195,9 @@ export class ToeicTestService {
               audioFile.buffer,
               `/toeic_tests/${toeic_test_title}/audios/${audioFile.originalname}`,
             );
+            this.uploadGateway.sendUploadingNotification(
+              `Tải lên thành công file: ${audioFile.originalname}`,
+            );
           }
         }
         // Upload question image nếu có
@@ -187,6 +210,9 @@ export class ToeicTestService {
             questionDto.question_image = await this.dropBoxService.uploadFile(
               imageFile.buffer,
               `/toeic_tests/${toeic_test_title}/images/${imageFile.originalname}`,
+            );
+            this.uploadGateway.sendUploadingNotification(
+              `Tải lên thành công file: ${imageFile.originalname}`,
             );
           }
         }
@@ -203,6 +229,7 @@ export class ToeicTestService {
       console.log('No questions file uploaded.');
     }
 
+    this.uploadGateway.sendUploadingNotification('Tải lên thành công.');
     // Tạo ToeicTest mới và lưu vào cơ sở dữ liệu
     const newToeicTest = new this.toeicTestModel(toeicTestDto);
     await newToeicTest.save();
@@ -272,8 +299,32 @@ export class ToeicTestService {
     return `This action updates a #${id} toeicTest`;
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} toeicTest`;
+  async remove(id: string) {
+    const toeicTest = await this.toeicTestModel
+      .findById(id)
+      .populate({ path: 'listening', model: 'Question' })
+      .populate({ path: 'reading', model: 'Question' })
+      .populate({ path: 'passages', model: 'Passage' });
+
+    if (!toeicTest) {
+      throw new Error('ToeicTest not found');
+    }
+
+    for (const question of toeicTest.listening) {
+      await this.questionService.remove(question._id.toString());
+    }
+
+    for (const question of toeicTest.reading) {
+      await this.questionService.remove(question._id.toString());
+    }
+
+    for (const passage of toeicTest.passages) {
+      await this.passageService.remove(passage._id.toString());
+    }
+    await this.dropBoxService.deleteAllFileInFolder(
+      `/toeic_tests/${toeicTest.title}`,
+    );
+    return await this.toeicTestModel.findByIdAndDelete(id);
   }
 
   async getTotalQuestion(toeic_test_id: string) {

@@ -146,7 +146,9 @@ export default function Page() {
                 userAnswerList.map((result: any, index: number) => {
                   return (
                     <TableRow key={index}>
-                      <TableCell className="font-medium">TEST 1</TableCell>
+                      <TableCell className="font-medium">
+                        {result?.toeic_test_id}
+                      </TableCell>
                       <TableCell className="text-green-500">
                         {result?.correct_answers}
                       </TableCell>

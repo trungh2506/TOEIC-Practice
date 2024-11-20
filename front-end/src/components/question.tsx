@@ -33,6 +33,7 @@ interface QuestionProps {
   isAnswerShowing: boolean;
   script: string;
   isPractice: boolean;
+  defaultValue: string;
 }
 
 export default function Question({
@@ -46,6 +47,7 @@ export default function Question({
   script,
   isPractice = false,
   isAnswerShowing = false,
+  defaultValue,
 }: QuestionProps) {
   //lựa chọn của người dùng
   const [optionUser, setOptionUser] = useState("");
@@ -63,6 +65,7 @@ export default function Question({
     dispatch(addQuestionNumberList(question_number));
   };
   const handleMarkQuestion = () => {
+    console.log(question_number);
     dispatch(addMarkedQuestions(question_number));
   };
 
@@ -107,6 +110,7 @@ export default function Question({
               </AccordionTrigger>
               <AccordionContent className="text-base">
                 <RadioGroup
+                  value={defaultValue}
                   onValueChange={handleValueChange}
                   className="mt-3 ml-3 flex flex-col "
                 >
@@ -120,7 +124,7 @@ export default function Question({
                           <RadioGroupItem
                             disabled={isAnswerShowing}
                             value={ANSWER_LABELS[index]}
-                            id={`option-${ANSWER_LABELS[index]}`}
+                            id={`${ANSWER_LABELS[index]}`}
                           />
                           <span>{options[index]}</span>
                         </div>
@@ -135,6 +139,7 @@ export default function Question({
           <>
             <span>{question_text}</span>
             <RadioGroup
+              value={defaultValue}
               onValueChange={handleValueChange}
               className="mt-3 ml-3 flex flex-col "
             >

@@ -25,9 +25,10 @@ import {
 
 import { Input } from "@/components/ui/input";
 import { login } from "@/lib/redux/features/auth/authSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-import { AppDispatch } from "@/lib/redux/store";
+import { AppDispatch, RootState } from "@/lib/redux/store";
+import { Loader2 } from "lucide-react";
 
 // Improved schema with additional validation rules
 const formSchema = z.object({
@@ -40,6 +41,7 @@ const formSchema = z.object({
 
 export default function LoginForm() {
   const router = useRouter();
+  const { loading } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -144,7 +146,11 @@ export default function LoginForm() {
                   )}
                 />
                 <Button type="submit" className="w-full">
-                  Đăng nhập
+                  {!loading ? (
+                    "Đăng nhập"
+                  ) : (
+                    <Loader2 className="animate-spin" />
+                  )}
                 </Button>
                 {/* <Button variant="outline" className="w-full">
                   Login with Google

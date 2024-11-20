@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 
-export interface Question {
+export interface IQuestion {
   question_number: number;
   question_text?: string;
   question_image: string;

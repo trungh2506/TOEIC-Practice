@@ -90,6 +90,11 @@ const userAnswerSlice = createSlice({
   reducers: {
     addMarkedQuestions: (state, action) => {
       const question = action.payload;
+
+      if (!Array.isArray(state.markedQuestions)) {
+        state.markedQuestions = [];
+      }
+
       if (state.markedQuestions.includes(question)) {
         state.markedQuestions = state.markedQuestions.filter(
           (q) => q !== question
@@ -129,6 +134,15 @@ const userAnswerSlice = createSlice({
           action.payload.selected_option;
       }
       console.log("answer của người dùng: ", current(state.answers));
+    },
+    setAnswers: (state, action) => {
+      state.answers = action.payload;
+    },
+    setQuestionNumberList: (state, action) => {
+      state.questionNumberList = action.payload;
+    },
+    setmarkedQuestions: (state, action) => {
+      state.markedQuestions = action.payload;
     },
     clearAnswer: (state) => {
       state.answers = [];
@@ -187,5 +201,8 @@ export const {
   clearCurrentUserAnswer,
   addQuestionNumberList,
   addMarkedQuestions,
+  setAnswers,
+  setQuestionNumberList,
+  setmarkedQuestions,
 } = userAnswerSlice.actions;
 export default userAnswerSlice.reducer;
