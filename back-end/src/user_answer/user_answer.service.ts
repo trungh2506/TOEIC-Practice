@@ -28,11 +28,15 @@ export class UserAnswerService {
     @InjectModel(User_Answer.name) private userAnswerModel: Model<User_Answer>,
   ) {}
   private userIntervals: { [userId: string]: NodeJS.Timeout } = {};
+
+
+  //Pracetice Mode
   async create(user_id: string, createUserAnswerDto: CreateUserAnswerDto) {
     let listening = 0;
     let reading = 0;
-    const total_of_question = await this.toeicTestService.getTotalQuestion(
+    const total_of_question = await this.toeicTestService.getTotalPartQuestion(
       createUserAnswerDto.toeic_test_id,
+      createUserAnswerDto.part,
     );
     createUserAnswerDto.correct_answers =
       createUserAnswerDto.correct_answers || 0;

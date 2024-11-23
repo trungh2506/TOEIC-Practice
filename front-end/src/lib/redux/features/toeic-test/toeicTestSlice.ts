@@ -75,6 +75,10 @@ interface ToeicTestState {
   //thời gian người dùng lựa chọn trong practice
   selectedTimer: number;
   isPractice: boolean;
+
+  //tùy chọn hiển thị câu trả lời
+  isAnswerShowing: boolean;
+
   //pagination
   totalPages: number;
   totalToeicTest: number;
@@ -100,6 +104,7 @@ const initialState: ToeicTestState = {
   currentPart: 1,
   selectedPart: 0,
   selectedTimer: 0,
+  isAnswerShowing: false,
   isPractice: false,
   loading: false,
   success: false,
@@ -145,6 +150,9 @@ const toeicTestSlice = createSlice({
     },
     setIsPractice: (state, action) => {
       state.isPractice = action.payload;
+    },
+    setIsAnswerShowing: (state, action) => {
+      state.isAnswerShowing = action.payload;
     },
     increaseCurrentPart: (state) => {
       state.currentPart += 1;
@@ -256,6 +264,7 @@ export const {
   increaseCurrentPart,
   filterByPart,
   navigateToSelectedQuestion,
+  setIsAnswerShowing,
   startTimer,
   stopTimer,
   resetTimer,

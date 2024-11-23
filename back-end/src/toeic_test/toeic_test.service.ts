@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  NotImplementedException,
+} from '@nestjs/common';
 import { CreateToeicTestDto } from './dto/create-toeic_test.dto';
 import { UpdateToeicTestDto } from './dto/update-toeic_test.dto';
 
@@ -335,6 +339,17 @@ export class ToeicTestService {
     let total = toeic_test.listening.length + toeic_test.reading.length;
     return total;
   }
+
+  async getTotalPartQuestion(toeic_test_id: string, part: number) {
+    // const toeic_test = await this.toeicTestModel.findById(toeic_test_id);
+    const toeic_test = await this.getPart(toeic_test_id, part);
+    if (!toeic_test) {
+      throw new Error('Toeic test not found');
+    }
+    let total = toeic_test.listening.length + toeic_test.reading.length;
+    return total;
+  }
+
   //Practice
   async getPart(toeic_test_id: string, part_number: number) {
     const toeicTest = await this.toeicTestModel
@@ -357,7 +372,7 @@ export class ToeicTestService {
 
     const partListening = toeicTest.listening;
     const partReading = toeicTest.reading;
-
+    console.log(toeicTest);
     return toeicTest;
     // return { partListening, partReading };
   }

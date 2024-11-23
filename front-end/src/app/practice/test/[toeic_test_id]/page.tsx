@@ -28,6 +28,7 @@ export default function Page() {
     isTimerRunning,
     selectedPart,
     selectedTimer,
+    isAnswerShowing,
   } = useSelector((state: RootState) => state.toeicTest);
   const { answers } = useSelector((state: RootState) => state.userAnswer);
   const router = useRouter();
@@ -140,9 +141,10 @@ export default function Page() {
                             correct_answer={question?.correct_answer}
                             question_audio={question.question_audio}
                             options={question.options}
-                            isAnswerShowing={false}
+                            isAnswerShowing={isAnswerShowing}
                             script={question?.script}
                             isPractice={true}
+                            showResult={false}
                           />
                         ) : null;
                       }
@@ -177,9 +179,10 @@ export default function Page() {
                     }
                     question_audio={question?.question_audio}
                     options={question?.options}
-                    isAnswerShowing={false}
+                    isAnswerShowing={isAnswerShowing}
                     script={question?.script}
                     isPractice={true}
+                    showResult={false}
                   />
                 );
               })}

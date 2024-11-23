@@ -272,6 +272,7 @@ export default function Page() {
                           isAnswerShowing={false}
                           script={""}
                           isPractice={false}
+                          showResult={false}
                         />
                       ) : null;
                     }
@@ -309,6 +310,7 @@ export default function Page() {
                   isAnswerShowing={false}
                   script={""}
                   isPractice={false}
+                  showResult={false}
                 />
               );
             })}

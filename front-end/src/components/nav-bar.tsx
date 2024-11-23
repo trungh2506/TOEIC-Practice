@@ -15,6 +15,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { fetchUserProfile, logout } from "@/lib/redux/features/user/userSlice";
 import { AppDispatch, RootState } from "@/lib/store";
@@ -40,8 +41,8 @@ export function NavBar() {
   const { setTheme } = useTheme();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const router = useRouter();
-  const isAuthenticated = useSelector(
-    (state: RootState) => state.user.isAuthenticated
+  const { isAuthenticated, loading } = useSelector(
+    (state: RootState) => state.user
   );
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => state.user.user);
@@ -85,10 +86,6 @@ export function NavBar() {
       )}
       {isAuthenticated && (
         <>
-          {/* <Button variant="outline" size="icon">
-        <ShoppingCart size={20} />
-      </Button> */}
-
           <Popover>
             <PopoverTrigger>
               <Button variant="outline" size="icon">

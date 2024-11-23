@@ -15,7 +15,7 @@ export default function TestResult() {
   const { answers, currentUserAnswer } = useSelector(
     (state: RootState) => state.userAnswer
   );
-  const { currentToeicTest, filteredToeicTest } = useSelector(
+  const { currentToeicTest, filteredToeicTest, selectedPart } = useSelector(
     (state: RootState) => state.toeicTest
   );
 
@@ -90,102 +90,119 @@ export default function TestResult() {
 
           <span className="text-4xl">Chi tiết đáp án:</span>
           <div>
-            <span className="text-xl">Listening</span>
-            <div className="flex flex-col flex-wrap h-[1200px] gap-2">
-              {filteredToeicTest?.listening.map(
-                (question: any, index: number) => {
-                  const userAnswer = currentUserAnswer.answers.find(
-                    (answer: any) => answer.question_id._id === question._id
-                  );
-                  return (
-                    <div key={index} className="flex gap-1 items-center">
-                      <Button size="icon">{question.question_number}</Button>
-                      <span className="text-primary">
-                        {question?.correct_answer}
-                      </span>
-                      {userAnswer ? (
-                        <span
-                          className={
-                            question?.correct_answer.includes(
-                              userAnswer.selected_option
-                            )
-                              ? `text-green-500`
-                              : `text-red-500`
-                          }
-                        >
-                          {userAnswer.selected_option}
-                        </span>
-                      ) : (
-                        <span>Chưa trả lời</span>
-                      )}
-                      <AnswerReview
-                        question_image={
-                          question?.question_image
-                            ? question?.question_image
-                            : undefined
-                        }
-                        question_id={question._id}
-                        question_number={question.question_number}
-                        question_text={question.question_text}
-                        question_audio={question.question_audio}
-                        options={question.options}
-                        correct_answer={question.correct_answer}
-                        isAnswerShowing={false}
-                        script={question?.script}
-                      />
-                    </div>
-                  );
-                }
+            {filteredToeicTest.listening &&
+              filteredToeicTest.listening.length > 0 && (
+                <>
+                  <span className="text-xl">Part {selectedPart}</span>
+                  <div className="flex flex-col flex-wrap h-[500px] gap-2">
+                    {filteredToeicTest?.listening.map(
+                      (question: any, index: number) => {
+                        const userAnswer = currentUserAnswer.answers.find(
+                          (answer: any) =>
+                            answer.question_id._id === question._id
+                        );
+                        return (
+                          <div key={index} className="flex gap-1 items-center">
+                            <Button size="icon">
+                              {question.question_number}
+                            </Button>
+                            <span className="text-primary">
+                              {question?.correct_answer}
+                            </span>
+                            {userAnswer ? (
+                              <span
+                                className={
+                                  question?.correct_answer.includes(
+                                    userAnswer.selected_option
+                                  )
+                                    ? `text-green-500`
+                                    : `text-red-500`
+                                }
+                              >
+                                {userAnswer.selected_option}
+                              </span>
+                            ) : (
+                              <span>Chưa trả lời</span>
+                            )}
+                            <AnswerReview
+                              question_image={
+                                question?.question_image
+                                  ? question?.question_image
+                                  : undefined
+                              }
+                              question_id={question._id}
+                              question_number={question.question_number}
+                              question_text={question.question_text}
+                              question_audio={question.question_audio}
+                              options={question.options}
+                              correct_answer={question.correct_answer}
+                              isAnswerShowing={false}
+                              script={question?.script}
+                            />
+                          </div>
+                        );
+                      }
+                    )}
+                  </div>
+                </>
               )}
-            </div>
-            <span className="text-xl">Reading</span>
-            <div className="flex flex-col flex-wrap h-[1200px] gap-2">
-              {filteredToeicTest?.reading.map(
-                (question: any, index: number) => {
-                  const userAnswer = currentUserAnswer.answers.find(
-                    (answer: any) => answer.question_id._id === question._id
-                  );
-                  return (
-                    <div key={index} className="flex gap-1 items-center">
-                      <Button size="icon">{question.question_number}</Button>
-                      <span className="text-primary">
-                        {question?.correct_answer}
-                      </span>
-                      {userAnswer ? (
-                        <span
-                          className={
-                            question?.correct_answer.includes(
-                              userAnswer.selected_option
-                            )
-                              ? `text-green-500`
-                              : `text-red-500`
-                          }
-                        >
-                          {userAnswer.selected_option}
-                        </span>
-                      ) : (
-                        <span>Chưa trả lời</span>
-                      )}
-                      <AnswerReview
-                        question_image={
-                          question?.question_image
-                            ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/${currentToeicTest.title}/images/${question?.question_image}`
-                            : undefined
-                        }
-                        question_id={question._id}
-                        question_number={question.question_number}
-                        question_text={question.question_text}
-                        question_audio={question.question_audio}
-                        options={question.options}
-                        correct_answer={question.correct_answer}
-                        isAnswerShowing={false}
-                        script={question?.script}
-                      />
-                    </div>
-                  );
-                }
+
+            {filteredToeicTest.reading &&
+              filteredToeicTest.reading.length > 0 && (
+                <>
+                  <span className="text-xl">Part {selectedPart}</span>
+                  <div className="flex flex-col flex-wrap h-[500px] gap-2">
+                    {filteredToeicTest?.reading.map(
+                      (question: any, index: number) => {
+                        const userAnswer = currentUserAnswer.answers.find(
+                          (answer: any) =>
+                            answer.question_id._id === question._id
+                        );
+                        return (
+                          <div key={index} className="flex gap-1 items-center">
+                            <Button size="icon">
+                              {question.question_number}
+                            </Button>
+                            <span className="text-primary">
+                              {question?.correct_answer}
+                            </span>
+                            {userAnswer ? (
+                              <span
+                                className={
+                                  question?.correct_answer.includes(
+                                    userAnswer.selected_option
+                                  )
+                                    ? `text-green-500`
+                                    : `text-red-500`
+                                }
+                              >
+                                {userAnswer.selected_option}
+                              </span>
+                            ) : (
+                              <span>Chưa trả lời</span>
+                            )}
+                            <AnswerReview
+                              question_image={
+                                question?.question_image
+                                  ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/${currentToeicTest.title}/images/${question?.question_image}`
+                                  : undefined
+                              }
+                              question_id={question._id}
+                              question_number={question.question_number}
+                              question_text={question.question_text}
+                              question_audio={question.question_audio}
+                              options={question.options}
+                              correct_answer={question.correct_answer}
+                              isAnswerShowing={false}
+                              script={question?.script}
+                            />
+                          </div>
+                        );
+                      }
+                    )}
+                  </div>
+                </>
               )}
-            </div>
           </div>
         </div>
       )}

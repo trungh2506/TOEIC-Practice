@@ -33,6 +33,7 @@ interface QuestionProps {
   isAnswerShowing: boolean;
   script: string;
   isPractice: boolean;
+  showResult: boolean;
   defaultValue: string;
 }
 
@@ -47,6 +48,7 @@ export default function Question({
   script,
   isPractice = false,
   isAnswerShowing = false,
+  showResult = false,
   defaultValue,
 }: QuestionProps) {
   //lựa chọn của người dùng
@@ -98,7 +100,7 @@ export default function Question({
             alt="Carousel image 1"
           />
         )}
-        {isAnswerShowing && question_audio && (
+        {showResult && question_audio && (
           <audio className="" controls src={`${question_audio}&raw=1`} />
         )}
 
@@ -122,7 +124,7 @@ export default function Question({
                           className="flex items-center space-x-2 hover:text-primary"
                         >
                           <RadioGroupItem
-                            disabled={isAnswerShowing}
+                            disabled={showResult}
                             value={ANSWER_LABELS[index]}
                             id={`${ANSWER_LABELS[index]}`}
                           />
@@ -151,7 +153,7 @@ export default function Question({
                       className="flex items-center space-x-2 hover:text-primary"
                     >
                       <RadioGroupItem
-                        disabled={isAnswerShowing}
+                        disabled={showResult}
                         value={ANSWER_LABELS[index]}
                         id={`option-${ANSWER_LABELS[index]}`}
                       />
@@ -164,7 +166,7 @@ export default function Question({
           </>
         )}
 
-        {isPractice && optionUser && (
+        {isAnswerShowing && isPractice && optionUser && (
           <div className="flex flex-col">
             <span className="text-green-600 text-2xl">
               Đáp án đúng: {correct_answer}
@@ -172,10 +174,11 @@ export default function Question({
             <span className="text-xl">{script}</span>
           </div>
         )}
+
         <Separator className="mt-5" />
 
         {/* nếu isAnswerShowing thì hiển thị đáp án */}
-        {isAnswerShowing && correct_answer && (
+        {showResult && correct_answer && (
           <div className="flex flex-col">
             <span className="text-green-600 text-2xl">
               Đáp án đúng: {correct_answer}

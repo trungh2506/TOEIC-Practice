@@ -19,6 +19,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -38,6 +39,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import {
   filterByPart,
+  setIsAnswerShowing,
   setSelectedPart,
   setSelectedTimer,
 } from "@/lib/redux/features/toeic-test/toeicTestSlice";
@@ -46,7 +48,7 @@ import { AppDispatch, RootState } from "@/lib/store";
 import { Description } from "@radix-ui/react-toast";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 interface PracticeCardProps {
@@ -58,6 +60,11 @@ interface PracticeCardProps {
 }
 
 const TIMER_LIST = [
+  {
+    index: 0,
+    value: -1,
+    description: "Không giới hạn",
+  },
   {
     index: 1,
     value: 6,
@@ -80,7 +87,7 @@ export default function PracticeCard({
 }: PracticeCardProps) {
   const [selectedToeicTest, setSelectedToeicTest] = useState("");
   const [selectedTime, setSelectedTime] = useState(-1);
-  const { toeicTestList, currentPage, loading } = useSelector(
+  const { toeicTestList, currentPage, loading, isAnswerShowing } = useSelector(
     (state: RootState) => state.toeicTest
   );
   const router = useRouter();
@@ -136,7 +143,7 @@ export default function PracticeCard({
                     setSelectedToeicTest(value);
                   }}
                 >
-                  <SelectTrigger className="w-[180px]">
+                  <SelectTrigger className="w-[300px]">
                     <SelectValue placeholder="Danh sách bài thi" />
                   </SelectTrigger>
                   <SelectContent>
@@ -178,13 +185,27 @@ export default function PracticeCard({
                   </SelectContent>
                 </Select>
               </div>
+
+              <Separator />
+
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  checked={isAnswerShowing}
+                  onCheckedChange={(newValue) => {
+                    dispatch(setIsAnswerShowing(newValue));
+                  }}
+                />
+                <p>Hiển thị câu trả lời sau khi chọn đáp án</p>
+              </div>
             </div>
 
             <AlertDialogFooter>
               <AlertDialogCancel>Hủy</AlertDialogCancel>
-              <AlertDialogAction onClick={handleActionButton}>
-                Vào thi
-              </AlertDialogAction>
+              {selectedToeicTest && (
+                <AlertDialogAction onClick={handleActionButton}>
+                  Vào thi
+                </AlertDialogAction>
+              )}
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

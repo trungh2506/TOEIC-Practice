@@ -74,6 +74,7 @@ export default function AnswerReview({
                 script={script}
                 isPractice={false}
                 defaultValue={correct_answer.split("(")[1]?.replace(")", "")}
+                showResult={true}
               />
             </div>
           </DialogDescription>

@@ -2,6 +2,7 @@
 import ToeicCard from "@/components/toeic-card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ToastAction } from "@/components/ui/toast";
 import { toast, useToast } from "@/hooks/use-toast";
 import {
@@ -91,20 +92,30 @@ export default function Page() {
         <span className="text-4xl">Đề thi</span>
         <Separator />
         <div className="flex flex-col sm:flex-row gap-5">
-          {toeicTestList.map((toeicTest: any, index: number) => {
-            return (
-              <ToeicCard
-                key={index}
-                title={toeicTest?.title}
-                type={""}
-                image={`${toeicTest?.image}&raw=1`}
-                description={``}
-                onClick={() => {
-                  handleSelectedToeicTest(toeicTest._id);
-                }}
-              />
-            );
-          })}
+          {loading &&
+            Array(5)
+              .fill(0)
+              .map((_, index) => (
+                <Skeleton
+                  key={index}
+                  className="w-[300px] h-[500px] rounded-md"
+                />
+              ))}
+          {!loading &&
+            toeicTestList.map((toeicTest: any, index: number) => {
+              return (
+                <ToeicCard
+                  key={index}
+                  title={toeicTest?.title}
+                  type={""}
+                  image={`${toeicTest?.image}&raw=1`}
+                  description={``}
+                  onClick={() => {
+                    handleSelectedToeicTest(toeicTest._id);
+                  }}
+                />
+              );
+            })}
         </div>
       </div>
     </div>

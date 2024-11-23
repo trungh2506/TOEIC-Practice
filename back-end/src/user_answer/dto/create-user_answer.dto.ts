@@ -74,4 +74,7 @@ export class CreateUserAnswerDto {
 
   @IsOptional()
   status: string;
+
+  @IsOptional()
+  part: number;
 }

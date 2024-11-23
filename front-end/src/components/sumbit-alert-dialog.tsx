@@ -31,7 +31,7 @@ export default function SubmitAlertDialog() {
   const { answers, currentUserAnswer, markedQuestions } = useSelector(
     (state: RootState) => state.userAnswer
   );
-  const { timer, isPractice } = useSelector(
+  const { timer, isPractice, selectedPart, selectedTimer } = useSelector(
     (state: RootState) => state.toeicTest
   );
   const param = useParams();
@@ -57,7 +57,8 @@ export default function SubmitAlertDialog() {
         submitPracticeAnswer({
           toeic_test_id: toeic_test_id,
           answers: answers,
-          duration: timer,
+          duration: selectedTimer - timer,
+          part: selectedPart,
         })
       );
       router.push(`/practice/test/${toeic_test_id}/result`);

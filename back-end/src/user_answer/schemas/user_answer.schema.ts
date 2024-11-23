@@ -62,6 +62,9 @@ export class User_Answer extends Document {
   })
   status: string;
 
+  @Prop()
+  part: number;
+
   @Prop({ type: MetaDataSchema, default: () => ({}) })
   meta_data: MetaData;
 }
