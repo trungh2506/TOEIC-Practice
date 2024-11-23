@@ -52,8 +52,8 @@ export function NavBar() {
   };
 
   const handleDarkMode = (checked: any) => {
-    if (checked) setTheme("light");
-    else setTheme("dark");
+    if (checked) setTheme("dark");
+    else setTheme("light");
   };
   useEffect(() => {
     const getCookie = (name: any) => {
@@ -71,9 +71,13 @@ export function NavBar() {
   }, [dispatch]);
   return (
     <div className="flex flex-row gap-3 items-center">
-      <Moon />
-      <Switch id="dark-mode" value="a" onCheckedChange={handleDarkMode} />
       <Sun />
+      <Switch
+        id="dark-mode"
+        defaultValue={"false"}
+        onCheckedChange={handleDarkMode}
+      />
+      <Moon />
       {!isAuthenticated && (
         <Button asChild>
           <Link href="/auth">Đăng nhập</Link>

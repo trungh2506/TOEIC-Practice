@@ -27,6 +27,7 @@ export const login = createAsyncThunk<{ jwt: string; user: any }, any>(
   async (payload: ILogin, { rejectWithValue }) => {
     try {
       const response = await loginApi(payload);
+      console.log("r", response);
       const user = response.data.user;
       const jwt = response.data.access_token;
       // localStorage.setItem("jwt", jwt);
@@ -122,10 +123,11 @@ const userSlice = createSlice({
       state.success = true;
       state.error = false;
     });
-    builder.addCase(login.rejected, (state, action: PayloadAction<any>) => {
+    builder.addCase(login.rejected, (state, action) => {
       state.loading = false;
       state.success = false;
       state.message = action.payload;
+      console.log(action.payload);
       state.error = true;
     });
     builder.addCase(register.pending, (state) => {
@@ -174,7 +176,7 @@ const userSlice = createSlice({
       state.jwt = action.payload.jwt;
       state.isAuthenticated = true;
       state.success = true;
-      console.log(action.payload);
+      // console.log(action.payload);
       state.error = false;
     });
     builder.addCase(signInWithGoogle.rejected, (state, action) => {

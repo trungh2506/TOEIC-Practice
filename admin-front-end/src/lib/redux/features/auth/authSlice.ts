@@ -23,7 +23,7 @@ export const login = createAsyncThunk<{ jwt: string; user: any }, any>(
   async (payload: ILogin, { rejectWithValue }) => {
     try {
       const response = await loginApi(payload);
-      console.log(response);
+      // console.log(response);
       const user = response.data.user;
       const jwt = response.data.access_token;
       // localStorage.setItem("jwt", jwt);
@@ -76,7 +76,7 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(login.pending, (state) => {
-      state.message = "";
+      state.message = "Đang xử lý";
       state.loading = true;
       state.success = false;
       state.error = false;

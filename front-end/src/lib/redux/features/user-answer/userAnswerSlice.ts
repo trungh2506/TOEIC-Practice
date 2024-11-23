@@ -1,6 +1,10 @@
 import {
+  cancelTestApi,
   getAllResultByUserIdApi,
-  submitAnswerApi,
+  resumeTestApi,
+  saveTestApi,
+  startTestApi,
+  submitPracticeAnswerApi,
   submitTestApi,
 } from "@/api/userAnswer-api";
 import { createAsyncThunk, createSlice, current } from "@reduxjs/toolkit";
@@ -23,11 +27,33 @@ export const getAllUserAnswer = createAsyncThunk<any, any>(
   }
 );
 
-export const submitAnswer = createAsyncThunk<any, any>(
-  "userAnswer/submitAnswer",
+interface StartTestErrorPayload {
+  message: string;
+  onGoingTest: any; // hoặc kiểu chính xác của bài thi đang thực hiện
+}
+
+export const startTest = createAsyncThunk<
+  any,
+  string,
+  { rejectValue: StartTestErrorPayload }
+>("userAnswer/startTest", async (toeic_test_id, { rejectWithValue }) => {
+  try {
+    const response = await startTestApi(toeic_test_id);
+    return response.data; // trả về dữ liệu thành công
+  } catch (error: any) {
+    // Xử lý lỗi và trả về thông tin message, onGoingTest
+    return rejectWithValue({
+      message: error.response?.data?.message || "Đã xảy ra lỗi",
+      onGoingTest: error.response?.data?.onGoingTest || null,
+    });
+  }
+});
+
+export const submitPracticeAnswer = createAsyncThunk<any, any>(
+  "userAnswer/submitPracticeAnswer",
   async (answerData: any, { rejectWithValue }) => {
     try {
-      const response = await submitAnswerApi(answerData);
+      const response = await submitPracticeAnswerApi(answerData);
       const data = response.data;
       console.log("data when submit answer", data);
       return data;
@@ -42,6 +68,45 @@ export const submitTest = createAsyncThunk<any, any>(
   async ({ toeic_test_id, answers }, { rejectWithValue }) => {
     try {
       const response = await submitTestApi(toeic_test_id, answers);
+      const data = response.data;
+      return data;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+export const saveTest = createAsyncThunk<any, any>(
+  "userAnswer/saveTest",
+  async ({ toeic_test_id, answers }, { rejectWithValue }) => {
+    try {
+      const response = await saveTestApi(toeic_test_id, answers);
+      const data = response.data;
+      return data;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+export const resumeTest = createAsyncThunk<any, any>(
+  "userAnswer/resumeTest",
+  async (toeic_test_id, { rejectWithValue }) => {
+    try {
+      const response = await resumeTestApi(toeic_test_id);
+      const data = response.data;
+      return data;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+export const cancelTest = createAsyncThunk<any, any>(
+  "userAnswer/cancelTest",
+  async (user_answer_id, { rejectWithValue }) => {
+    try {
+      const response = await cancelTestApi(user_answer_id);
       const data = response.data;
       return data;
     } catch (error: any) {
@@ -73,6 +138,9 @@ interface UserAnswerState {
   currentUserAnswer: any;
   answers: Answer[];
 
+  //thời gian làm bài nhận từ sv
+  test_duration: number;
+
   //pagination
   totalPages: number;
   totalToeicTest: number;
@@ -85,6 +153,8 @@ interface UserAnswerState {
   loading: boolean;
   success: boolean;
   error: boolean;
+  message: string;
+  onGoingTest: any[];
 }
 
 const initialState: UserAnswerState = {
@@ -95,10 +165,13 @@ const initialState: UserAnswerState = {
   answers: [],
   totalPages: 0,
   totalToeicTest: 0,
+  test_duration: 0,
   currentPage: 1,
   loading: false,
   success: false,
   error: false,
+  message: "",
+  onGoingTest: [],
 };
 
 const userAnswerSlice = createSlice({
@@ -191,7 +264,25 @@ const userAnswerSlice = createSlice({
       state.error = true;
     });
 
-    //submit answer
+    //submit practice test
+    builder.addCase(submitPracticeAnswer.pending, (state) => {
+      state.loading = true;
+      state.success = false;
+      state.error = false;
+    });
+    builder.addCase(submitPracticeAnswer.fulfilled, (state, action) => {
+      state.loading = false;
+      state.success = true;
+      state.error = false;
+      state.currentUserAnswer = action.payload;
+    });
+    builder.addCase(submitPracticeAnswer.rejected, (state, action) => {
+      state.loading = false;
+      state.success = false;
+      state.error = true;
+    });
+
+    //submit test
     builder.addCase(submitTest.pending, (state) => {
       state.loading = true;
       state.success = false;
@@ -204,6 +295,83 @@ const userAnswerSlice = createSlice({
       state.currentUserAnswer = action.payload;
     });
     builder.addCase(submitTest.rejected, (state, action) => {
+      state.loading = false;
+      state.success = false;
+      state.error = true;
+    });
+
+    //save temporary test
+    builder.addCase(saveTest.pending, (state) => {
+      state.loading = true;
+      state.success = false;
+      state.error = false;
+    });
+    builder.addCase(saveTest.fulfilled, (state, action) => {
+      state.loading = false;
+      state.success = true;
+      state.error = false;
+      state.currentUserAnswer = action.payload;
+    });
+    builder.addCase(saveTest.rejected, (state, action) => {
+      state.loading = false;
+      state.success = false;
+      state.error = true;
+    });
+
+    //start test
+    builder.addCase(startTest.pending, (state) => {
+      state.loading = true;
+      state.success = false;
+      state.error = false;
+    });
+    builder.addCase(startTest.fulfilled, (state, action) => {
+      state.loading = false;
+      state.success = true;
+      state.error = false;
+      state.test_duration = action.payload.duration;
+      state.message = action.payload.message;
+    });
+    builder.addCase(startTest.rejected, (state, action) => {
+      state.loading = false;
+      state.success = false;
+      state.error = true;
+      console.log(action.payload);
+      state.message = action.payload?.message || "Đã có bài thi đang thực hiện";
+      state.onGoingTest = action.payload?.onGoingTest || null;
+    });
+
+    //cancel test
+    builder.addCase(cancelTest.pending, (state) => {
+      state.loading = true;
+      state.success = false;
+      state.error = false;
+    });
+    builder.addCase(cancelTest.fulfilled, (state, action) => {
+      state.loading = false;
+      state.success = true;
+      state.error = false;
+    });
+    builder.addCase(cancelTest.rejected, (state, action) => {
+      state.loading = false;
+      state.success = false;
+      state.error = true;
+    });
+
+    //resume test
+    builder.addCase(resumeTest.pending, (state) => {
+      state.loading = true;
+      state.success = false;
+      state.error = false;
+    });
+    builder.addCase(resumeTest.fulfilled, (state, action) => {
+      state.loading = false;
+      state.success = true;
+      state.error = false;
+      state.message = action.payload.message;
+      state.test_duration = action.payload.duration;
+      console.log(action.payload.duration);
+    });
+    builder.addCase(resumeTest.rejected, (state, action) => {
       state.loading = false;
       state.success = false;
       state.error = true;

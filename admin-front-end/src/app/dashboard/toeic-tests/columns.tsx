@@ -19,6 +19,7 @@ import {
   removeToeicTest,
 } from "@/lib/redux/features/toeic-tests/toeicTestSlice";
 import { toast } from "@/hooks/use-toast";
+import Image from "next/image";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -71,6 +72,15 @@ export const columns: ColumnDef<ToeicTest>[] = [
         </Button>
       );
     },
+    cell: ({ cell }) => (
+      <Image
+        src={String(cell.getValue()) + "&raw=1"}
+        alt="Image"
+        width={200}
+        height={200}
+        quality={100}
+      />
+    ),
   },
   {
     accessorKey: "type",

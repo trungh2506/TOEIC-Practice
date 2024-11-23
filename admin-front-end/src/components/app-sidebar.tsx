@@ -76,11 +76,11 @@ const data = {
           url: "/dashboard/users",
           icon: UsersRound,
         },
-        {
-          title: "Thêm người dùng mới",
-          url: "/dashboard/users/add",
-          icon: UserRoundPlus,
-        },
+        // {
+        //   title: "Thêm người dùng mới",
+        //   url: "/dashboard/users/add",
+        //   icon: UserRoundPlus,
+        // },
       ],
     },
     {

@@ -17,7 +17,7 @@ const RequireAuth = ({
   useEffect(() => {
     if (!isAuthenticated) {
       router.push("/auth");
-    }
+    } else router.push("/");
   }, [isAuthenticated, router]);
 
   return children;

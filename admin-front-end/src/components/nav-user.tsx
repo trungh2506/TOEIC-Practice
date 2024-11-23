@@ -30,6 +30,7 @@ import { AppDispatch, RootState } from "@/lib/redux/store";
 import { fetchUserProfile, logout } from "@/lib/redux/features/auth/authSlice";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { ModeToggle } from "@/components/mode-toggle";
 
 export function NavUser({
   user,
@@ -96,10 +97,7 @@ export function NavUser({
                 <BadgeCheck />
                 Tài khoản
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Hóa đơn
-              </DropdownMenuItem>
+
               <DropdownMenuItem>
                 <Bell />
                 Thông báo

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { AppDispatch, RootState } from "@/lib/store";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   decrementTimer,
@@ -16,17 +16,28 @@ import {
   increaseCurrentPart,
   setCurrentPage,
   setIsPractice,
+  setTimer,
   startTimer,
 } from "@/lib/redux/features/toeic-test/toeicTestSlice";
 
 import parse from "html-react-parser";
-import { clearCurrentUserAnswer } from "@/lib/redux/features/user-answer/userAnswerSlice";
+import {
+  clearAnswer,
+  clearCurrentUserAnswer,
+  saveTest,
+  startTest,
+  submitTest,
+} from "@/lib/redux/features/user-answer/userAnswerSlice";
 import AnswerReview from "@/components/answer-review";
-
-const DURATION_TEST = 120 * 60;
+import { toast } from "@/hooks/use-toast";
+import { getSocket } from "@/socket";
+import { useRouter } from "next/navigation";
+import SubmitAlertDialog from "@/components/sumbit-alert-dialog";
 
 export default function Page() {
   const [activePart, setActivePart] = useState<string | null>("1");
+  const [minutesRemaining, setMinutesRemaining] = useState(0);
+  const [secondRemaining, setSecondRemaining] = useState(0);
   const param = useParams();
   const dispatch = useDispatch<AppDispatch>();
   const {
@@ -36,8 +47,12 @@ export default function Page() {
     timer,
     isTimerRunning,
   } = useSelector((state: RootState) => state.toeicTest);
-  const { answers } = useSelector((state: RootState) => state.userAnswer);
-
+  const { answers, markedQuestions, test_duration, onGoingTest } = useSelector(
+    (state: RootState) => state.userAnswer
+  );
+  const user = useSelector((state: RootState) => state.user.user);
+  const router = useRouter();
+  const answersRef = useRef<any>(answers);
   const handlePartButtonClick = (
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
@@ -51,15 +66,32 @@ export default function Page() {
       dispatch(getToeicTestById(param?.toeic_test_id)).then(() => {
         dispatch(filterByPart(1));
       });
-      dispatch(startTimer(DURATION_TEST));
+      dispatch(startTimer(test_duration));
       dispatch(setIsPractice(false));
     }
+    console.log("câu trả lời bài thi cũ", answers);
   }, [dispatch, param?.toeic_test_id, currentPart]);
+
+  //Bắt sự kiện người dùng ấn F5
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      handleAutoSubmit();
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
 
   ///Countdown Timer
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
-
+    //nếu tiếp tục làm bài thi trước đó, lấy thời gian làm bài - thời gian đã làm trước đó để tiếp tục
+    if (onGoingTest && onGoingTest.length > 0) {
+      console.log(test_duration);
+      dispatch(setTimer(test_duration));
+    }
     if (isTimerRunning) {
       interval = setInterval(() => {
         dispatch(decrementTimer());
@@ -73,18 +105,45 @@ export default function Page() {
     };
   }, [isTimerRunning, dispatch]);
 
-  //Bắt sự kiện người dùng ấn F5
+  //socket
   useEffect(() => {
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      event.preventDefault();
-    };
+    const socket = getSocket(user?._id);
+    socket.on("time_update", (data: any) => {
+      dispatch(setTimer(data.remainingTime));
+    });
 
-    window.addEventListener("beforeunload", handleBeforeUnload);
+    socket.on("test_expired", (data: any) => {
+      alert("Hết thời gian làm bài");
+      handleAutoSubmit();
+    });
 
     return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
+      socket.off("time_update");
+      socket.off("test_expired");
     };
   }, []);
+
+  useEffect(() => {
+    answersRef.current = answers; // Cập nhật answers mới nhất vào ref
+  }, [answers]); // Khi answers thay đổi
+
+  const handleAutoSubmit = () => {
+    const toeic_test_id = param?.toeic_test_id;
+    router.replace(`/toeic-test/test/${toeic_test_id}/result`);
+    console.log("Submitted", {
+      toeic_test_id: toeic_test_id,
+      answers: answersRef.current,
+    });
+
+    dispatch(
+      saveTest({
+        toeic_test_id: toeic_test_id,
+        answers: answersRef.current,
+      })
+    );
+    dispatch(clearAnswer());
+  };
+
   return (
     <div className="">
       <span className="sm:text-4xl text-xl mb-5">

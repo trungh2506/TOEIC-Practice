@@ -43,6 +43,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
+import RequireAuth from "@/components/require-auth";
 
 const loginFormSchema = z.object({
   email: z.string().email(),
@@ -104,13 +105,13 @@ export default function Page() {
       toast({
         title: "Đăng nhập thành công",
       });
-      router.push("/");
-    } else {
+      router.replace("/");
+    } else if (result.meta.requestStatus === "rejected") {
       // Hiển thị thông báo lỗi
       toast({
         variant: "destructive",
         title: "Lỗi đăng nhập",
-        description: message,
+        description: result.payload as string,
       });
     }
   }
@@ -143,135 +144,56 @@ export default function Page() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center">
-      <Tabs
-        defaultValue="signin"
-        className="w-full sm:w-[500px]  quicksand-semibold "
-      >
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="signin">Đăng nhập</TabsTrigger>
-          <TabsTrigger value="signup">Đăng ký</TabsTrigger>
-        </TabsList>
-        <TabsContent value="signin">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-4xl">Đăng Nhập</CardTitle>
-              <CardDescription>
-                Trở thành thành viên của Toeic Area.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Form {...loginForm}>
-                <form
-                  onSubmit={loginForm.handleSubmit(onSubmitLoginForm)}
-                  className="space-y-8"
-                >
-                  {/* Email Field */}
-                  <FormField
-                    control={loginForm.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Nhập email" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Password Field */}
-                  <FormField
-                    control={loginForm.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Mật khẩu</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="password"
-                            placeholder="Nhập mật khẩu"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Submit Button */}
-                  <div className="flex items-center justify-center">
-                    <Button type="submit" disabled={loading}>
-                      Đăng nhập
-                    </Button>
-                  </div>
-                </form>
-              </Form>
-
-              <div className="flex flex-col gap-3 items-center justify-center">
-                <div className="flex items-center justify-center gap-2">
-                  <Separator className="w-[100px]" />
-                  <span className="text-gray-400">hoặc</span>
-                  <Separator className="w-[100px]" />
-                </div>
-                <Button variant="outline" onClick={() => signInGoogle()}>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    x="0px"
-                    y="0px"
-                    width="100"
-                    height="100"
-                    viewBox="0 0 48 48"
+    <RequireAuth>
+      <div className="flex flex-col items-center justify-center">
+        <Tabs
+          defaultValue="signin"
+          className="w-full sm:w-[500px]  quicksand-semibold "
+        >
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="signin">Đăng nhập</TabsTrigger>
+            <TabsTrigger value="signup">Đăng ký</TabsTrigger>
+          </TabsList>
+          <TabsContent value="signin">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-4xl">Đăng Nhập</CardTitle>
+                <CardDescription>
+                  Trở thành thành viên của Toeic Area.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Form {...loginForm}>
+                  <form
+                    onSubmit={loginForm.handleSubmit(onSubmitLoginForm)}
+                    className="space-y-8"
                   >
-                    <path
-                      fill="#FFC107"
-                      d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"
-                    ></path>
-                    <path
-                      fill="#FF3D00"
-                      d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"
-                    ></path>
-                    <path
-                      fill="#4CAF50"
-                      d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"
-                    ></path>
-                    <path
-                      fill="#1976D2"
-                      d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"
-                    ></path>
-                  </svg>
-                  Đăng nhập bằng Google
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="signup">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-4xl">Đăng Ký</CardTitle>
-              <CardDescription>
-                Trở thành thành viên của Toeic Area sẽ có quyền lợi.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Form {...registerForm}>
-                <form
-                  onSubmit={registerForm.handleSubmit(onSubmitRegisterForm)}
-                  className="space-y-8"
-                >
-                  {/* Container chia thành 2 cột */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Email Field */}
                     <FormField
-                      control={registerForm.control}
+                      control={loginForm.control}
                       name="email"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Email</FormLabel>
                           <FormControl>
+                            <Input placeholder="Nhập email" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Password Field */}
+                    <FormField
+                      control={loginForm.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Mật khẩu</FormLabel>
+                          <FormControl>
                             <Input
-                              placeholder="example@example.com"
+                              type="password"
+                              placeholder="Nhập mật khẩu"
                               {...field}
                             />
                           </FormControl>
@@ -279,80 +201,161 @@ export default function Page() {
                         </FormItem>
                       )}
                     />
-                    <FormField
-                      control={registerForm.control}
-                      name="username"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Username</FormLabel>
-                          <FormControl>
-                            <Input {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
 
-                    <FormField
-                      control={registerForm.control}
-                      name="fullname"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Họ và tên</FormLabel>
-                          <FormControl>
-                            <Input {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={registerForm.control}
-                      name="number_phone"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Số điện thoại</FormLabel>
-                          <FormControl>
-                            <Input type="tel" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={registerForm.control}
-                      name="password"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Mật khẩu</FormLabel>
-                          <FormControl>
-                            <Input type="password" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={registerForm.control}
-                      name="confirm_password"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Xác nhận mật khẩu</FormLabel>
-                          <FormControl>
-                            <Input type="password" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    {/* Submit Button */}
+                    <div className="flex items-center justify-center">
+                      <Button type="submit" disabled={loading}>
+                        Đăng nhập
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+
+                <div className="flex flex-col gap-3 items-center justify-center">
+                  <div className="flex items-center justify-center gap-2">
+                    <Separator className="w-[100px]" />
+                    <span className="text-gray-400">hoặc</span>
+                    <Separator className="w-[100px]" />
                   </div>
-                  <Button type="submit">Đăng ký</Button>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
+                  <Button variant="outline" onClick={() => signInGoogle()}>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      x="0px"
+                      y="0px"
+                      width="100"
+                      height="100"
+                      viewBox="0 0 48 48"
+                    >
+                      <path
+                        fill="#FFC107"
+                        d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"
+                      ></path>
+                      <path
+                        fill="#FF3D00"
+                        d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"
+                      ></path>
+                      <path
+                        fill="#4CAF50"
+                        d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"
+                      ></path>
+                      <path
+                        fill="#1976D2"
+                        d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"
+                      ></path>
+                    </svg>
+                    Đăng nhập bằng Google
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="signup">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-4xl">Đăng Ký</CardTitle>
+                <CardDescription>
+                  Trở thành thành viên của Toeic Area sẽ có quyền lợi.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Form {...registerForm}>
+                  <form
+                    onSubmit={registerForm.handleSubmit(onSubmitRegisterForm)}
+                    className="space-y-8"
+                  >
+                    {/* Container chia thành 2 cột */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <FormField
+                        control={registerForm.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Email</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="example@example.com"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={registerForm.control}
+                        name="username"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Username</FormLabel>
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={registerForm.control}
+                        name="fullname"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Họ và tên</FormLabel>
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={registerForm.control}
+                        name="number_phone"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Số điện thoại</FormLabel>
+                            <FormControl>
+                              <Input type="tel" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={registerForm.control}
+                        name="password"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Mật khẩu</FormLabel>
+                            <FormControl>
+                              <Input type="password" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={registerForm.control}
+                        name="confirm_password"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Xác nhận mật khẩu</FormLabel>
+                            <FormControl>
+                              <Input type="password" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <Button type="submit">Đăng ký</Button>
+                  </form>
+                </Form>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </RequireAuth>
   );
 }

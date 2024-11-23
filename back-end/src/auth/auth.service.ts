@@ -14,6 +14,7 @@ import * as bcrypt from 'bcrypt';
 import { RegisterDTO } from './dto/register.dto';
 
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Role } from 'src/enum/role.enum';
 
 @Injectable()
 export class AuthService {
@@ -61,17 +62,63 @@ export class AuthService {
     const user = await this.userService.findOneByEmail(loginDto.email);
 
     if (!user) {
-      throw new BadRequestException('Invalid email or password');
+      return {
+        success: false,
+        message: 'Email hoặc mật khẩu không chính xác!',
+      };
     }
 
     const isPasswordMatched = await bcrypt.compare(password, user.password);
 
     if (!isPasswordMatched) {
-      throw new BadRequestException('Invalid email or password');
+      return {
+        success: false,
+        message: 'Email hoặc mật khẩu không chính xác!',
+      };
     }
     const payload = { email: user.email, sub: user._id, roles: user.roles };
 
     return {
+      success: true,
+      message: 'Đăng nhập thành công!',
+      user: user,
+      access_token: this.jwtService.sign(payload),
+      refresh_token: this.jwtService.sign(payload, {
+        secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+        expiresIn: this.configService.get<string>(
+          'JWT_REFRESH_SECRET_EXPIRE_IN',
+        ),
+      }),
+    };
+  }
+
+  async adminLogin(loginDto: LoginDTO) {
+    const { email, password } = loginDto;
+
+    const user = await this.userService.findOneByEmail(loginDto.email);
+
+    if (!user) {
+      throw new BadRequestException('Không tìm thấy email!');
+    }
+
+    const isPasswordMatched = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordMatched) {
+      throw new BadRequestException('Sai mật khẩu!');
+    }
+
+    if (!user.roles || !user.roles.includes(Role.Admin)) {
+      // throw new ForbiddenException('Chỉ dành cho Quản trị viên');
+      return {
+        success: false,
+        message: 'Tài khoản không có quyền truy cập.',
+      };
+    }
+
+    const payload = { email: user.email, sub: user._id, roles: user.roles };
+
+    return {
+      success: true,
       user: user,
       access_token: this.jwtService.sign(payload),
       refresh_token: this.jwtService.sign(payload, {
