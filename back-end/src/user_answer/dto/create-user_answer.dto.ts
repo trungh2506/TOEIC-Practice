@@ -77,4 +77,7 @@ export class CreateUserAnswerDto {
 
   @IsOptional()
   part: number;
+
+  @IsOptional()
+  current_audio_time: number;
 }

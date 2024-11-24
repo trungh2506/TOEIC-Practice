@@ -82,6 +82,7 @@ export class UserAnswerController {
     return {
       message: 'Tiếp tục làm bài thi trước đó.',
       duration: result.duration,
+      questionNumberList: result.questionNumberList
     };
   }
 

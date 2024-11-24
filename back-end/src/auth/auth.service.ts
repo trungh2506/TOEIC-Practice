@@ -98,13 +98,19 @@ export class AuthService {
     const user = await this.userService.findOneByEmail(loginDto.email);
 
     if (!user) {
-      throw new BadRequestException('Không tìm thấy email!');
+      return {
+        success: false,
+        message: 'Email hoặc mật khẩu không chính xác!',
+      };
     }
 
     const isPasswordMatched = await bcrypt.compare(password, user.password);
 
     if (!isPasswordMatched) {
-      throw new BadRequestException('Sai mật khẩu!');
+      return {
+        success: false,
+        message: 'Email hoặc mật khẩu không chính xác!',
+      };
     }
 
     if (!user.roles || !user.roles.includes(Role.Admin)) {

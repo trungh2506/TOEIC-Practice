@@ -62,6 +62,9 @@ export class User_Answer extends Document {
   })
   status: string;
 
+  @Prop({ default: 0 })
+  current_audio_time: number;
+
   @Prop()
   part: number;
 

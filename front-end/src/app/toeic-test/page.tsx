@@ -8,12 +8,14 @@ import { toast, useToast } from "@/hooks/use-toast";
 import {
   getAllToeicTest,
   setCurrentPage,
+  setIsExaming,
 } from "@/lib/redux/features/toeic-test/toeicTestSlice";
 import {
   cancelTest,
   clearAnswer,
   resumeTest,
   setAnswers,
+  setQuestionNumberList,
   startTest,
 } from "@/lib/redux/features/user-answer/userAnswerSlice";
 import { AppDispatch, RootState } from "@/lib/store";
@@ -51,6 +53,7 @@ export default function Page() {
                 router.push(
                   `/toeic-test/test/${result.payload.onGoingTest[0]?.toeic_test_id}`
                 );
+                dispatch(setIsExaming(true));
               }}
             >
               Vào lại
@@ -75,6 +78,7 @@ export default function Page() {
         ),
       });
     } else if (result.meta.requestStatus === "fulfilled") {
+      dispatch(setIsExaming(true));
       router.push(`/toeic-test/test/${toeic_test_id}`);
     }
     const handlePageChange = (page: number) => {

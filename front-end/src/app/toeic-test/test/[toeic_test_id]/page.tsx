@@ -15,6 +15,7 @@ import {
   getToeicTestById,
   increaseCurrentPart,
   setCurrentPage,
+  setCurrentPart,
   setIsPractice,
   setTimer,
   startTimer,
@@ -33,6 +34,8 @@ import { toast } from "@/hooks/use-toast";
 import { getSocket } from "@/socket";
 import { useRouter } from "next/navigation";
 import SubmitAlertDialog from "@/components/sumbit-alert-dialog";
+import FullAudio from "@/components/full-audio";
+import { useSidebar } from "@/components/ui/sidebar";
 
 export default function Page() {
   const [activePart, setActivePart] = useState<string | null>("1");
@@ -41,12 +44,22 @@ export default function Page() {
   const param = useParams();
   const dispatch = useDispatch<AppDispatch>();
   const {
+    isExaming,
     currentToeicTest,
     currentPart,
     filteredToeicTest,
     timer,
     isTimerRunning,
   } = useSelector((state: RootState) => state.toeicTest);
+  const {
+    state,
+    open,
+    setOpen,
+    openMobile,
+    setOpenMobile,
+    isMobile,
+    toggleSidebar,
+  } = useSidebar();
   const { answers, markedQuestions, test_duration, onGoingTest } = useSelector(
     (state: RootState) => state.userAnswer
   );
@@ -57,17 +70,24 @@ export default function Page() {
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
     const buttonValue = event.currentTarget.value;
+    console.log(buttonValue);
     dispatch(filterByPart(parseInt(buttonValue, 10)));
     setActivePart(buttonValue);
   };
 
   useEffect(() => {
-    if (param?.toeic_test_id) {
-      dispatch(getToeicTestById(param?.toeic_test_id)).then(() => {
-        dispatch(filterByPart(1));
-      });
-      dispatch(startTimer(test_duration));
-      dispatch(setIsPractice(false));
+    setOpen(false);
+    if (isExaming) {
+      if (param?.toeic_test_id) {
+        dispatch(getToeicTestById(param?.toeic_test_id)).then(() => {
+          dispatch(filterByPart(1));
+        });
+        dispatch(startTimer(test_duration));
+        dispatch(setIsPractice(false));
+      }
+    } else {
+      alert("Bạn chưa chọn bài thi!");
+      router.replace("/toeic-test");
     }
     console.log("câu trả lời bài thi cũ", answers);
   }, [dispatch, param?.toeic_test_id, currentPart]);
@@ -76,13 +96,14 @@ export default function Page() {
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       event.preventDefault();
-      handleAutoSubmit();
+      handleAutoSave();
+      router.push("/toeic-test");
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-  }, []);
+  }, [router]);
 
   ///Countdown Timer
   useEffect(() => {
@@ -127,7 +148,7 @@ export default function Page() {
     answersRef.current = answers; // Cập nhật answers mới nhất vào ref
   }, [answers]); // Khi answers thay đổi
 
-  const handleAutoSubmit = () => {
+  const handleAutoSave = () => {
     const toeic_test_id = param?.toeic_test_id;
     router.replace(`/toeic-test/test/${toeic_test_id}/result`);
     console.log("Submitted", {
@@ -144,17 +165,29 @@ export default function Page() {
     dispatch(clearAnswer());
   };
 
+  const handleAutoSubmit = () => {
+    const toeic_test_id = param?.toeic_test_id;
+    router.replace(`/toeic-test/test/${toeic_test_id}/result`);
+    console.log("Submitted", {
+      toeic_test_id: toeic_test_id,
+      answers: answersRef.current,
+    });
+
+    dispatch(
+      submitTest({
+        toeic_test_id: toeic_test_id,
+        answers: answersRef.current,
+      })
+    );
+    dispatch(clearAnswer());
+  };
+
   return (
     <div className="">
       <span className="sm:text-4xl text-xl mb-5">
         {currentToeicTest?.title}
       </span>
-      <audio
-        className="w-[500px]"
-        autoPlay={true}
-        controls
-        src={`${currentToeicTest?.full_audio}&raw=1`}
-      />
+      <FullAudio source={`${currentToeicTest?.full_audio}&raw=1`} />
       <div className="flex gap-2 mb-5 overflow-x-auto sm:overflow-x-hidden">
         <Button
           value="1"
@@ -220,7 +253,7 @@ export default function Page() {
                   <span className="text-xl">{passage.title}</span>
                   {/*Duyệt qua content nếu không thấy thì duyệt qua hình ảnh */}
                   {passage.content && (
-                    <div className="border-primary border p-3">
+                    <div className="border-primary border p-3 sm:w-[600px]">
                       {parse(passage.content)}
                     </div>
                   )}
@@ -330,6 +363,7 @@ export default function Page() {
           className="mt-5"
           onClick={() => {
             dispatch(increaseCurrentPart());
+            dispatch(filterByPart(currentPart));
             window.scrollTo(0, 0);
           }}
         >

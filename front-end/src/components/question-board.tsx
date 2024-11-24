@@ -78,7 +78,7 @@ const ButtonQuestionList = React.memo(
           isAnswered={isAnswered}
           onClick={onButtonClick}
           value={i}
-          key={i} // Đảm bảo key là duy nhất
+          key={i}
         />
       );
     }

@@ -369,7 +369,7 @@ const userAnswerSlice = createSlice({
       state.error = false;
       state.message = action.payload.message;
       state.test_duration = action.payload.duration;
-      console.log(action.payload.duration);
+      state.questionNumberList = action.payload.questionNumberList;
     });
     builder.addCase(resumeTest.rejected, (state, action) => {
       state.loading = false;

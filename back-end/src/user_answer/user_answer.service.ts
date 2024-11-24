@@ -29,7 +29,6 @@ export class UserAnswerService {
   ) {}
   private userIntervals: { [userId: string]: NodeJS.Timeout } = {};
 
-
   //Pracetice Mode
   async create(user_id: string, createUserAnswerDto: CreateUserAnswerDto) {
     let listening = 0;
@@ -225,8 +224,17 @@ export class UserAnswerService {
     // Lưu interval vào đối tượng cho người dùng này
     this.userIntervals[user_id] = interval;
 
+    //Trả về question_number đã làm
+    const questionNumberList = [];
+    for (const answer of onGoingTest.answers) {
+      const question = await this.questionService.findOne(answer.question_id);
+
+      questionNumberList.push(question.question_number);
+    }
+    console.log(questionNumberList);
     return {
       duration: TIME_DURATION_TEST - onGoingTest.duration,
+      questionNumberList: questionNumberList,
     };
   }
 
@@ -384,17 +392,27 @@ export class UserAnswerService {
 
   async findAllByUserId(user_id: string, paginationDto: PaginationDto) {
     // const user_answers = await this.userAnswerModel.find({ user_id: user_id });
-    const filter = { user_id: user_id }; // Điều kiện lọc theo user_id
+    const filter = { user_id: user_id, status: 'completed' }; // Điều kiện lọc theo user_id
     const projection = {}; // Có thể chỉ định các trường cần lấy nếu muốn
-
+    const populate = [
+      { path: 'toeic_test_id', select: 'title description' }, // Lấy trường title và description từ toeic_test_id
+    ];
+    const sort = { date_answer: -1 };
     // Gọi hàm paginate và truyền vào model, DTO phân trang, điều kiện lọc, và projection
     const user_answers = await paginate(
       this.userAnswerModel, // Model MongoDB
       paginationDto, // Thông tin phân trang
       filter, // Điều kiện lọc theo user_id
-      projection, // Lấy toàn bộ các trường, có thể điều chỉnh nếu cần
+      projection,
+      populate,
+      sort,
     );
     return user_answers;
+  }
+
+  async findAllByUserIdWithOutPagination(user_id: string) {
+    const result = await this.userAnswerModel.find({ user_id: user_id });
+    return result;
   }
 
   async findOneById(id: string) {

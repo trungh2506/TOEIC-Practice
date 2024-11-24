@@ -20,5 +20,6 @@ import { TestExpiredGateway } from 'src/user_answer/gateways/test_expired.gatewa
   ],
   controllers: [UserAnswerController],
   providers: [UserAnswerService, TestExpiredGateway],
+  exports: [UserAnswerService],
 })
 export class UserAnswerModule {}

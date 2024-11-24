@@ -18,7 +18,7 @@ import {
   addQuestionNumberList,
 } from "@/lib/redux/features/user-answer/userAnswerSlice";
 import { useState } from "react";
-import { Bookmark, BookMarked, Pin } from "lucide-react";
+import { Bookmark, BookMarked, Check, Pin, X } from "lucide-react";
 
 const ANSWER_LABELS = ["A", "B", "C", "D"];
 
@@ -76,19 +76,23 @@ export default function Question({
       className="flex flex-col sm:flex-row gap-5 mb-5"
       id={question_number?.toString()}
     >
-      {markedQuestions.includes(question_number) && <Bookmark color="red" />}
-      <div className="mt-3">
+      <div className="mt-3 flex flex-col items-center">
+        {markedQuestions.includes(question_number) && <Pin />}
         <Button
           onClick={handleMarkQuestion}
           size={"icon"}
-          className="text-white text-sm p-1 rounded-full bg-primary"
+          className="text-sm p-1 rounded-full bg-primary"
         >
           {question_number}
         </Button>
       </div>
       <div>
         {isPractice && question_audio && (
-          <audio className="" controls src={`${question_audio}&raw=1`} />
+          <audio
+            className="w-[500px] mb-2"
+            controls
+            src={`${question_audio}&raw=1`}
+          />
         )}
         {question_image && (
           <Image
@@ -101,14 +105,18 @@ export default function Question({
           />
         )}
         {showResult && question_audio && (
-          <audio className="" controls src={`${question_audio}&raw=1`} />
+          <audio
+            className="w-[400px]"
+            controls
+            src={`${question_audio}&raw=1`}
+          />
         )}
 
         {question_text ? (
           <Accordion defaultValue="item-1" type="single" collapsible>
             <AccordionItem value="item-1">
               <AccordionTrigger className="quicksand-semibold">
-                <span className="text-xl ">{question_text}</span>
+                <span className="text-xl">{question_text}</span>
               </AccordionTrigger>
               <AccordionContent className="text-base">
                 <RadioGroup
@@ -168,7 +176,15 @@ export default function Question({
 
         {isAnswerShowing && isPractice && optionUser && (
           <div className="flex flex-col">
-            <span className="text-green-600 text-2xl">
+            <span className="flex">
+              Bạn chọn : {optionUser}
+              {correct_answer.includes(optionUser) ? (
+                <Check color="green" />
+              ) : (
+                <X color="red" />
+              )}
+            </span>
+            <span className="text-green-600">
               Đáp án đúng: {correct_answer}
             </span>
             <span className="text-xl">{script}</span>
