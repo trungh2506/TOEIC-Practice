@@ -38,7 +38,7 @@ const items = [
     children: [],
   },
   {
-    title: "Tài liệu miễn phí",
+    title: "Tài liệu ngữ pháp",
     url: "/grammar",
     icon: Leaf,
     children: [],

@@ -1,6 +1,13 @@
 "use client";
 import ToeicCard from "@/components/toeic-card";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ToastAction } from "@/components/ui/toast";
@@ -19,9 +26,11 @@ import {
   startTest,
 } from "@/lib/redux/features/user-answer/userAnswerSlice";
 import { AppDispatch, RootState } from "@/lib/store";
+import { Files } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import Image from "next/image";
 
 export default function Page() {
   const router = useRouter();
@@ -91,9 +100,22 @@ export default function Page() {
   }, [dispatch, currentPage]);
 
   return (
-    <div className="flex flex-col items-center sm:items-start gap-5">
+    <div className="flex flex-col justify-center items-center sm:items-start gap-5">
+      <>
+        <div className=" sm:block bottom-20 bg-primary rounded-md p-5 text-primary-foreground">
+          <span className="text-4xl">Khu vực luyện đề</span>
+          <p className="quicksand-regular">
+            Trong quá trình chuẩn bị cho kỳ thi TOEIC, việc luyện tập với các bộ
+            đề thực tế là một phương pháp hiệu quả giúp bạn làm quen với cấu
+            trúc bài thi và cải thiện kỹ năng nghe và đọc. Các bộ đề TOEIC 2 kỹ
+            năng, bao gồm phần Nghe và phần Đọc, được thiết kế để giúp bạn tăng
+            cường khả năng hiểu và xử lý thông tin trong môi trường giao tiếp
+            tiếng Anh thực tế.
+          </p>
+        </div>
+      </>
       <div className="flex flex-col gap-5">
-        <span className="text-4xl">Đề thi</span>
+        <span className="text-4xl">Đề Thi</span>
         <Separator />
         <div className="flex flex-col sm:flex-row gap-5">
           {loading &&

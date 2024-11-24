@@ -42,7 +42,7 @@ export default function Page() {
               <Image
                 className="shadow rounded-md"
                 src="/carousel.jpg"
-                width={1200}
+                width={1000}
                 height={450}
                 quality={100}
                 alt="Carousel image 1"
@@ -51,8 +51,18 @@ export default function Page() {
             <CarouselItem className="flex items-center justify-center">
               <Image
                 className="rounded-md"
-                src="/carousel.jpg"
-                width={1200}
+                src="/listening.jpg"
+                width={1000}
+                height={450}
+                quality={100}
+                alt="Carousel image 1"
+              />
+            </CarouselItem>
+            <CarouselItem className="flex items-center justify-center">
+              <Image
+                className="rounded-md"
+                src="/reading.jpg"
+                width={1000}
                 height={450}
                 quality={100}
                 alt="Carousel image 1"
@@ -150,7 +160,7 @@ export default function Page() {
         </div>
         <Image
           className="basis-1/3 rounded-md"
-          src="/carousel.jpg"
+          src="/exam_tests.jpg"
           width={400}
           height={300}
           quality={100}

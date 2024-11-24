@@ -78,8 +78,19 @@ export default function Page() {
   }, [dispatch, currentPage]);
   return (
     <div className="flex flex-col items-center sm:items-start gap-10">
+      <>
+        <div className=" sm:block bottom-20 bg-primary rounded-md p-5 text-primary-foreground">
+          <span className="text-4xl">Khu vực các kỹ năng</span>
+          <p className="quicksand-regular">
+            Chào mừng bạn đến với khu vực luyện tập các kỹ năng Nghe và Đọc
+            trong chương trình ôn luyện TOEIC! Đây là những kỹ năng quan trọng
+            nhất giúp bạn đạt điểm cao trong kỳ thi TOEIC và cải thiện khả năng
+            sử dụng tiếng Anh trong môi trường công việc và giao tiếp hàng ngày.
+          </p>
+        </div>
+      </>
       <div className="flex flex-col gap-5">
-        <span className="text-4xl">Listening</span>
+        <span className="text-4xl">Phần Nghe</span>
         <Separator />
         <div className="flex flex-col sm:flex-row gap-5">
           {listeningCards.map((card: any, index: number) => (
@@ -96,7 +107,7 @@ export default function Page() {
       </div>
 
       <div className="flex flex-col gap-5">
-        <span className="text-4xl">Reading</span>
+        <span className="text-4xl">Phần Đọc</span>
         <Separator />
         <div className="flex flex-col sm:flex-row gap-5">
           {readingCards.map((card: any, index: number) => (
