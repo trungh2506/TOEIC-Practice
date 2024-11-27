@@ -38,7 +38,7 @@ const items = [
     children: [],
   },
   {
-    title: "Tài liệu miễn phí",
+    title: "Tài liệu ngữ pháp",
     url: "/grammar",
     icon: Leaf,
     children: [],
@@ -80,10 +80,10 @@ export function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <Link href={item.url}>
+                    <a href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
-                    </Link>
+                    </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

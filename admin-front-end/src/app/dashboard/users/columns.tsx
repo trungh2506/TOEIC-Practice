@@ -12,6 +12,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
 
 export type Users = {
   _id: string;
@@ -92,6 +94,19 @@ export const columns: ColumnDef<Users>[] = [
         </Button>
       );
     },
+    cell: ({ cell }) => {
+      return cell.getValue() ? (
+        <Image
+          src={String(cell.getValue())}
+          alt="Avatar"
+          width={50}
+          height={50}
+          quality={100}
+        />
+      ) : (
+        <Badge variant={"outline"}>none</Badge>
+      );
+    },
   },
   {
     accessorKey: "roles",
@@ -104,6 +119,14 @@ export const columns: ColumnDef<Users>[] = [
           Vai trò
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
+      );
+    },
+    cell: ({ cell }) => {
+      const isAdmin = cell.getValue() === "admin" ? true : false;
+      return isAdmin ? (
+        <Badge variant="destructive">Administrator</Badge>
+      ) : (
+        <Badge>Member</Badge>
       );
     },
   },

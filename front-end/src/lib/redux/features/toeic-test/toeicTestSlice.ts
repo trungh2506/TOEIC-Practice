@@ -8,19 +8,6 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const DURATION_TEST = 120 * 60;
 
-export const startTest = createAsyncThunk<any, any>(
-  "toeicTest/startTest",
-  async (toeic_test_id: string, { rejectWithValue }) => {
-    try {
-      const response = await startTestApi(toeic_test_id);
-      const data = response.data;
-      return data;
-    } catch (error: any) {
-      return rejectWithValue(error.response.data.message);
-    }
-  }
-);
-
 export const getPartToeicTest = createAsyncThunk<
   any,
   { toeic_test_id: string; part_number: number }
@@ -88,6 +75,13 @@ interface ToeicTestState {
   //thời gian người dùng lựa chọn trong practice
   selectedTimer: number;
   isPractice: boolean;
+
+  //tùy chọn hiển thị câu trả lời
+  isAnswerShowing: boolean;
+
+  //kiểm tra người dùng có đang thi thử hay không
+  isExaming: boolean;
+
   //pagination
   totalPages: number;
   totalToeicTest: number;
@@ -113,7 +107,9 @@ const initialState: ToeicTestState = {
   currentPart: 1,
   selectedPart: 0,
   selectedTimer: 0,
+  isAnswerShowing: false,
   isPractice: false,
+  isExaming: false,
   loading: false,
   success: false,
   error: false,
@@ -132,6 +128,9 @@ const toeicTestSlice = createSlice({
     },
     stopTimer: (state) => {
       state.isTimerRunning = false;
+    },
+    setTimer: (state, action) => {
+      state.timer = action.payload;
     },
     resetTimer: (state, action) => {
       state.timer = action.payload;
@@ -155,6 +154,15 @@ const toeicTestSlice = createSlice({
     },
     setIsPractice: (state, action) => {
       state.isPractice = action.payload;
+    },
+    setIsExaming: (state, action) => {
+      state.isExaming = action.payload;
+    },
+    setIsAnswerShowing: (state, action) => {
+      state.isAnswerShowing = action.payload;
+    },
+    setCurrentPart: (state, action) => {
+      state.currentPart = action.payload;
     },
     increaseCurrentPart: (state) => {
       state.currentPart += 1;
@@ -258,8 +266,6 @@ const toeicTestSlice = createSlice({
       state.success = false;
       state.error = true;
     });
-
-    //start toeic test
   },
 });
 
@@ -268,12 +274,16 @@ export const {
   increaseCurrentPart,
   filterByPart,
   navigateToSelectedQuestion,
+  setIsAnswerShowing,
   startTimer,
   stopTimer,
   resetTimer,
+  setTimer,
   decrementTimer,
   setSelectedTimer,
   setSelectedPart,
   setIsPractice,
+  setCurrentPart,
+  setIsExaming,
 } = toeicTestSlice.actions;
 export default toeicTestSlice.reducer;

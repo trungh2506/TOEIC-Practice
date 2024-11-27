@@ -31,7 +31,7 @@ export default function ToeicCard({
         className="rounded-t-md"
         src={image}
         width={400}
-        height={300}
+        height={400}
         quality={100}
         alt="Carousel image 1"
       />

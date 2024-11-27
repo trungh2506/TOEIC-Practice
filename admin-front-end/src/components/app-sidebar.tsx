@@ -13,6 +13,8 @@ import {
   FileText,
   Frame,
   GalleryVerticalEnd,
+  HeadphoneOff,
+  HeadphonesIcon,
   LayoutDashboard,
   LibraryBig,
   Map,
@@ -67,6 +69,24 @@ const data = {
       ],
     },
     {
+      title: "Luyện nghe",
+      url: "#",
+      icon: Files,
+      isActive: true,
+      items: [
+        {
+          title: "Danh sách bài luyện nghe",
+          url: "/dashboard/listening-tests",
+          icon: HeadphonesIcon,
+        },
+        {
+          title: "Thêm bài luyện nghe mới",
+          url: "/dashboard/listening-tests/add",
+          icon: FilePlus,
+        },
+      ],
+    },
+    {
       title: "Người dùng",
       url: "#",
       icon: UsersRound,
@@ -76,11 +96,11 @@ const data = {
           url: "/dashboard/users",
           icon: UsersRound,
         },
-        {
-          title: "Thêm người dùng mới",
-          url: "/dashboard/users/add",
-          icon: UserRoundPlus,
-        },
+        // {
+        //   title: "Thêm người dùng mới",
+        //   url: "/dashboard/users/add",
+        //   icon: UserRoundPlus,
+        // },
       ],
     },
     {

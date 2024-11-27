@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import parse from "html-react-parser";
 import Image from "next/image";
 import Question from "@/components/question";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
   const param = useParams();
@@ -27,9 +28,10 @@ export default function Page() {
     isTimerRunning,
     selectedPart,
     selectedTimer,
+    isAnswerShowing,
   } = useSelector((state: RootState) => state.toeicTest);
   const { answers } = useSelector((state: RootState) => state.userAnswer);
-
+  const router = useRouter();
   useEffect(() => {
     if (param?.toeic_test_id) {
       dispatch(getToeicTestById(param?.toeic_test_id)).then(() => {
@@ -122,6 +124,11 @@ export default function Page() {
                         // Chỉ hiển thị nếu tìm thấy câu hỏi
                         return question ? (
                           <Question
+                            defaultValue={
+                              answers.find(
+                                (answer) => answer.question_id === question._id
+                              )?.selected_option || ""
+                            }
                             key={`question-${questionIndex}`}
                             question_id={question._id}
                             question_number={question.question_number}
@@ -131,12 +138,13 @@ export default function Page() {
                                 ? `${question.question_image}`
                                 : undefined
                             }
-                            correct_answer=""
+                            correct_answer={question?.correct_answer}
                             question_audio={question.question_audio}
                             options={question.options}
-                            isAnswerShowing={false}
-                            script={""}
+                            isAnswerShowing={isAnswerShowing}
+                            script={question?.script}
                             isPractice={true}
+                            showResult={false}
                           />
                         ) : null;
                       }
@@ -154,6 +162,11 @@ export default function Page() {
               ].map((question: any, index: number) => {
                 return (
                   <Question
+                    defaultValue={
+                      answers.find(
+                        (answer) => answer.question_id === question._id
+                      )?.selected_option || ""
+                    }
                     question_id={question._id}
                     key={`question-${question.question_number}-${index}`}
                     question_number={question?.question_number}
@@ -166,9 +179,10 @@ export default function Page() {
                     }
                     question_audio={question?.question_audio}
                     options={question?.options}
-                    isAnswerShowing={false}
+                    isAnswerShowing={isAnswerShowing}
                     script={question?.script}
                     isPractice={true}
+                    showResult={false}
                   />
                 );
               })}

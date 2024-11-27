@@ -13,7 +13,7 @@ import {
   navigateToSelectedQuestion,
   startTimer,
 } from "@/lib/redux/features/toeic-test/toeicTestSlice";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import SubmitAlertDialog from "@/components/sumbit-alert-dialog";
@@ -78,7 +78,7 @@ const ButtonQuestionList = React.memo(
           isAnswered={isAnswered}
           onClick={onButtonClick}
           value={i}
-          key={i} // Đảm bảo key là duy nhất
+          key={i}
         />
       );
     }
@@ -122,42 +122,42 @@ export default function QuestionBoard({ minutes, second }: QuestionBoardProps) {
     console.log(`câu hỏi số ${event.currentTarget.value}`);
   };
 
-  //Save User Answer in LocalStorage
-  const saveUserAnswer = () => {
-    localStorage.setItem("PREVIOUS_ANSWERS", JSON.stringify(answers));
-    localStorage.setItem("PREVIOUS_DURATION", JSON.stringify(timer));
-    localStorage.setItem(
-      "PREVIOUS_QUESTION_NUMBER_LIST",
-      JSON.stringify(questionNumberList)
-    );
-    localStorage.setItem(
-      "PREVIOUS_MARKED_QUESTIONS",
-      JSON.stringify(markedQuestions)
-    );
-    toast({
-      title: "Đã lưu bài làm thành công!",
-    });
-  };
-  //Restore User Answer
-  const restoreUserAnswer = () => {
-    const PREVIOUS_ANSWERS = JSON.parse(
-      localStorage.getItem("PREVIOUS_ANSWERS") || "[]"
-    );
-    const PREVIOUS_DURATION = localStorage.getItem("PREVIOUS_DURATION");
-    const PREVIOUS_QUESTION_NUMBER_LIST = localStorage.getItem(
-      "PREVIOUS_QUESTION_NUMBER_LIST"
-    );
-    const PREVIOUS_MARKED_QUESTIONS = localStorage.getItem(
-      "PREVIOUS_MARKED_QUESTIONS"
-    );
-    dispatch(setAnswers(PREVIOUS_ANSWERS));
-    dispatch(setQuestionNumberList(PREVIOUS_QUESTION_NUMBER_LIST));
-    dispatch(startTimer(PREVIOUS_DURATION));
-    dispatch(setmarkedQuestions(PREVIOUS_MARKED_QUESTIONS));
-    toast({
-      title: "Khôi phục bài làm trước đó thành công!",
-    });
-  };
+  // //Save User Answer in LocalStorage
+  // const saveUserAnswer = () => {
+  //   localStorage.setItem("PREVIOUS_ANSWERS", JSON.stringify(answers));
+  //   localStorage.setItem("PREVIOUS_DURATION", JSON.stringify(timer));
+  //   localStorage.setItem(
+  //     "PREVIOUS_QUESTION_NUMBER_LIST",
+  //     JSON.stringify(questionNumberList)
+  //   );
+  //   localStorage.setItem(
+  //     "PREVIOUS_MARKED_QUESTIONS",
+  //     JSON.stringify(markedQuestions)
+  //   );
+  //   toast({
+  //     title: "Đã lưu bài làm thành công!",
+  //   });
+  // };
+  // //Restore User Answer
+  // const restoreUserAnswer = () => {
+  //   const PREVIOUS_ANSWERS = JSON.parse(
+  //     localStorage.getItem("PREVIOUS_ANSWERS") || "[]"
+  //   );
+  //   const PREVIOUS_DURATION = localStorage.getItem("PREVIOUS_DURATION");
+  //   const PREVIOUS_QUESTION_NUMBER_LIST = localStorage.getItem(
+  //     "PREVIOUS_QUESTION_NUMBER_LIST"
+  //   );
+  //   const PREVIOUS_MARKED_QUESTIONS = localStorage.getItem(
+  //     "PREVIOUS_MARKED_QUESTIONS"
+  //   );
+  //   dispatch(setAnswers(PREVIOUS_ANSWERS));
+  //   dispatch(setQuestionNumberList(PREVIOUS_QUESTION_NUMBER_LIST));
+  //   dispatch(startTimer(PREVIOUS_DURATION));
+  //   dispatch(setmarkedQuestions(PREVIOUS_MARKED_QUESTIONS));
+  //   toast({
+  //     title: "Khôi phục bài làm trước đó thành công!",
+  //   });
+  // };
 
   return (
     <div className="border p-5 rounded-lg flex flex-col gap-5 items-center justify-center w-full sm:w-[200px]">
@@ -166,15 +166,15 @@ export default function QuestionBoard({ minutes, second }: QuestionBoardProps) {
         {minutes}:{second}
       </span>
       <div className="w-[150px] flex flex-col items-center">
-        {answers.length}/200
-        <Progress value={answers.length} />
+        {answers?.length}/200
+        <Progress value={answers?.length} />
       </div>
-      <div className="flex flex-col gap-2">
+      {/* <div className="flex flex-col gap-2">
         <Button variant={"destructive"} onClick={restoreUserAnswer}>
           Khôi phục bài làm
         </Button>
         <Button onClick={saveUserAnswer}>Lưu bài làm</Button>
-      </div>
+      </div> */}
       <div className="text-foreground">
         Chú ý: Bạn có thể click vào số thứ tự câu hỏi trong bài để đánh dấu
         review
@@ -216,12 +216,12 @@ export default function QuestionBoard({ minutes, second }: QuestionBoardProps) {
       </ScrollArea>
       <div className="flex gap-2">
         <SubmitAlertDialog />
-        <Button
+        {/* <Button
           className=" text-white hover:text-red-500 hover:bg-white hover:border-red-500 hover:border-b"
           variant={"destructive"}
         >
           Thoát
-        </Button>
+        </Button> */}
       </div>
     </div>
   );

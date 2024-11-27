@@ -103,7 +103,7 @@ export default function AddToeicTest() {
           description: (
             <span>
               Thêm mới đề thi
-              <i className="font-semibold">{form.getValues("title")}</i> thành
+              <i className="font-semibold"> {form.getValues("title")}</i> thành
               công!
             </span>
           ),
@@ -133,7 +133,7 @@ export default function AddToeicTest() {
         [fieldName]: event.target.multiple ? Array.from(files) : files[0],
       }));
     }
-    console.log(files);
+    // console.log(files);
   };
 
   //SOCKET
@@ -221,6 +221,7 @@ export default function AddToeicTest() {
 
             <div className="col-span-4">
               <FormField
+                disabled={loading}
                 control={form.control}
                 name="type"
                 render={({ field }) => (

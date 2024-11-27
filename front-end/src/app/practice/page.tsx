@@ -13,7 +13,7 @@ const listeningCards = [
     image: "/part-1.webp",
     type: "Mô Tả Hình Ảnh",
     description:
-      "Four short statements regarding a photograph will be spoken only one time. Of these four statements, select the one. that best describes the photograph.",
+      "Bốn câu mô tả ngắn về một bức ảnh sẽ được nói chỉ một lần. Trong số bốn câu này, hãy chọn câu mô tả phù hợp nhất với bức ảnh.",
   },
   {
     id: 2,
@@ -21,7 +21,7 @@ const listeningCards = [
     image: "/part-2.webp",
     type: "Hỏi Và Trả Lời",
     description:
-      "Three responses to one question or statement will be spoken only one time. Select the best response for the question.",
+      "Ba câu trả lời cho một câu hỏi hoặc một phát biểu sẽ được nói chỉ một lần. Hãy chọn câu trả lời phù hợp nhất cho câu hỏi đó.",
   },
   {
     id: 3,
@@ -29,7 +29,7 @@ const listeningCards = [
     image: "/part-3.webp",
     type: "Đoạn Hội Thoại",
     description:
-      "Conversations between two or three people will be spoken only one time. Listen to each conversation and select the best response for the question. There are three questions for each conversation.",
+      "Các đoạn hội thoại giữa hai hoặc ba người sẽ chỉ được nghe một lần. Lắng nghe mỗi đoạn hội thoại và chọn câu trả lời phù hợp nhất cho câu hỏi. Mỗi đoạn hội thoại sẽ có ba câu hỏi.",
   },
   {
     id: 4,
@@ -37,7 +37,7 @@ const listeningCards = [
     image: "/part-4.webp",
     type: "Bài Nói Chuyện",
     description:
-      "Short talks such as announcements or narrations will be spoken only one time. Listen to each talk and select the best response for the question There are three questions for each talk.",
+      "Các bài nói ngắn như thông báo hoặc tường thuật sẽ chỉ được nghe một lần. Lắng nghe mỗi bài nói và chọn câu trả lời phù hợp nhất cho câu hỏi. Mỗi bài nói sẽ có ba câu hỏi.",
   },
 ];
 
@@ -48,7 +48,7 @@ const readingCards = [
     image: "/part-5.webp",
     type: "Hoàn thành câu",
     description:
-      "Select the best answer of the four choices to complete the sentence.",
+      "Chọn câu trả lời đúng nhất trong bốn lựa chọn để hoàn thành câu.",
   },
   {
     id: 6,
@@ -56,7 +56,7 @@ const readingCards = [
     image: "/part-6.webp",
     type: "Hoàn Thành Đoạn Văn",
     description:
-      "Select the best answer of the four choices (words, phrases, or a sentence) to complete the text. There are four questions for each text.",
+      "Chọn câu trả lời đúng nhất trong bốn lựa chọn (từ, cụm từ hoặc một câu) để hoàn thành đoạn văn. Mỗi đoạn văn có bốn câu hỏi.",
   },
   {
     id: 7,
@@ -64,7 +64,7 @@ const readingCards = [
     image: "/part-7.webp",
     type: "Đọc Hiểu",
     description:
-      "Read a range of different texts and select the best answer of the four choices. There are multiple questions for each text.",
+      "Đọc một loạt các văn bản khác nhau và chọn câu trả lời đúng nhất trong bốn lựa chọn. Mỗi văn bản có nhiều câu hỏi.",
   },
 ];
 
@@ -78,8 +78,30 @@ export default function Page() {
   }, [dispatch, currentPage]);
   return (
     <div className="flex flex-col items-center sm:items-start gap-10">
+      <>
+        <div className=" sm:block bottom-20 bg-primary rounded-md p-5 text-primary-foreground">
+          <span className="text-4xl">Khu vực luyện các kỹ năng</span>
+          <p className="quicksand-regular">
+            Chào mừng bạn đến với khu vực luyện tập các kỹ năng Nghe và Đọc
+            trong chương trình ôn luyện TOEIC! Đây là những kỹ năng quan trọng
+            nhất giúp bạn đạt điểm cao trong kỳ thi TOEIC và cải thiện khả năng
+            sử dụng tiếng Anh trong môi trường công việc và giao tiếp hàng ngày.
+          </p>
+        </div>
+      </>
       <div className="flex flex-col gap-5">
-        <span className="text-4xl">Listening</span>
+        <span className="text-4xl">Phần Nghe</span>
+        <Separator />
+        <div>
+          <p className="text-xl">
+            <strong className="underline italic">Luyện nghe chủ động</strong>{" "}
+            bằng cách nghe và điền vào từ còn thiếu là một phương pháp hiệu quả
+            để nâng cao kỹ năng nghe và cải thiện khả năng xử lý thông tin nhanh
+            chóng trong môi trường thực tế. Phương pháp này không chỉ giúp người
+            học cải thiện khả năng nghe mà còn nâng cao khả năng ghi nhớ từ vựng
+            và cấu trúc câu trong ngữ cảnh thực tế.
+          </p>
+        </div>
         <Separator />
         <div className="flex flex-col sm:flex-row gap-5">
           {listeningCards.map((card: any, index: number) => (
@@ -96,7 +118,7 @@ export default function Page() {
       </div>
 
       <div className="flex flex-col gap-5">
-        <span className="text-4xl">Reading</span>
+        <span className="text-4xl">Phần Đọc</span>
         <Separator />
         <div className="flex flex-col sm:flex-row gap-5">
           {readingCards.map((card: any, index: number) => (

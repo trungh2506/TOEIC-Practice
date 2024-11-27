@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { AppDispatch, RootState } from "@/lib/store";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   decrementTimer,
@@ -15,51 +15,104 @@ import {
   getToeicTestById,
   increaseCurrentPart,
   setCurrentPage,
+  setCurrentPart,
   setIsPractice,
+  setTimer,
   startTimer,
 } from "@/lib/redux/features/toeic-test/toeicTestSlice";
 
 import parse from "html-react-parser";
-import { clearCurrentUserAnswer } from "@/lib/redux/features/user-answer/userAnswerSlice";
+import {
+  clearAnswer,
+  clearCurrentUserAnswer,
+  saveTest,
+  startTest,
+  submitTest,
+} from "@/lib/redux/features/user-answer/userAnswerSlice";
 import AnswerReview from "@/components/answer-review";
-
-const DURATION_TEST = 120 * 60;
+import { toast } from "@/hooks/use-toast";
+import { getSocket } from "@/socket";
+import { useRouter } from "next/navigation";
+import SubmitAlertDialog from "@/components/sumbit-alert-dialog";
+import FullAudio from "@/components/full-audio";
+import { useSidebar } from "@/components/ui/sidebar";
 
 export default function Page() {
   const [activePart, setActivePart] = useState<string | null>("1");
+  const [minutesRemaining, setMinutesRemaining] = useState(0);
+  const [secondRemaining, setSecondRemaining] = useState(0);
   const param = useParams();
   const dispatch = useDispatch<AppDispatch>();
   const {
+    isExaming,
     currentToeicTest,
     currentPart,
     filteredToeicTest,
     timer,
     isTimerRunning,
   } = useSelector((state: RootState) => state.toeicTest);
-  const { answers } = useSelector((state: RootState) => state.userAnswer);
-
+  const {
+    state,
+    open,
+    setOpen,
+    openMobile,
+    setOpenMobile,
+    isMobile,
+    toggleSidebar,
+  } = useSidebar();
+  const { answers, markedQuestions, test_duration, onGoingTest } = useSelector(
+    (state: RootState) => state.userAnswer
+  );
+  const user = useSelector((state: RootState) => state.user.user);
+  const router = useRouter();
+  const answersRef = useRef<any>(answers);
   const handlePartButtonClick = (
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
     const buttonValue = event.currentTarget.value;
+    console.log(buttonValue);
     dispatch(filterByPart(parseInt(buttonValue, 10)));
     setActivePart(buttonValue);
   };
 
   useEffect(() => {
-    if (param?.toeic_test_id) {
-      dispatch(getToeicTestById(param?.toeic_test_id)).then(() => {
-        dispatch(filterByPart(1));
-      });
-      dispatch(startTimer(DURATION_TEST));
-      dispatch(setIsPractice(false));
+    setOpen(false);
+    if (isExaming) {
+      if (param?.toeic_test_id) {
+        dispatch(getToeicTestById(param?.toeic_test_id)).then(() => {
+          dispatch(filterByPart(1));
+        });
+        dispatch(startTimer(test_duration));
+        dispatch(setIsPractice(false));
+      }
+    } else {
+      alert("Bạn chưa chọn bài thi!");
+      router.replace("/toeic-test");
     }
+    console.log("câu trả lời bài thi cũ", answers);
   }, [dispatch, param?.toeic_test_id, currentPart]);
+
+  //Bắt sự kiện người dùng ấn F5
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      handleAutoSave();
+      router.push("/toeic-test");
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [router]);
 
   ///Countdown Timer
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
-
+    //nếu tiếp tục làm bài thi trước đó, lấy thời gian làm bài - thời gian đã làm trước đó để tiếp tục
+    if (onGoingTest && onGoingTest.length > 0) {
+      console.log(test_duration);
+      dispatch(setTimer(test_duration));
+    }
     if (isTimerRunning) {
       interval = setInterval(() => {
         dispatch(decrementTimer());
@@ -73,29 +126,68 @@ export default function Page() {
     };
   }, [isTimerRunning, dispatch]);
 
-  //Bắt sự kiện người dùng ấn F5
+  //socket
   useEffect(() => {
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      event.preventDefault();
-    };
+    const socket = getSocket(user?._id);
+    socket.on("time_update", (data: any) => {
+      dispatch(setTimer(data.remainingTime));
+    });
 
-    window.addEventListener("beforeunload", handleBeforeUnload);
+    socket.on("test_expired", (data: any) => {
+      alert("Hết thời gian làm bài");
+      handleAutoSubmit();
+    });
 
     return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
+      socket.off("time_update");
+      socket.off("test_expired");
     };
   }, []);
+
+  useEffect(() => {
+    answersRef.current = answers; // Cập nhật answers mới nhất vào ref
+  }, [answers]); // Khi answers thay đổi
+
+  const handleAutoSave = () => {
+    const toeic_test_id = param?.toeic_test_id;
+    router.replace(`/toeic-test/test/${toeic_test_id}/result`);
+    console.log("Submitted", {
+      toeic_test_id: toeic_test_id,
+      answers: answersRef.current,
+    });
+
+    dispatch(
+      saveTest({
+        toeic_test_id: toeic_test_id,
+        answers: answersRef.current,
+      })
+    );
+    dispatch(clearAnswer());
+  };
+
+  const handleAutoSubmit = () => {
+    const toeic_test_id = param?.toeic_test_id;
+    router.replace(`/toeic-test/test/${toeic_test_id}/result`);
+    console.log("Submitted", {
+      toeic_test_id: toeic_test_id,
+      answers: answersRef.current,
+    });
+
+    dispatch(
+      submitTest({
+        toeic_test_id: toeic_test_id,
+        answers: answersRef.current,
+      })
+    );
+    dispatch(clearAnswer());
+  };
+
   return (
     <div className="">
       <span className="sm:text-4xl text-xl mb-5">
         {currentToeicTest?.title}
       </span>
-      <audio
-        className="w-[500px]"
-        autoPlay={true}
-        controls
-        src={`${currentToeicTest?.full_audio}&raw=1`}
-      />
+      <FullAudio source={`${currentToeicTest?.full_audio}&raw=1`} />
       <div className="flex gap-2 mb-5 overflow-x-auto sm:overflow-x-hidden">
         <Button
           value="1"
@@ -161,7 +253,7 @@ export default function Page() {
                   <span className="text-xl">{passage.title}</span>
                   {/*Duyệt qua content nếu không thấy thì duyệt qua hình ảnh */}
                   {passage.content && (
-                    <div className="border-primary border p-3">
+                    <div className="border-primary border p-3 sm:w-[600px]">
                       {parse(passage.content)}
                     </div>
                   )}
@@ -213,6 +305,7 @@ export default function Page() {
                           isAnswerShowing={false}
                           script={""}
                           isPractice={false}
+                          showResult={false}
                         />
                       ) : null;
                     }
@@ -250,6 +343,7 @@ export default function Page() {
                   isAnswerShowing={false}
                   script={""}
                   isPractice={false}
+                  showResult={false}
                 />
               );
             })}
@@ -269,6 +363,7 @@ export default function Page() {
           className="mt-5"
           onClick={() => {
             dispatch(increaseCurrentPart());
+            dispatch(filterByPart(currentPart));
             window.scrollTo(0, 0);
           }}
         >

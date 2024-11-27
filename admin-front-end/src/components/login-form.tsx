@@ -4,7 +4,6 @@ import Link from "next/link";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 
 import {
   Form,
@@ -29,19 +28,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { AppDispatch, RootState } from "@/lib/redux/store";
 import { Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 // Improved schema with additional validation rules
 const formSchema = z.object({
-  email: z.string().email({ message: "Invalid email address" }),
+  email: z.string().email({ message: "Địa chỉ email không hợp lệ" }),
   password: z
     .string()
-    .min(6, { message: "Password must be at least 6 characters long" })
-    .regex(/[a-zA-Z0-9]/, { message: "Password must be alphanumeric" }),
+    .min(6, { message: "Mật khẩu phải ít nhất 6 ký tự" })
+    .regex(/[a-zA-Z0-9]/, { message: "Mật khẩu phải có chữ và số" }),
 });
 
 export default function LoginForm() {
   const router = useRouter();
-  const { loading } = useSelector((state: RootState) => state.auth);
+  const { loading, message } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -50,38 +50,28 @@ export default function LoginForm() {
       password: "",
     },
   });
+  const { toast } = useToast();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      // Assuming an async login function
-      console.log(values);
-
       // thực hiện đăng nhập
       const result = await dispatch(login(values));
+
+      if (result.meta.requestStatus === "rejected") {
+        toast({
+          variant: "destructive",
+          description: result.payload as string,
+        });
+      }
       // Kiểm tra kết quả từ đăng nhập
       if (result.meta.requestStatus === "fulfilled") {
-        // Nếu đăng nhập thành công, điều hướng ngay lập tức
-        // toast({
-        //   title: "Đăng nhập thành công",
-        // });
         router.push("/dashboard");
+        toast({
+          description: "Đăng nhập thành công!",
+        });
       }
-      //   } else {
-      //     // Hiển thị thông báo lỗi
-      //     toast({
-      //       variant: "destructive",
-      //       title: "Lỗi đăng nhập",
-      //       description: message,
-      //     });
-      //   }
-      toast(
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-        </pre>
-      );
     } catch (error) {
       console.error("Form submission error", error);
-      toast.error("Failed to submit the form. Please try again.");
     }
   }
 
@@ -124,7 +114,7 @@ export default function LoginForm() {
                   render={({ field }) => (
                     <FormItem className="grid gap-2">
                       <div className="flex justify-between items-center">
-                        <FormLabel htmlFor="password">Password</FormLabel>
+                        <FormLabel htmlFor="password">Mật khẩu</FormLabel>
                         <Link
                           href="#"
                           className="ml-auto inline-block text-sm underline"
@@ -145,7 +135,7 @@ export default function LoginForm() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full">
+                <Button type="submit" className="quicksand-bold w-full">
                   {!loading ? (
                     "Đăng nhập"
                   ) : (

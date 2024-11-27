@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import StoreProvider from "@/lib/redux/StoreProvider";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -34,6 +35,7 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap"
           rel="stylesheet"
         />
+        
       </head>
       <body className="quicksand-semibold">
         <StoreProvider>
@@ -44,6 +46,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             {children}
+            <Toaster />
           </ThemeProvider>
         </StoreProvider>
       </body>

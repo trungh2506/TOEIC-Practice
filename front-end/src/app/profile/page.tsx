@@ -42,7 +42,10 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { fetchUserProfile } from "@/lib/redux/features/user/userSlice";
+import {
+  fetchUserProfile,
+  statisticsUser,
+} from "@/lib/redux/features/user/userSlice";
 import { AppDispatch, RootState } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -65,7 +68,7 @@ import {
 export default function Page() {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
-  const user = useSelector((state: RootState) => state.user.user);
+  const { user, allPart } = useSelector((state: RootState) => state.user);
   const { userAnswerList, currentPage, loading } = useSelector(
     (state: RootState) => state.userAnswer
   );
@@ -76,7 +79,9 @@ export default function Page() {
   };
 
   useEffect(() => {
+    console.log(allPart);
     dispatch(getAllUserAnswer(currentPage));
+    dispatch(statisticsUser());
   }, [dispatch, currentPage]);
 
   return (
@@ -104,8 +109,8 @@ export default function Page() {
             </div>
           </div>
         </div>
-
-        {/* <div className="flex flex-col sm:flex-row sm:gap-10 gap-5 items-center">
+        {/* 
+        <div className="flex flex-col sm:flex-row sm:gap-10 gap-5 items-center">
           <div className="flex flex-col items-center gap-2">
             <span className="text-2xl text-black">Aim Score</span>
             <div className="bg-primary text-secondary p-8 rounded-full text-xl">
@@ -138,6 +143,8 @@ export default function Page() {
                 <TableHead>Số câu chưa làm</TableHead>
                 <TableHead>Thời gian làm</TableHead>
                 <TableHead>Điểm</TableHead>
+                <TableHead>Part</TableHead>
+                <TableHead>Chế độ thi</TableHead>
                 <TableHead className="text-right">Ngày thi</TableHead>
               </TableRow>
             </TableHeader>
@@ -146,8 +153,8 @@ export default function Page() {
                 userAnswerList.map((result: any, index: number) => {
                   return (
                     <TableRow key={index}>
-                      <TableCell className="font-medium">
-                        {result?.toeic_test_id}
+                      <TableCell className="font-medium quicksand-bold">
+                        {result?.toeic_test_id.title}
                       </TableCell>
                       <TableCell className="text-green-500">
                         {result?.correct_answers}
@@ -167,8 +174,29 @@ export default function Page() {
                           .padStart(2, "0")}`}
                       </TableCell>
                       <TableCell>{result?.total_score}</TableCell>
+                      <TableCell>
+                        {result?.part ? `${result?.part}` : "Full"}
+                      </TableCell>
+                      <TableCell>
+                        {result?.isPractice ? (
+                          <Badge variant={"outline"}>Luyện tập</Badge>
+                        ) : (
+                          <Badge>Thi thử</Badge>
+                        )}
+                      </TableCell>
                       <TableCell className="text-right">
-                        {result?.date_answer}
+                        {result?.date_answer
+                          ? new Date(result.date_answer).toLocaleString(
+                              "vi-VN",
+                              {
+                                day: "2-digit",
+                                month: "2-digit",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              }
+                            )
+                          : "Không có dữ liệu"}
                       </TableCell>
                     </TableRow>
                   );
@@ -184,230 +212,43 @@ export default function Page() {
         {/* statistics */}
         <TabsContent value="statistics">
           <div className="flex flex-row flex-wrap w-[full] gap-5 justify-center items-center">
-            <Card className="w-[400px]">
-              <Image
-                className="rounded-t-md"
-                src="/carousel.jpg"
-                width={400}
-                height={300}
-                quality={100}
-                alt="Carousel image 1"
-              />
-              <CardHeader>
-                <CardTitle>
-                  <div className="flex justify-between ">
-                    <span>Part 1</span>
-                    <div className="flex flex-row gap-5">
-                      <div className="flex flex-col items-center gap-2">
-                        <span className="text-green-500">Đúng</span>
-                        <span>150</span>
-                      </div>
-                      <div className="flex flex-col items-center gap-2">
-                        <span className="text-red-500">Sai</span>
-                        <span>50</span>
-                      </div>
-                      <div className="flex flex-col items-center gap-2">
-                        <span className="text-gray-500"> Chưa làm</span>
-                        <span>0</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardTitle>
-                <CardDescription>Mô tả hình ảnh</CardDescription>
-              </CardHeader>
-            </Card>
-            <Card className="w-[400px]">
-              <Image
-                className="rounded-t-md"
-                src="/carousel.jpg"
-                width={400}
-                height={300}
-                quality={100}
-                alt="Carousel image 1"
-              />
-              <CardHeader>
-                <CardTitle>
-                  <div className="flex justify-between ">
-                    <span>Part 2</span>
-                    <div className="flex flex-row gap-5">
-                      <div className="flex flex-col items-center gap-2">
-                        <span className="text-green-500">Đúng</span>
-                        <span>150</span>
-                      </div>
-                      <div className="flex flex-col items-center gap-2">
-                        <span className="text-red-500">Sai</span>
-                        <span>50</span>
-                      </div>
-                      <div className="flex flex-col items-center gap-2">
-                        <span className="text-gray-500"> Chưa làm</span>
-                        <span>0</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardTitle>
-                <CardDescription>Hỏi Và Trả Lời</CardDescription>
-              </CardHeader>
-            </Card>
-            <Card className="w-[400px]">
-              <Image
-                className="rounded-t-md"
-                src="/carousel.jpg"
-                width={400}
-                height={300}
-                quality={100}
-                alt="Carousel image 1"
-              />
-              <CardHeader>
-                <CardTitle>
-                  <div className="flex justify-between ">
-                    <span>Part 3</span>
-                    <div className="flex flex-row gap-5">
-                      <div className="flex flex-col items-center gap-2">
-                        <span className="text-green-500">Đúng</span>
-                        <span>150</span>
-                      </div>
-                      <div className="flex flex-col items-center gap-2">
-                        <span className="text-red-500">Sai</span>
-                        <span>50</span>
-                      </div>
-                      <div className="flex flex-col items-center gap-2">
-                        <span className="text-gray-500"> Chưa làm</span>
-                        <span>0</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardTitle>
-                <CardDescription>Đoạn Hội Thoại</CardDescription>
-              </CardHeader>
-            </Card>
-            <Card className="w-[400px]">
-              <Image
-                className="rounded-t-md"
-                src="/carousel.jpg"
-                width={400}
-                height={300}
-                quality={100}
-                alt="Carousel image 1"
-              />
-              <CardHeader>
-                <CardTitle>
-                  <div className="flex justify-between ">
-                    <span>Part 4</span>
-                    <div className="flex flex-row gap-5">
-                      <div className="flex flex-col items-center gap-2">
-                        <span className="text-green-500">Đúng</span>
-                        <span>150</span>
-                      </div>
-                      <div className="flex flex-col items-center gap-2">
-                        <span className="text-red-500">Sai</span>
-                        <span>50</span>
-                      </div>
-                      <div className="flex flex-col items-center gap-2">
-                        <span className="text-gray-500"> Chưa làm</span>
-                        <span>0</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardTitle>
-                <CardDescription>Bài Nói Chuyện</CardDescription>
-              </CardHeader>
-            </Card>
-            <Card className="w-[400px]">
-              <Image
-                className="rounded-t-md"
-                src="/carousel.jpg"
-                width={400}
-                height={300}
-                quality={100}
-                alt="Carousel image 1"
-              />
-              <CardHeader>
-                <CardTitle>
-                  <div className="flex justify-between ">
-                    <span>Part 5</span>
-                    <div className="flex flex-row gap-5">
-                      <div className="flex flex-col items-center gap-2">
-                        <span className="text-green-500">Đúng</span>
-                        <span>150</span>
-                      </div>
-                      <div className="flex flex-col items-center gap-2">
-                        <span className="text-red-500">Sai</span>
-                        <span>50</span>
-                      </div>
-                      <div className="flex flex-col items-center gap-2">
-                        <span className="text-gray-500"> Chưa làm</span>
-                        <span>0</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardTitle>
-                <CardDescription>Hoàn thành câu</CardDescription>
-              </CardHeader>
-            </Card>
-            <Card className="w-[400px]">
-              <Image
-                className="rounded-t-md"
-                src="/carousel.jpg"
-                width={400}
-                height={300}
-                quality={100}
-                alt="Carousel image 1"
-              />
-              <CardHeader>
-                <CardTitle>
-                  <div className="flex justify-between ">
-                    <span>Part 6</span>
-                    <div className="flex flex-row gap-5">
-                      <div className="flex flex-col items-center gap-2">
-                        <span className="text-green-500">Đúng</span>
-                        <span>150</span>
-                      </div>
-                      <div className="flex flex-col items-center gap-2">
-                        <span className="text-red-500">Sai</span>
-                        <span>50</span>
-                      </div>
-                      <div className="flex flex-col items-center gap-2">
-                        <span className="text-gray-500"> Chưa làm</span>
-                        <span>0</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardTitle>
-                <CardDescription>Hoàn Thành Đoạn Văn</CardDescription>
-              </CardHeader>
-            </Card>
-            <Card className="w-[400px]">
-              <Image
-                className="rounded-t-md"
-                src="/carousel.jpg"
-                width={400}
-                height={300}
-                quality={100}
-                alt="Carousel image 1"
-              />
-              <CardHeader>
-                <CardTitle>
-                  <div className="flex justify-between ">
-                    <span>Part 7</span>
-                    <div className="flex flex-row gap-5">
-                      <div className="flex flex-col items-center gap-2">
-                        <span className="text-green-500">Đúng</span>
-                        <span>150</span>
-                      </div>
-                      <div className="flex flex-col items-center gap-2">
-                        <span className="text-red-500">Sai</span>
-                        <span>50</span>
-                      </div>
-                      <div className="flex flex-col items-center gap-2">
-                        <span className="text-gray-500"> Chưa làm</span>
-                        <span>0</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardTitle>
-                <CardDescription>Đọc Hiểu</CardDescription>
-              </CardHeader>
-            </Card>
+            {allPart &&
+              allPart?.map((part: any, index: number) => {
+                return (
+                  <Card key={index} className="w-[400px]">
+                    <Image
+                      className="rounded-t-md"
+                      src="/carousel.jpg"
+                      width={400}
+                      height={300}
+                      quality={100}
+                      alt={`Carousel image for part ${index + 1}`}
+                    />
+                    <CardHeader>
+                      <CardTitle>
+                        <div className="flex justify-between ">
+                          <span>Part {index + 1}</span>
+                          <div className="flex flex-row gap-5">
+                            <div className="flex flex-col items-center gap-2">
+                              <span className="text-green-500">Đúng</span>
+                              <span>{part.corrects}</span>
+                            </div>
+                            <div className="flex flex-col items-center gap-2">
+                              <span className="text-red-500">Sai</span>
+                              <span>{part.incorrects}</span>
+                            </div>
+                            <div className="flex flex-col items-center gap-2">
+                              <span className="text-gray-500">Chưa làm</span>
+                              <span>{part.unanswers}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </CardTitle>
+                      <CardDescription>{part.description}</CardDescription>
+                    </CardHeader>
+                  </Card>
+                );
+              })}
           </div>
         </TabsContent>
         {/* settings  */}

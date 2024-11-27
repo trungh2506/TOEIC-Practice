@@ -31,10 +31,15 @@ export class AuthController {
   @Post('login')
   @Public()
   async login(@Body() loginDto: LoginDTO, @Res() res: Response) {
-    // return this.authService.login(loginDto);
+    const result = await this.authService.login(loginDto);
 
-    const { user, access_token, refresh_token } =
-      await this.authService.login(loginDto);
+    if (!result.success) {
+      return res.status(403).json({
+        success: false,
+        message: result.message,
+      });
+    }
+    const { user, access_token, refresh_token, message } = result;
 
     // Lưu refresh token vào cookie
     res.cookie('refreshToken', refresh_token, {
@@ -45,7 +50,53 @@ export class AuthController {
     });
 
     // Gửi token truy cập về phía client
-    return res.json({ user, access_token });
+    return res.status(200).json({
+      success: true,
+      message: message,
+      user,
+      access_token,
+    });
+  }
+
+  @UseGuards(LocalAuthGuard)
+  @Post('admin/login')
+  @Public()
+  async adminLogin(@Body() loginDto: LoginDTO, @Res() res: Response) {
+    try {
+      const result = await this.authService.adminLogin(loginDto);
+
+      if (!result.success) {
+        // Trả về nếu không phải admin
+        return res.status(403).json({
+          success: false,
+          message: result.message,
+        });
+      }
+
+      const { user, access_token, refresh_token } = result;
+
+      // Lưu refresh token vào cookie
+      res.cookie('refreshToken', refresh_token, {
+        httpOnly: true, // Ngăn chặn truy cập qua JavaScript
+        secure: process.env.NODE_ENV === 'production', // Chỉ gửi cookie qua HTTPS trong môi trường production
+        sameSite: 'strict', // Ngăn chặn CSRF
+        expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Hết hạn sau 30 ngày
+      });
+
+      // Gửi token truy cập về phía client
+      return res.status(200).json({
+        success: true,
+        message: 'Đăng nhập thành công.',
+        user,
+        access_token,
+      });
+    } catch (error) {
+      console.error('Admin login error:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Internal server error. Please try again later.',
+      });
+    }
   }
 
   @Public()

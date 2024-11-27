@@ -1,11 +1,17 @@
 import authSlice from "@/lib/redux/features/auth/authSlice";
+import listeningSlice from "@/lib/redux/features/listening/listeningSlice";
 import toeicTestSlice from "@/lib/redux/features/toeic-tests/toeicTestSlice";
 import userSlice from "@/lib/redux/features/user/userSlice";
 import { configureStore } from "@reduxjs/toolkit";
 
 export const makeStore = () => {
   return configureStore({
-    reducer: { auth: authSlice, toeicTests: toeicTestSlice, user: userSlice },
+    reducer: {
+      auth: authSlice,
+      toeicTests: toeicTestSlice,
+      user: userSlice,
+      listeningTests: listeningSlice,
+    },
   });
 };
 

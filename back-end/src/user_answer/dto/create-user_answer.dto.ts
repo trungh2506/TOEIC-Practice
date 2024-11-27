@@ -52,6 +52,12 @@ export class CreateUserAnswerDto {
   date_answer: Date;
 
   @IsOptional()
+  start_time: Date;
+
+  @IsOptional()
+  end_time: Date;
+
+  @IsOptional()
   total_score: number;
 
   @IsOptional()
@@ -62,4 +68,16 @@ export class CreateUserAnswerDto {
 
   @IsOptional()
   duration: number;
+
+  @IsOptional()
+  isPractice: boolean;
+
+  @IsOptional()
+  status: string;
+
+  @IsOptional()
+  part: number;
+
+  @IsOptional()
+  current_audio_time: number;
 }

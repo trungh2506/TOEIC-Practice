@@ -53,11 +53,20 @@ export class User_Answer extends Document {
   @Prop()
   end_time: Date;
 
+  @Prop({ default: false })
+  isPractice: boolean;
+
   @Prop({
     default: 'in_progress',
-    enum: ['in_progress', 'completed', 'expired'],
+    enum: ['in_progress', 'completed', 'expired', 'canceled'],
   })
   status: string;
+
+  @Prop({ default: 0 })
+  current_audio_time: number;
+
+  @Prop()
+  part: number;
 
   @Prop({ type: MetaDataSchema, default: () => ({}) })
   meta_data: MetaData;

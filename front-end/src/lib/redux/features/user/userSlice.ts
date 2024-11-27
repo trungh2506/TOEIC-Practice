@@ -1,5 +1,11 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { googleApi, loginApi, profileApi, registerApi } from "@/api/userApi";
+import {
+  googleApi,
+  loginApi,
+  profileApi,
+  registerApi,
+  statisticsApi,
+} from "@/api/userApi";
 import { ILogin } from "@/interfaces/ILogin";
 import { IRegister } from "@/interfaces/IRegister";
 import { IUser } from "@/interfaces/IUser";
@@ -27,6 +33,7 @@ export const login = createAsyncThunk<{ jwt: string; user: any }, any>(
   async (payload: ILogin, { rejectWithValue }) => {
     try {
       const response = await loginApi(payload);
+      console.log("r", response);
       const user = response.data.user;
       const jwt = response.data.access_token;
       // localStorage.setItem("jwt", jwt);
@@ -72,6 +79,21 @@ export const fetchUserProfile = createAsyncThunk<
   }
 });
 
+export const statisticsUser = createAsyncThunk<
+  any,
+  void,
+  { rejectValue: string }
+>("user/statisticsUser", async (_, { rejectWithValue }) => {
+  try {
+    const response = await statisticsApi();
+    return response.data;
+  } catch (error: any) {
+    return rejectWithValue(
+      error.response?.data?.message || "Error fetching profile"
+    );
+  }
+});
+
 interface UserState {
   isAuthenticated: boolean;
   jwt: string;
@@ -80,6 +102,9 @@ interface UserState {
   success: boolean;
   error: boolean;
   message?: any;
+
+  //Thống kê người dùng
+  allPart: [];
 }
 
 const initialState: UserState = {
@@ -90,6 +115,7 @@ const initialState: UserState = {
   success: false,
   error: false,
   message: null,
+  allPart: [],
 };
 
 const userSlice = createSlice({
@@ -122,10 +148,11 @@ const userSlice = createSlice({
       state.success = true;
       state.error = false;
     });
-    builder.addCase(login.rejected, (state, action: PayloadAction<any>) => {
+    builder.addCase(login.rejected, (state, action) => {
       state.loading = false;
       state.success = false;
       state.message = action.payload;
+      console.log(action.payload);
       state.error = true;
     });
     builder.addCase(register.pending, (state) => {
@@ -174,13 +201,31 @@ const userSlice = createSlice({
       state.jwt = action.payload.jwt;
       state.isAuthenticated = true;
       state.success = true;
-      console.log(action.payload);
+      // console.log(action.payload);
       state.error = false;
     });
     builder.addCase(signInWithGoogle.rejected, (state, action) => {
       state.loading = false;
       state.error = true;
       state.message = "rejected sign in with google";
+    });
+    //thống kê người dùng
+    builder.addCase(statisticsUser.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(statisticsUser.fulfilled, (state, action) => {
+      state.loading = false;
+      state.success = true;
+      state.error = false;
+      state.message = action.payload.message;
+      state.allPart = action.payload.allPart;
+      console.log(action.payload);
+    });
+    builder.addCase(statisticsUser.rejected, (state, action) => {
+      state.loading = false;
+      state.success = false;
+      state.error = true;
+      state.message = action.payload;
     });
   },
 });
