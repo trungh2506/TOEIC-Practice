@@ -80,7 +80,7 @@ export default function Page() {
     <div className="flex flex-col items-center sm:items-start gap-10">
       <>
         <div className=" sm:block bottom-20 bg-primary rounded-md p-5 text-primary-foreground">
-          <span className="text-4xl">Khu vực các kỹ năng</span>
+          <span className="text-4xl">Khu vực luyện các kỹ năng</span>
           <p className="quicksand-regular">
             Chào mừng bạn đến với khu vực luyện tập các kỹ năng Nghe và Đọc
             trong chương trình ôn luyện TOEIC! Đây là những kỹ năng quan trọng
@@ -91,6 +91,17 @@ export default function Page() {
       </>
       <div className="flex flex-col gap-5">
         <span className="text-4xl">Phần Nghe</span>
+        <Separator />
+        <div>
+          <p className="text-xl">
+            <strong className="underline italic">Luyện nghe chủ động</strong>{" "}
+            bằng cách nghe và điền vào từ còn thiếu là một phương pháp hiệu quả
+            để nâng cao kỹ năng nghe và cải thiện khả năng xử lý thông tin nhanh
+            chóng trong môi trường thực tế. Phương pháp này không chỉ giúp người
+            học cải thiện khả năng nghe mà còn nâng cao khả năng ghi nhớ từ vựng
+            và cấu trúc câu trong ngữ cảnh thực tế.
+          </p>
+        </div>
         <Separator />
         <div className="flex flex-col sm:flex-row gap-5">
           {listeningCards.map((card: any, index: number) => (

@@ -12,7 +12,7 @@ import { BookOpen, CaseSensitive, Files, UsersRound } from "lucide-react";
 export default function Dashboard() {
   return (
     <div>
-      <div className="flex gap-5 items-center justify-center">
+      {/* <div className="flex gap-5 items-center justify-center">
         <Card className="w-[350px]">
           <CardHeader>
             <CardTitle>
@@ -65,7 +65,7 @@ export default function Dashboard() {
             <p className="text-secondary-foreground">SỐ LƯỢNG TỪ VỰNG</p>
           </CardFooter>
         </Card>
-      </div>
+      </div> */}
     </div>
   );
 }

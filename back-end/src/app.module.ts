@@ -22,6 +22,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { DropboxModule } from './dropbox/dropbox.module';
 import { StatisticsModule } from './statistics/statistics.module';
+import { ListeningModule } from './listening/listening.module';
 import multer from 'multer';
 
 @Module({
@@ -48,6 +49,7 @@ import multer from 'multer';
     PassageModule,
     DropboxModule,
     StatisticsModule,
+    ListeningModule,
   ],
   controllers: [AppController],
   providers: [

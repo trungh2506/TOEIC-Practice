@@ -13,6 +13,8 @@ import {
   FileText,
   Frame,
   GalleryVerticalEnd,
+  HeadphoneOff,
+  HeadphonesIcon,
   LayoutDashboard,
   LibraryBig,
   Map,
@@ -62,6 +64,24 @@ const data = {
         {
           title: "Thêm đề thi mới",
           url: "/dashboard/toeic-tests/add",
+          icon: FilePlus,
+        },
+      ],
+    },
+    {
+      title: "Luyện nghe",
+      url: "#",
+      icon: Files,
+      isActive: true,
+      items: [
+        {
+          title: "Danh sách bài luyện nghe",
+          url: "/dashboard/listening-tests",
+          icon: HeadphonesIcon,
+        },
+        {
+          title: "Thêm bài luyện nghe mới",
+          url: "/dashboard/listening-tests/add",
           icon: FilePlus,
         },
       ],

@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, Info, MoreHorizontal, Trash } from "lucide-react";
+import { ArrowUpDown, Edit, Info, MoreHorizontal, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -130,7 +130,7 @@ export const columns: ColumnDef<ToeicTest>[] = [
                 console.log(`Xem chi tiết ${toeicTest._id}`);
               }}
             >
-              <Info /> Xem chi tiết
+              <Edit /> Chỉnh sửa
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleDelete}>
               <Trash /> Xóa đề thi
