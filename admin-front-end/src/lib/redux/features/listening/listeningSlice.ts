@@ -53,7 +53,9 @@ const listeningSlice = createSlice({
     },
 
     addBlankWord: (state, action) => {
-      state.blank_words = [...state.blank_words, action.payload];
+      if (!state.blank_words.includes(action.payload)) {
+        state.blank_words = [...state.blank_words, action.payload]; // Nếu chưa tồn tại, thêm vào
+      }
     },
     removeBlankWord: (state, action) => {
       state.blank_words.splice(action.payload.index, 1);

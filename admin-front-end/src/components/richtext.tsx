@@ -5,6 +5,10 @@ import { useEffect } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // Import CSS cho ReactQuill
 import { useDispatch } from "react-redux";
+import dynamic from "next/dynamic";
+const ReactQuillNoSSR = dynamic(() => import("react-quill"), {
+  ssr: false, // Tắt SSR
+});
 
 export default function RichText({
   value,
@@ -23,7 +27,7 @@ export default function RichText({
 
   return (
     <div className="">
-      <ReactQuill theme="snow" value={value} onChange={onChange} />
+      <ReactQuillNoSSR theme="snow" value={value} onChange={onChange} />
       <HighlightMenu />
     </div>
   );
