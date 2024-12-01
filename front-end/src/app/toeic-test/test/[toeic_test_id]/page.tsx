@@ -95,9 +95,9 @@ export default function Page() {
   //Bắt sự kiện người dùng ấn F5
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      event.preventDefault();
+      // event.preventDefault();
       handleAutoSave();
-      router.push("/toeic-test");
+      // router.push("/toeic-test");
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => {

@@ -19,6 +19,9 @@ export default function RichText({
 }) {
   const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
+    dispatch(setModifyConversation(""));
+  }, []);
+  useEffect(() => {
     console.log(value);
     if (value) {
       dispatch(setModifyConversation(value));

@@ -253,6 +253,18 @@ export class ToeicTestService {
     return toeicTests;
   }
 
+  async adminFindAll(paginationDto: PaginationDto) {
+    const projection = { title: 1, image: 1, type: 1, meta_data: 1 };
+    const filter = {};
+    const toeicTests = await paginate(
+      this.toeicTestModel,
+      paginationDto,
+      filter,
+      projection,
+    );
+    return toeicTests;
+  }
+
   async findOne(id: string) {
     const toeicTest = await this.toeicTestModel
       .findById(id)
@@ -276,31 +288,208 @@ export class ToeicTestService {
         path: 'passages',
         model: 'Passage',
       });
-
-    const allQuestion = [...toeicTest.listening, ...toeicTest.reading];
-
-    // Nhóm các câu hỏi theo passage_id
-    const groupedQuestions = allQuestion.reduce((acc, question) => {
-      const passageId = question.passage_id?.id || 'no-passage';
-      if (!acc[passageId]) {
-        acc[passageId] = {
-          passage: question.passage_id,
-          questions: [],
-        };
-      }
-      acc[passageId].questions.push(question);
-      return acc;
-    }, {});
-
-    // Chuyển đổi đối tượng nhóm thành mảng
-    const groupedArray = Object.values(groupedQuestions);
-
-    // return groupedArray;
     return toeicTest;
   }
 
-  update(id: number, updateToeicTestDto: UpdateToeicTestDto) {
-    return `This action updates a #${id} toeicTest`;
+  async update(
+    toeic_test_id: string,
+    files: {
+      testImage?: Express.Multer.File;
+      questions?: Express.Multer.File;
+      passages?: Express.Multer.File;
+      images?: Express.Multer.File[];
+      audios?: Express.Multer.File[];
+      fullAudio?: Express.Multer.File;
+    },
+    toeic_test_title?: string,
+    toeic_test_type?: ToeicTestType,
+  ) {
+    // Tìm TOEIC Test hiện có
+    const existingTest = await this.toeicTestModel.findById(toeic_test_id);
+    if (!existingTest) {
+      throw new NotFoundException('TOEIC Test không tồn tại');
+    }
+
+    // Cập nhật các trường cơ bản nếu có
+    if (toeic_test_title) existingTest.title = toeic_test_title;
+    if (toeic_test_type) existingTest.type = toeic_test_type;
+
+    this.uploadGateway.sendUploadingNotification('Bắt đầu cập nhật...');
+
+    // Cập nhật các file
+    if (files.testImage) {
+      console.log(
+        'Updating Toeic Test Image in Dropbox...',
+        files.testImage[0].originalname,
+      );
+      existingTest.image = await this.dropBoxService.uploadFile(
+        files.testImage[0].buffer,
+        `/toeic_tests/${existingTest.title}/testImage/${files.testImage[0].originalname}`,
+      );
+      console.log('Toeic Test Image updated:', existingTest.image);
+      this.uploadGateway.sendUploadingNotification(
+        `Cập nhật thành công file: ${files.testImage[0].originalname}.`,
+      );
+    }
+
+    if (files.fullAudio) {
+      console.log(
+        'Updating Full Audio in Dropbox...',
+        files.fullAudio[0].originalname,
+      );
+      existingTest.full_audio = await this.dropBoxService.uploadFile(
+        files.fullAudio[0].buffer,
+        `/toeic_tests/${existingTest.title}/fullAudio/${files.fullAudio[0].originalname}`,
+      );
+      console.log('Full Audio updated:', existingTest.full_audio);
+      this.uploadGateway.sendUploadingNotification(
+        `Cập nhật thành công file: ${files.fullAudio[0].originalname}.`,
+      );
+    }
+
+    // **Xử lý passages**
+    if (files.passages) {
+      for (const passage of existingTest.passages) {
+        await this.passageService.remove(passage._id.toString());
+      }
+      existingTest.passages = [];
+
+      const workbook1 = XLSX.read(files.passages[0].buffer, { type: 'buffer' });
+      const worksheet1 = workbook1.Sheets[workbook1.SheetNames[0]];
+      const passagesData: IPassage[] = XLSX.utils.sheet_to_json(worksheet1);
+
+      for (const passage of passagesData) {
+        const passageDto = new CreatePassageDto();
+        passageDto.id = passage.id || '';
+        passageDto.title = passage.title || '';
+        passageDto.content = passage.content || '';
+        passageDto.audio = passage.audio || '';
+        passageDto.part = passage.part || 0;
+        passageDto.questions = passage.questions
+          ?.split(',')
+          .map((question) => Number(question.trim()))
+          .filter((num) => !isNaN(num));
+
+        // Cập nhật hình ảnh
+        if (passage.images && typeof passage.images === 'string') {
+          const imagePaths = passage.images.split(',').map((img) => img.trim());
+          passageDto.images = await Promise.all(
+            imagePaths.map(async (imgPath) => {
+              const imgFile = files.images?.find(
+                (img) => img.originalname === imgPath,
+              );
+              if (imgFile) {
+                console.log(
+                  `Updating images for passage: ${imgFile.originalname}`,
+                );
+                return this.dropBoxService.uploadFile(
+                  imgFile.buffer,
+                  `/toeic_tests/${existingTest.title}/images/${imgFile.originalname}`,
+                );
+              }
+            }),
+          );
+        }
+
+        // Cập nhật audio
+        if (passage.audio && typeof passage.audio === 'string') {
+          const audioFile = files.audios?.find(
+            (audio) => audio.originalname === passage.audio,
+          );
+          if (audioFile) {
+            console.log(
+              `Updating audio for passage: ${audioFile.originalname}`,
+            );
+            passageDto.audio = await this.dropBoxService.uploadFile(
+              audioFile.buffer,
+              `/toeic_tests/${existingTest.title}/audios/${audioFile.originalname}`,
+            );
+          }
+        }
+
+        // Cập nhật passage
+        const updatedPassage = await this.passageService.create(passageDto);
+        existingTest.passages.push(updatedPassage);
+      }
+    }
+
+    // **Xử lý questions**
+    if (files.questions) {
+      //Nếu có file câu hỏi thì mới xóa
+
+      for (const question of existingTest.listening) {
+        await this.questionService.remove(question._id.toString());
+      }
+
+      for (const question of existingTest.reading) {
+        await this.questionService.remove(question._id.toString());
+      }
+      existingTest.listening = [];
+      existingTest.reading = [];
+
+      const workbook = XLSX.read(files.questions[0].buffer, { type: 'buffer' });
+      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+      const questionsData: IQuestion[] = XLSX.utils.sheet_to_json(worksheet);
+
+      for (const question of questionsData) {
+        const questionDto = new CreateQuestionDto();
+        questionDto.question_number = question.question_number;
+        questionDto.question_text = question.question_text;
+        questionDto.question_image = question.question_image;
+        questionDto.question_audio = question.question_audio;
+        questionDto.part = question.part;
+        questionDto.options = [
+          question.option_a || '',
+          question.option_b || '',
+          question.option_c || '',
+          question.option_d || '',
+        ];
+        questionDto.section = question.section;
+        questionDto.correct_answer = question.correct_answer;
+        questionDto.script = question.script;
+        questionDto.passage_id = question.passage_id;
+
+        // Upload hoặc cập nhật audio
+        if (question.question_audio) {
+          const audioFile = files.audios?.find(
+            (audio) => audio.originalname === question.question_audio,
+          );
+          if (audioFile) {
+            console.log(`Updating question audio: ${audioFile.originalname}`);
+            questionDto.question_audio = await this.dropBoxService.uploadFile(
+              audioFile.buffer,
+              `/toeic_tests/${existingTest.title}/audios/${audioFile.originalname}`,
+            );
+          }
+        }
+
+        // Upload hoặc cập nhật hình ảnh
+        if (question.question_image) {
+          const imageFile = files.images?.find(
+            (image) => image.originalname === question.question_image,
+          );
+          if (imageFile) {
+            console.log(`Updating question image: ${imageFile.originalname}`);
+            questionDto.question_image = await this.dropBoxService.uploadFile(
+              imageFile.buffer,
+              `/toeic_tests/${existingTest.title}/images/${imageFile.originalname}`,
+            );
+          }
+        }
+
+        // Tạo mới hoặc cập nhật câu hỏi
+        const updatedQuestion = await this.questionService.create(questionDto);
+        if (questionDto.section.includes('listening')) {
+          existingTest.listening.push(updatedQuestion);
+        } else {
+          existingTest.reading.push(updatedQuestion);
+        }
+      }
+    }
+
+    this.uploadGateway.sendUploadingNotification('Cập nhật thành công.');
+    await existingTest.save();
+    return existingTest;
   }
 
   async remove(id: string) {
@@ -313,22 +502,10 @@ export class ToeicTestService {
     if (!toeicTest) {
       throw new Error('ToeicTest not found');
     }
-
-    for (const question of toeicTest.listening) {
-      await this.questionService.remove(question._id.toString());
-    }
-
-    for (const question of toeicTest.reading) {
-      await this.questionService.remove(question._id.toString());
-    }
-
-    for (const passage of toeicTest.passages) {
-      await this.passageService.remove(passage._id.toString());
-    }
-    await this.dropBoxService.deleteAllFileInFolder(
-      `/toeic_tests/${toeicTest.title}`,
-    );
-    return await this.toeicTestModel.findByIdAndDelete(id);
+    toeicTest.meta_data.is_deleted = true;
+    toeicTest.meta_data.deleted_at = new Date();
+    await toeicTest.save();
+    return toeicTest;
   }
 
   async getTotalQuestion(toeic_test_id: string) {
@@ -375,5 +552,15 @@ export class ToeicTestService {
     console.log(toeicTest);
     return toeicTest;
     // return { partListening, partReading };
+  }
+  async restoreAfterSoftDelete(toeic_test_id: string) {
+    const restoreToeicTest = await this.findOne(toeic_test_id);
+    if (!restoreToeicTest) {
+      throw new Error('Toeic test not found');
+    }
+    restoreToeicTest.meta_data.is_deleted = false;
+    restoreToeicTest.meta_data.updated_at = new Date();
+    await restoreToeicTest.save();
+    return restoreToeicTest;
   }
 }

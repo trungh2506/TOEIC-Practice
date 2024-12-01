@@ -18,12 +18,13 @@ import { Input } from "@/components/ui/input";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/lib/redux/store";
 import {
+  getToeicTestById,
   resetStatus,
+  updateToeicTest,
   uploadToeicTest,
 } from "@/lib/redux/features/toeic-tests/toeicTestSlice";
 import { toast, useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
-import { socket } from "../../../../socket";
 import {
   Select,
   SelectContent,
@@ -31,6 +32,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { socket } from "@/socket";
+import { useParams, useRouter } from "next/navigation";
 
 const formSchema = z.object({
   title: z.string(),
@@ -43,15 +46,21 @@ const formSchema = z.object({
   images: z.any(),
 });
 
-export default function AddToeicTest() {
+export default function UpdateToeicTest() {
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [transport, setTransport] = useState("N/A");
-
+  const router = useRouter();
+  const param = useParams();
   const { toast } = useToast();
   const dispatch = useDispatch<AppDispatch>();
-  const { toeicTestList, currentPage, loading, success, error } = useSelector(
-    (state: RootState) => state.toeicTests
-  );
+  const {
+    toeicTestList,
+    currentToeicTest,
+    currentPage,
+    loading,
+    success,
+    error,
+  } = useSelector((state: RootState) => state.toeicTests);
   const [uploadedFiles, setUploadedFiles] = useState({
     testImage: null,
     questions: null,
@@ -60,14 +69,25 @@ export default function AddToeicTest() {
     audios: [],
     images: [],
   });
+  useEffect(() => {
+    if (param?.toeic_test_id) {
+      dispatch(getToeicTestById(param?.toeic_test_id));
+    }
+  }, [dispatch, param?.toeic_test_id]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
 
+  useEffect(() => {
+    if (currentToeicTest) {
+      form.setValue("title", currentToeicTest.title);
+      form.setValue("type", currentToeicTest.type);
+    }
+  }, [currentToeicTest, form]);
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      // console.log(values);
       const formData = new FormData();
 
       if (values?.title) {
@@ -96,13 +116,18 @@ export default function AddToeicTest() {
         });
       });
 
-      await dispatch(uploadToeicTest(formData));
+      await dispatch(
+        updateToeicTest({
+          toeic_test_id: currentToeicTest._id.toString(),
+          formData: formData,
+        })
+      );
 
       if (success) {
         toast({
           description: (
             <span>
-              Thêm mới đề thi
+              Cập nhật đề thi
               <i className="font-semibold"> {form.getValues("title")}</i> thành
               công!
             </span>
@@ -112,7 +137,7 @@ export default function AddToeicTest() {
 
       if (error) {
         toast({
-          description: <span>Đã xảy ra lỗi khi thêm mới đề thi.</span>,
+          description: <span>Đã xảy ra lỗi khi cập nhật đề thi.</span>,
         });
       }
       dispatch(resetStatus());
@@ -182,12 +207,7 @@ export default function AddToeicTest() {
                   <FormItem>
                     <FormLabel>Tên đề thi</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder=""
-                        type="text"
-                        {...field}
-                        // onChange={(e) => handleFileChange(e, "title")}
-                      />
+                      <Input placeholder="" type="text" {...field} />
                     </FormControl>
                     <FormDescription>Tiêu đề cho đề thi.</FormDescription>
                     <FormMessage />
@@ -388,15 +408,10 @@ export default function AddToeicTest() {
             className="quicksand-bold"
           >
             {loading && <Loader2 className="animate-spin" />}
-            Thêm
+            Cập nhật
           </Button>
         </form>
       </Form>
-
-      {/* <div>
-        <p>Status: {isConnected ? "connected" : "disconnected"}</p>
-        <p>Transport: {transport}</p>
-      </div> */}
     </>
   );
 }

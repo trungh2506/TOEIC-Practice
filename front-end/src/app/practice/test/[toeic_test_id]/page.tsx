@@ -16,6 +16,7 @@ import parse from "html-react-parser";
 import Image from "next/image";
 import Question from "@/components/question";
 import { useRouter } from "next/navigation";
+import { useSidebar } from "@/components/ui/sidebar";
 
 export default function Page() {
   const param = useParams();
@@ -32,7 +33,17 @@ export default function Page() {
   } = useSelector((state: RootState) => state.toeicTest);
   const { answers } = useSelector((state: RootState) => state.userAnswer);
   const router = useRouter();
+  const {
+    state,
+    open,
+    setOpen,
+    openMobile,
+    setOpenMobile,
+    isMobile,
+    toggleSidebar,
+  } = useSidebar();
   useEffect(() => {
+    setOpen(false);
     if (param?.toeic_test_id) {
       dispatch(getToeicTestById(param?.toeic_test_id)).then(() => {
         dispatch(filterByPart(selectedPart));
@@ -79,7 +90,7 @@ export default function Page() {
                     <span className="text-xl">{passage.title}</span>
                     {/*Duyệt qua content nếu không thấy thì duyệt qua hình ảnh */}
                     {passage.content && (
-                      <div className="border-primary border p-3">
+                      <div className="border-primary border p-3 sm:w-[600px]">
                         {parse(passage.content)}
                       </div>
                     )}

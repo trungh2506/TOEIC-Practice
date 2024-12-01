@@ -14,6 +14,7 @@ export default function ToeicTestList() {
   );
   useEffect(() => {
     dispatch(getAllToeicTest(currentPage));
+    console.log(toeicTestList);
   }, [currentPage, dispatch]);
   return (
     <div className="container mx-auto py-10">

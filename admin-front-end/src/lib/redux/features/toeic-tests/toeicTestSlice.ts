@@ -3,6 +3,8 @@ import {
   getAllToeicTestApi,
   getPartToeicTestApi,
   getToeicTestByIdApi,
+  restoreAfterSoftDeleteApi,
+  updateToeicTestApi,
   uploadToeicTestApi,
 } from "@/api/toeic-tests/api";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
@@ -71,7 +73,6 @@ export const uploadToeicTest = createAsyncThunk<any, any>(
   "toeicTest/uploadToeicTest",
   async (formData: FormData, { rejectWithValue }) => {
     try {
-      // Make sure uploadToeicTestApi accepts toeic_test_data and files correctly
       const response = await uploadToeicTestApi(formData);
       return response.data;
     } catch (error: any) {
@@ -82,11 +83,50 @@ export const uploadToeicTest = createAsyncThunk<any, any>(
   }
 );
 
+export const updateToeicTest = createAsyncThunk<
+  any,
+  { toeic_test_id: string; formData: FormData },
+  { rejectValue: string }
+>(
+  "toeicTest/updateToeicTest",
+  async ({ toeic_test_id, formData }, { rejectWithValue }) => {
+    try {
+      const response = await updateToeicTestApi(toeic_test_id, formData);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to update TOEIC test."
+      );
+    }
+  }
+);
+
+export const restoreToeicTest = createAsyncThunk<
+  any,
+  { toeic_test_id: string },
+  { rejectValue: string }
+>(
+  "toeicTest/restoreToeicTest",
+  async ({ toeic_test_id }, { rejectWithValue }) => {
+    try {
+      const response = await restoreAfterSoftDeleteApi(toeic_test_id);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to restore TOEIC test."
+      );
+    }
+  }
+);
+
 interface ToeicTest {
   _id: string;
   title: string;
   image: string;
   type: string;
+  meta_data: {
+    is_deleted: boolean;
+  };
 }
 
 interface ToeicTestState {
@@ -150,10 +190,17 @@ const toeicTestSlice = createSlice({
       state.error = false;
       state.loading = false;
     },
-    removeToeicTest: (state, action) => {
-      state.toeicTestList = state.toeicTestList.filter(
-        (test) => test._id !== action.payload
+    refreshToeicTest: (state, action) => {
+      const { id, is_deleted } = action.payload;
+      const testIndex = state.toeicTestList.findIndex(
+        (test) => test._id === id
       );
+      if (testIndex !== -1) {
+        state.toeicTestList[testIndex].meta_data.is_deleted = is_deleted;
+      }
+    },
+    setCurrentToeicTest: (state, action) => {
+      state.currentToeicTest = action.payload;
     },
     startTimer: (state, action) => {
       state.timer = action.payload;
@@ -305,6 +352,23 @@ const toeicTestSlice = createSlice({
       state.error = true;
     });
 
+    //Update Toeic Test
+    builder.addCase(updateToeicTest.pending, (state) => {
+      state.loading = true;
+      state.success = false;
+      state.error = false;
+    });
+    builder.addCase(updateToeicTest.fulfilled, (state, action) => {
+      state.loading = false;
+      state.success = true;
+      state.error = false;
+    });
+    builder.addCase(updateToeicTest.rejected, (state, action) => {
+      state.loading = false;
+      state.success = false;
+      state.error = true;
+    });
+
     // Delete Toeic Test
     builder.addCase(deleteToeicTest.pending, (state) => {
       state.loading = true;
@@ -317,6 +381,23 @@ const toeicTestSlice = createSlice({
       state.error = false;
     });
     builder.addCase(deleteToeicTest.rejected, (state, action) => {
+      state.loading = false;
+      state.success = false;
+      state.error = true;
+    });
+
+    //Restore toeic test
+    builder.addCase(restoreToeicTest.pending, (state) => {
+      state.loading = true;
+      state.success = false;
+      state.error = false;
+    });
+    builder.addCase(restoreToeicTest.fulfilled, (state, action) => {
+      state.loading = false;
+      state.success = true;
+      state.error = false;
+    });
+    builder.addCase(restoreToeicTest.rejected, (state, action) => {
       state.loading = false;
       state.success = false;
       state.error = true;
@@ -336,7 +417,8 @@ export const {
   setSelectedTimer,
   setSelectedPart,
   setIsPractice,
-  removeToeicTest,
+  refreshToeicTest,
   resetStatus,
+  setCurrentToeicTest,
 } = toeicTestSlice.actions;
 export default toeicTestSlice.reducer;

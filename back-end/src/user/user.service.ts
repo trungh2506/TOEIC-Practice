@@ -38,19 +38,37 @@ export class UserService {
     return users;
   }
 
-  findOne(id: string) {
-    return this.userModel.findById(id);
+  async findOne(id: string) {
+    return await this.userModel.findById(id);
   }
 
   async findOneByEmail(email: string) {
     return this.userModel.findOne({ email });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
+  async update(id: number, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async softDelete(id: string) {
+    const user = await this.findOne(id);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    user.meta_data.is_deleted = true;
+    user.meta_data.deleted_at = new Date();
+    await user.save();
+    return user;
+  }
+
+  async restoreUser(id: string) {
+    const user = await this.findOne(id);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    user.meta_data.is_deleted = false;
+    user.meta_data.updated_at = new Date();
+    await user.save();
+    return user;
   }
 }
