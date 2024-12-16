@@ -49,7 +49,7 @@ export function NavBar() {
 
   const handleLogout = () => {
     dispatch(logout());
-    router.push("/");
+    // router.push("/");
   };
 
   const handleDarkMode = (checked: any) => {
@@ -117,7 +117,7 @@ export function NavBar() {
               <DropdownMenuLabel>Tài khoản</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
-                <Link href={"/profile"}>Thông tin cá nhân</Link>
+                <a href={"/profile"}>Thông tin cá nhân</a>
               </DropdownMenuItem>
               <DropdownMenuItem>Lịch sử luyện thi</DropdownMenuItem>
               <DropdownMenuItem>Thống kê</DropdownMenuItem>

@@ -77,7 +77,7 @@ export default function Question({
       id={question_number?.toString()}
     >
       <div className="mt-3 flex flex-col items-center">
-        {markedQuestions.includes(question_number) && <Pin />}
+        {markedQuestions.includes(question_number) && <Pin color="red" />}
         <Button
           onClick={handleMarkQuestion}
           size={"icon"}

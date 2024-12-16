@@ -43,7 +43,7 @@ export class AuthController {
 
     // Lưu refresh token vào cookie
     res.cookie('refreshToken', refresh_token, {
-      httpOnly: false, // Ngăn chặn truy cập qua JavaScript
+      httpOnly: false, 
       secure: process.env.NODE_ENV === 'production', // Chỉ gửi cookie qua HTTPS
       sameSite: 'strict', // Ngăn chặn CSRF
       expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Thời gian hết hạn (30 ngày)
@@ -134,7 +134,6 @@ export class AuthController {
   @Get('google-redirect')
   @UseGuards(GoogleOAuthGuard)
   async googleAuthRedirect(@Req() req, @Res() res: Response) {
-    // console.log('controller req.user with google', req.user);
     const { access_token, refresh_token } =
       await this.authService.signInWithGoogle(req.user);
 

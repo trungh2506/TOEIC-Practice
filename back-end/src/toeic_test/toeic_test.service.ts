@@ -96,7 +96,7 @@ export class ToeicTestService {
       });
       const worksheet1 = workbook1.Sheets[workbook1.SheetNames[0]];
       const passagesData: IPassage[] = XLSX.utils.sheet_to_json(worksheet1);
-
+      console.log(passagesData);
       // Lặp qua tất cả các passage và xử lý
       for (const passage of passagesData) {
         const passageDto = new CreatePassageDto();
@@ -168,13 +168,14 @@ export class ToeicTestService {
       });
       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
       const questionsData: IQuestion[] = XLSX.utils.sheet_to_json(worksheet);
-
+      console.log(questionsData);
       // Lặp qua tất cả các câu hỏi và xử lý
       for (const question of questionsData) {
         const questionDto = new CreateQuestionDto();
         questionDto.question_number = question.question_number;
         questionDto.question_text = question.question_text;
         questionDto.question_image = question.question_image;
+        console.log('question number in DTO', questionDto.question_number);
         questionDto.question_audio = question.question_audio;
         questionDto.part = question.part;
         questionDto.options = [
@@ -185,6 +186,7 @@ export class ToeicTestService {
         ];
         questionDto.section = question.section;
         questionDto.correct_answer = question.correct_answer;
+        console.log('correct answer in DTO', questionDto.correct_answer);
         questionDto.script = question.script;
         questionDto.passage_id = question.passage_id;
 

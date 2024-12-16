@@ -88,12 +88,12 @@ const data = {
     //   ],
     // },
     {
-      title: "Người dùng",
+      title: "Thành viên",
       url: "#",
       icon: UsersRound,
       items: [
         {
-          title: "Danh sách người dùng",
+          title: "Danh sách thành viên",
           url: "/dashboard/users",
           icon: UsersRound,
         },

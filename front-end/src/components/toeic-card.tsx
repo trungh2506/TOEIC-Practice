@@ -8,7 +8,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { RootState } from "@/lib/store";
+import {
+  ArrowRight,
+  ArrowRightFromLine,
+  FileQuestion,
+  Timer,
+} from "lucide-react";
 import Image from "next/image";
+import { useSelector } from "react-redux";
 
 interface ToeicCardProps {
   title: string;
@@ -25,8 +34,11 @@ export default function ToeicCard({
   type,
   onClick,
 }: ToeicCardProps) {
+  const { isAuthenticated, user, loading } = useSelector(
+    (state: RootState) => state.user
+  );
   return (
-    <Card className="w-[300px]">
+    <Card className="w-[300px] shadow-lg">
       <Image
         className="rounded-t-md"
         src={image}
@@ -39,11 +51,30 @@ export default function ToeicCard({
         <CardTitle>{title}</CardTitle>
         <CardDescription>{type}</CardDescription>
       </CardHeader>
-      <CardContent className="quicksand-regular text-sm">
+      <Separator />
+      <CardContent className="quicksand-semibold text-lg">
+        <div className="flex h-5 items-center space-x-3 text-base">
+          <div>Full</div>
+          <Separator orientation="vertical" />
+          <div>200 câu hỏi</div>
+          <Separator orientation="vertical" />
+          <div className="flex items-center">
+            <Timer size={15} color="red" />
+            120 phút
+          </div>
+        </div>
         <p className="text-base">{description}</p>
       </CardContent>
-      <CardFooter>
-        <Button onClick={onClick}>Vào thi</Button>
+      <CardFooter className="flex flex-row-reverse">
+        {isAuthenticated && user && (
+          <Button onClick={onClick}>
+            <ArrowRight />
+            Vào thi
+          </Button>
+        )}
+        {!isAuthenticated && !user && (
+          <span className="text-sm">Đăng nhập để thi...</span>
+        )}
       </CardFooter>
     </Card>
   );

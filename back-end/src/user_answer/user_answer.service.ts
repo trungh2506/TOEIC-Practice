@@ -83,7 +83,7 @@ export class UserAnswerService {
     createUserAnswerDto.listening_score = listeningScore;
     createUserAnswerDto.reading_score = readingScore;
     createUserAnswerDto.total_score = listeningScore + readingScore;
-    createUserAnswerDto.isPractice = true;
+    createUserAnswerDto.is_practice = true;
     createUserAnswerDto.status = 'completed';
 
     const new_user_answer = new this.userAnswerModel(createUserAnswerDto);
@@ -111,7 +111,8 @@ export class UserAnswerService {
     });
     if (ongoingTest.length > 0) {
       return {
-        message: 'Đã có bài thi đang thực hiện, không thể bắt đầu bài thi mới.',
+        message:
+          'Bạn có một bài thi chưa hoàn thành. Bạn muốn tiếp tục bài thi cũ hay hủy và bắt đầu bài thi mới?',
         onGoingTest: ongoingTest,
       };
     }
@@ -140,10 +141,9 @@ export class UserAnswerService {
         clearInterval(this.userIntervals[user_id]);
       } else if (remainingTime > 0) {
         // Vẫn còn thời gian
-        const minutesRemaining = Math.floor(remainingTime / 60000); // Số phút còn lại
-        const secondsRemaining = Math.floor((remainingTime % 60000) / 1000); // Số giây còn lại
-
-        if (minutesRemaining % 1 === 0 && secondsRemaining === 0) {
+        let minutesRemaining = Math.floor(remainingTime / 60000); // Số phút còn lại
+        let secondsRemaining = Math.floor((remainingTime % 60000) / 1000); // Số giây còn lại
+        if (secondsRemaining === 0) {
           console.log(remainingTime);
           // In thời gian còn lại hoặc gửi thông báo mỗi giây nếu cần
           console.log(
@@ -205,11 +205,9 @@ export class UserAnswerService {
         this.testExpiredGateway.notifyTestExpired(user_id);
         clearInterval(this.userIntervals[user_id]);
       } else if (remainingTime > 0) {
-        // Vẫn còn thời gian
-        const minutesRemaining = Math.floor(remainingTime / 60000); // Số phút còn lại
-        const secondsRemaining = Math.floor((remainingTime % 60000) / 1000); // Số giây còn lại
-
-        if (secondsRemaining === 0) {
+        let minutesRemaining = Math.floor(remainingTime / 60000); // Số phút còn lại
+        let secondsRemaining = Math.floor((remainingTime % 60000) / 1000); // Số giây còn lại
+        if (minutesRemaining % 1 === 0 && secondsRemaining === 0) {
           console.log(
             `Thời gian còn lại resume test: ${minutesRemaining}:${secondsRemaining}`,
           );
@@ -362,6 +360,41 @@ export class UserAnswerService {
       (userAnswer.end_time.getTime() - userAnswer.start_time.getTime()) / 1000,
     );
     console.log('thời gian làm bài lúc save test:', durationInSeconds);
+    userAnswer.duration += durationInSeconds;
+    userAnswer.start_time = new Date();
+    userAnswer.end_time = new Date(
+      new Date().getTime() + (TIME_DURATION_TEST - durationInSeconds) * 1000,
+    );
+    // Lưu bản ghi đã cập nhật
+    await userAnswer.save();
+
+    return userAnswer.populate({
+      path: 'answers.question_id',
+      model: 'Question',
+    });
+  }
+
+  async autoSaveTest(user_id: string, toeic_test_id: string, answers: any[]) {
+    // Tìm bản ghi bài thi của người dùng
+    const userAnswer = await this.userAnswerModel.findOne({
+      user_id: user_id,
+      toeic_test_id: toeic_test_id,
+      status: 'in_progress',
+    });
+
+    if (!userAnswer) {
+      throw new Error('Bài thi không tồn tại hoặc đã bị hết thời gian.');
+    }
+
+    // Cập nhật câu trả lời và trạng thái bài thi
+    userAnswer.answers = answers; // Cập nhật danh sách câu trả lời của người dùng
+    userAnswer.end_time = new Date(); // Cập nhật thời gian kết thúc bài thi
+    userAnswer.status = 'in_progress'; // Đánh dấu bài thi
+    // Tính toán thời gian làm bài
+    const durationInSeconds = Math.floor(
+      (userAnswer.end_time.getTime() - userAnswer.start_time.getTime()) / 1000,
+    );
+    console.log('thời gian làm bài lúc auto save test:', durationInSeconds);
     userAnswer.duration += durationInSeconds;
     userAnswer.start_time = new Date();
     userAnswer.end_time = new Date(

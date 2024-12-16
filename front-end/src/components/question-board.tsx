@@ -179,6 +179,9 @@ export default function QuestionBoard({ minutes, second }: QuestionBoardProps) {
         Chú ý: Bạn có thể click vào số thứ tự câu hỏi trong bài để đánh dấu
         review
       </div>
+      <p>
+        <strong>Nhắc nhở:</strong> Bài thi tự động lưu sau mỗi phút.
+      </p>
       <ScrollArea className="p-2 rounded-xl sm:h-[400px] h-full sm:w-[200px] w-full">
         <ButtonQuestionList
           questionNumberList={questionNumberList}

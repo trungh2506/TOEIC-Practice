@@ -20,6 +20,7 @@ import {
 import {
   cancelTest,
   clearAnswer,
+  clearOngoingTest,
   resumeTest,
   setAnswers,
   setQuestionNumberList,
@@ -65,7 +66,7 @@ export default function Page() {
                 dispatch(setIsExaming(true));
               }}
             >
-              Vào lại
+              Vào
             </ToastAction>
             <ToastAction
               altText="Hủy bài thi trước"
@@ -74,6 +75,8 @@ export default function Page() {
                   const isSuccess = dispatch(
                     cancelTest(result.payload.onGoingTest[0]._id)
                   );
+                  dispatch(clearOngoingTest());
+                  dispatch(clearAnswer());
                   alert("Hủy thành công!");
                 } else {
                   console.error("Không tìm thấy ID bài thi!");
@@ -81,7 +84,7 @@ export default function Page() {
               }}
               className="quicksand-bold"
             >
-              Hủy bài thi trước
+              Hủy
             </ToastAction>
           </div>
         ),

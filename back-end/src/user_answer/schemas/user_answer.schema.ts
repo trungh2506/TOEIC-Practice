@@ -54,16 +54,13 @@ export class User_Answer extends Document {
   end_time: Date;
 
   @Prop({ default: false })
-  isPractice: boolean;
+  is_practice: boolean;
 
   @Prop({
     default: 'in_progress',
     enum: ['in_progress', 'completed', 'expired', 'canceled'],
   })
   status: string;
-
-  @Prop({ default: 0 })
-  current_audio_time: number;
 
   @Prop()
   part: number;
