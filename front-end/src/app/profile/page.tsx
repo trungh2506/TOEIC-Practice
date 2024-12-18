@@ -182,7 +182,7 @@ export default function Page() {
                         {result?.part ? `${result?.part}` : "Full"}
                       </TableCell>
                       <TableCell>
-                        {result?.isPractice ? (
+                        {result?.is_practice ? (
                           <Badge variant={"outline"}>Luyện tập</Badge>
                         ) : (
                           <Badge>Thi thử</Badge>

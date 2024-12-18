@@ -23,7 +23,7 @@ import {
 } from "@/lib/redux/features/toeic-tests/toeicTestSlice";
 import { toast, useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
-import { socket } from "../../../../socket";
+import { getSocket } from "@/socket";
 import {
   Select,
   SelectContent,
@@ -44,7 +44,7 @@ const formSchema = z.object({
 });
 
 export default function AddToeicTest() {
-  const [isConnected, setIsConnected] = useState(socket.connected);
+  // const [isConnected, setIsConnected] = useState(socket.connected);
   const [transport, setTransport] = useState("N/A");
 
   const { toast } = useToast();
@@ -52,6 +52,7 @@ export default function AddToeicTest() {
   const { toeicTestList, currentPage, loading, success, error } = useSelector(
     (state: RootState) => state.toeicTests
   );
+  const { user } = useSelector((state: RootState) => state.auth);
   const [uploadedFiles, setUploadedFiles] = useState({
     testImage: null,
     questions: null,
@@ -89,13 +90,6 @@ export default function AddToeicTest() {
         console.log(`${key}:`, value);
       }
 
-      socket.off("uploading");
-      socket.on("uploading", (data: any) => {
-        toast({
-          description: <span>{data.message}</span>,
-        });
-      });
-
       await dispatch(uploadToeicTest(formData));
 
       if (success) {
@@ -122,6 +116,20 @@ export default function AddToeicTest() {
     }
   }
 
+  useEffect(() => {
+    const socket = getSocket(user?._id);
+    console.log("sadsadsad", user?._id);
+    socket.off("uploading");
+    socket.on("uploading", (data: any) => {
+      toast({
+        description: <span>{data.message}</span>,
+      });
+    });
+    return () => {
+      socket.off("uploading");
+    };
+  }, [user?._id]);
+
   const handleFileChange = (
     event: React.ChangeEvent<HTMLInputElement>,
     fieldName: string
@@ -136,34 +144,34 @@ export default function AddToeicTest() {
     // console.log(files);
   };
 
-  //SOCKET
-  useEffect(() => {
-    if (isConnected) {
-      onConnect();
-    }
+  // //SOCKET
+  // useEffect(() => {
+  //   if (isConnected) {
+  //     onConnect();
+  //   }
 
-    function onConnect() {
-      setIsConnected(true);
-      setTransport(socket.io.engine.transport.name);
+  //   function onConnect() {
+  //     setIsConnected(true);
+  //     setTransport(socket.io.engine.transport.name);
 
-      socket.io.engine.on("upgrade", (transport: any) => {
-        setTransport(transport.name);
-      });
-    }
+  //     socket.io.engine.on("upgrade", (transport: any) => {
+  //       setTransport(transport.name);
+  //     });
+  //   }
 
-    function onDisconnect() {
-      setIsConnected(false);
-      setTransport("N/A");
-    }
+  //   function onDisconnect() {
+  //     setIsConnected(false);
+  //     setTransport("N/A");
+  //   }
 
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
+  //   socket.on("connect", onConnect);
+  //   socket.on("disconnect", onDisconnect);
 
-    return () => {
-      socket.off("connect", onConnect);
-      socket.off("disconnect", onDisconnect);
-    };
-  }, []);
+  //   return () => {
+  //     socket.off("connect", onConnect);
+  //     socket.off("disconnect", onDisconnect);
+  //   };
+  // }, []);
 
   return (
     <>

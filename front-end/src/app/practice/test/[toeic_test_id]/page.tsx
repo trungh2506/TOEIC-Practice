@@ -17,6 +17,7 @@ import Image from "next/image";
 import Question from "@/components/question";
 import { useRouter } from "next/navigation";
 import { useSidebar } from "@/components/ui/sidebar";
+import { submitPracticeAnswer } from "@/lib/redux/features/user-answer/userAnswerSlice";
 
 export default function Page() {
   const param = useParams();
@@ -69,6 +70,27 @@ export default function Page() {
       if (interval) clearInterval(interval);
     };
   }, [isTimerRunning, dispatch]);
+
+  //Check out of time
+  useEffect(() => {
+    if (timer === 0) {
+      alert("Đã hết thời gian luyện tập!");
+      if (answers.length === 0) {
+        alert("Bạn chưa chọn câu trả lời nào!");
+        router.replace("/practice");
+      } else {
+        dispatch(
+          submitPracticeAnswer({
+            toeic_test_id: param?.toeic_test_id,
+            answers: answers,
+            duration: selectedTimer - timer,
+            part: selectedPart,
+          })
+        );
+        router.push(`/practice/test/${param?.toeic_test_id}/result`);
+      }
+    }
+  }, [timer]);
 
   return (
     <>

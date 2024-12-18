@@ -16,7 +16,7 @@ export class TestExpiredGateway {
     const user_id = client.handshake.query.user_id;
     if (user_id) {
       client.join(user_id);
-      console.log(`User ${user_id} has joined the room.`);
+      // console.log(`User ${user_id} bắt đầu thi thử.`);
     }
   }
 
@@ -24,10 +24,7 @@ export class TestExpiredGateway {
   notifyTestExpired(user_id: string) {
     this.server.to(user_id).emit('test_expired', { user_id });
   }
-  notifyTimeRemaining(
-    user_id: string,
-    remainingTime: number,
-  ) {
+  notifyTimeRemaining(user_id: string, remainingTime: number) {
     this.server.to(user_id).emit('time_update', {
       user_id,
       remainingTime,

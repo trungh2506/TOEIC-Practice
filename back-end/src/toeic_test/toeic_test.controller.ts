@@ -49,7 +49,7 @@ export class ToeicTestController {
     ),
   )
   create(
-    @Req() req: Request,
+    @Req() req: any,
     @Body() body: CreateToeicTestDto,
     @UploadedFiles()
     files: {
@@ -67,6 +67,7 @@ export class ToeicTestController {
       files,
       toeic_test_title,
       toeic_test_type,
+      req.user?._id,
     );
   }
 
@@ -104,7 +105,7 @@ export class ToeicTestController {
     ),
   )
   update(
-    @Req() req: Request,
+    @Req() req: any,
     @Param('id') id: string,
     @Body() body: UpdateToeicTestDto,
     @UploadedFiles()
@@ -122,6 +123,7 @@ export class ToeicTestController {
     return this.toeicTestService.update(
       id,
       files,
+      req.user?._id,
       toeic_test_title,
       toeic_test_type,
     );

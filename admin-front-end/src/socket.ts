@@ -1,13 +1,15 @@
 "use client";
 
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
 
-let socket: any;
+let socket: Socket | null = null;
 
-if (!socket) {
-  socket = io(process.env.NEXT_PUBLIC_API_BASE_URL, {
-    transports: ["websocket"],
-  });
-}
-
-export { socket };
+export const getSocket = (user_id: string): Socket => {
+  if (!socket) {
+    socket = io(process.env.NEXT_PUBLIC_API_BASE_URL!, {
+      transports: ["websocket"],
+      query: { user_id },
+    });
+  }
+  return socket;
+};

@@ -114,7 +114,7 @@ const initialState: ToeicTestState = {
   success: false,
   error: false,
 
-  timer: 0,
+  timer: -1,
   isTimerRunning: false,
 };
 

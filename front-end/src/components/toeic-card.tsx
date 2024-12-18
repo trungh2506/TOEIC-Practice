@@ -38,7 +38,7 @@ export default function ToeicCard({
     (state: RootState) => state.user
   );
   return (
-    <Card className="w-[300px] shadow-lg">
+    <Card className="w-[300px] h-[400px] shadow-lg">
       <Image
         className="rounded-t-md"
         src={image}

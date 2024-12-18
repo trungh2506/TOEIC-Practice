@@ -180,7 +180,7 @@ export default function QuestionBoard({ minutes, second }: QuestionBoardProps) {
         review
       </div>
       <p>
-        <strong>Nhắc nhở:</strong> Bài thi tự động lưu sau mỗi phút.
+        <strong>**Thi thử**</strong> Bài thi tự động lưu sau mỗi phút.
       </p>
       <ScrollArea className="p-2 rounded-xl sm:h-[400px] h-full sm:w-[200px] w-full">
         <ButtonQuestionList
