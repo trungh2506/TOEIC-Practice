@@ -318,6 +318,7 @@ export class ToeicTestService {
     toeic_test_title?: string,
     toeic_test_type?: ToeicTestType,
   ) {
+    console.log(files.fullAudio);
     // Tìm TOEIC Test hiện có
     const existingTest = await this.toeicTestModel.findById(toeic_test_id);
     if (!existingTest) {
@@ -339,10 +340,15 @@ export class ToeicTestService {
         'Updating Toeic Test Image in Dropbox...',
         files.testImage[0].originalname,
       );
+      //xóa file trên dropbox đã cập nhật trước đó
+      await this.dropBoxService.deleteAllFileInFolder(
+        `/toeic_tests/${existingTest.title}/testImage/`,
+      );
       existingTest.image = await this.dropBoxService.uploadFile(
         files.testImage[0].buffer,
         `/toeic_tests/${existingTest.title}/testImage/${files.testImage[0].originalname}`,
       );
+
       console.log('Toeic Test Image updated:', existingTest.image);
       this.uploadGateway.sendUploadingNotification(
         user_id,
@@ -354,6 +360,10 @@ export class ToeicTestService {
       console.log(
         'Updating Full Audio in Dropbox...',
         files.fullAudio[0].originalname,
+      );
+      //xóa file trên dropbox đã cập nhật trước đó
+      await this.dropBoxService.deleteAllFileInFolder(
+        `/toeic_tests/${existingTest.title}/fullAudio/`,
       );
       existingTest.full_audio = await this.dropBoxService.uploadFile(
         files.fullAudio[0].buffer,
