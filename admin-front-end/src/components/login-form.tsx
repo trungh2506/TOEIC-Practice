@@ -87,7 +87,11 @@ export default function LoginForm() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form
+              method="post"
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-8"
+            >
               <div className="grid gap-4">
                 <FormField
                   control={form.control}

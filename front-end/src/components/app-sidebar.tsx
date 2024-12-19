@@ -4,6 +4,7 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -28,6 +29,7 @@ import {
   UserRound,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 // Menu items.
 const items = [
@@ -74,7 +76,16 @@ export function AppSidebar() {
     <Sidebar variant="sidebar" collapsible="icon" className="text-white">
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>TOEIC AREA LOGO</SidebarGroupLabel>
+          <SidebarHeader>
+            <Image
+              className="basis-1/3 rounded-md"
+              src="/logo.png"
+              width={300}
+              height={200}
+              quality={100}
+              alt="Carousel image 1"
+            />
+          </SidebarHeader>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (

@@ -48,10 +48,33 @@ export default function FullAudio({ source }: { source: string }) {
   };
 
   useEffect(() => {
-    if (onGoingTest) {
+    if (source && audioRef.current) {
+      audioRef.current.src = source; // Gán source mới cho audio
+      audioRef.current.play().catch((err) => console.error("Play error:", err));
+    }
+    console.log(source);
+  }, [source]);
+
+  useEffect(() => {
+    if (onGoingTest && audioRef.current && onGoingTest.length > 0) {
+      if (audioRef.current.paused) {
+        audioRef.current
+          .play()
+          .catch((err) => console.error("Play error:", err));
+      }
       jumpToTime(onGoingTest[0]?.duration || 0);
     }
+    console.log(source);
   }, [onGoingTest]);
+
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -80,7 +103,6 @@ export default function FullAudio({ source }: { source: string }) {
       <Progress value={(currentTime / duration) * 100} className="w-[60%]" />
       {formatTime(duration)}
       <audio
-        autoPlay
         onTimeUpdate={handleTimeUpdate}
         className="sm:w-[1000px] my-5"
         ref={audioRef}

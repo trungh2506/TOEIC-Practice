@@ -64,7 +64,14 @@ export class AuthService {
     if (!user) {
       return {
         success: false,
-        message: 'Email hoặc mật khẩu không chính xác!',
+        message: 'Tài khoản không tồn tại!',
+      };
+    }
+
+    if (user.meta_data.is_deleted) {
+      return {
+        success: false,
+        message: 'Tài khoản của bạn đã bị xóa!',
       };
     }
 

@@ -70,7 +70,7 @@ export class CreateUserAnswerDto {
   duration: number;
 
   @IsOptional()
-  isPractice: boolean;
+  is_practice: boolean;
 
   @IsOptional()
   status: string;

@@ -41,14 +41,8 @@ export class CreateUserDto {
   estimate_scores?: Record<string, any>;
 
   @IsOptional()
-  //   @IsArray()
-  //   @ValidateNested({ each: true })
-  //   @Type(() => String) // Assuming saved_vocabulary are ObjectId (string)
   saved_vocabulary?: string[];
 
   @IsOptional()
-  //   @IsArray()
-  //   @ValidateNested({ each: true })
-  //   @Type(() => String) // Assuming favorites are ObjectId (string)
   favorites?: string[];
 }

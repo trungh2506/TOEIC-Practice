@@ -18,6 +18,7 @@ export class DropboxService {
       const uploadResponse = await this.dbx.filesUpload({
         path: path,
         contents: fileBuffer,
+        mode: { '.tag': 'overwrite' }, //overwrite existing file before
       });
 
       try {

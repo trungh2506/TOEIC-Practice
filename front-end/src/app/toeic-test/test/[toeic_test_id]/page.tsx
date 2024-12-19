@@ -23,6 +23,7 @@ import {
 
 import parse from "html-react-parser";
 import {
+  autoSaveTest,
   clearAnswer,
   clearCurrentUserAnswer,
   saveTest,
@@ -95,9 +96,9 @@ export default function Page() {
   //Bắt sự kiện người dùng ấn F5
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      event.preventDefault();
+      // event.preventDefault();
       handleAutoSave();
-      router.push("/toeic-test");
+      // router.push("/toeic-test");
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => {
@@ -131,6 +132,31 @@ export default function Page() {
     const socket = getSocket(user?._id);
     socket.on("time_update", (data: any) => {
       dispatch(setTimer(data.remainingTime));
+      console.log(data.remainingTime);
+      dispatch(
+        autoSaveTest({
+          toeic_test_id: param?.toeic_test_id,
+          answers: answersRef.current,
+        })
+      );
+      if (data.remainingTime === 75 * 60) {
+        toast({
+          title: "Bắt đầu phần thi Reading",
+          duration: 3000,
+        });
+      }
+      if (data.remainingTime === 30 * 60) {
+        toast({
+          title: "Còn 30 phút làm bài",
+          duration: 3000,
+        });
+      }
+      if (data.remainingTime === 10 * 60) {
+        toast({
+          title: "Còn 10 phút làm bài",
+          duration: 3000,
+        });
+      }
     });
 
     socket.on("test_expired", (data: any) => {
@@ -145,12 +171,12 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
-    answersRef.current = answers; // Cập nhật answers mới nhất vào ref
-  }, [answers]); // Khi answers thay đổi
+    answersRef.current = answers;
+  }, [answers]);
 
   const handleAutoSave = () => {
     const toeic_test_id = param?.toeic_test_id;
-    router.replace(`/toeic-test/test/${toeic_test_id}/result`);
+    // router.replace(`/toeic-test/test/${toeic_test_id}/result`);
     console.log("Submitted", {
       toeic_test_id: toeic_test_id,
       answers: answersRef.current,
@@ -162,7 +188,7 @@ export default function Page() {
         answers: answersRef.current,
       })
     );
-    dispatch(clearAnswer());
+    // dispatch(clearAnswer());
   };
 
   const handleAutoSubmit = () => {
@@ -186,7 +212,16 @@ export default function Page() {
     <div className="">
       <span className="sm:text-4xl text-xl mb-5">
         {currentToeicTest?.title}
-      </span>
+      </span>{" "}
+      <Button
+        variant={"destructive"}
+        onClick={() => {
+          handleAutoSave();
+          router.replace("/toeic-test/");
+        }}
+      >
+        Thoát
+      </Button>
       <FullAudio source={`${currentToeicTest?.full_audio}&raw=1`} />
       <div className="flex gap-2 mb-5 overflow-x-auto sm:overflow-x-hidden">
         <Button
@@ -253,7 +288,7 @@ export default function Page() {
                   <span className="text-xl">{passage.title}</span>
                   {/*Duyệt qua content nếu không thấy thì duyệt qua hình ảnh */}
                   {passage.content && (
-                    <div className="border-primary border p-3 sm:w-[600px]">
+                    <div className="border-primary border p-3 sm:w-[600px] rounded-md shadow-black shadow-md">
                       {parse(passage.content)}
                     </div>
                   )}
@@ -370,6 +405,78 @@ export default function Page() {
           Tiếp theo
         </Button>
       )} */}
+      <div className="flex gap-2 mb-5 overflow-x-auto sm:overflow-x-hidden">
+        <Button
+          value="1"
+          onClick={(e) => {
+            handlePartButtonClick(e);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          variant={activePart === "1" ? "default" : "outline"}
+        >
+          Part 1
+        </Button>
+        <Button
+          value="2"
+          onClick={(e) => {
+            handlePartButtonClick(e);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          variant={activePart === "2" ? "default" : "outline"}
+        >
+          Part 2
+        </Button>
+        <Button
+          value="3"
+          onClick={(e) => {
+            handlePartButtonClick(e);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          variant={activePart === "3" ? "default" : "outline"}
+        >
+          Part 3
+        </Button>
+        <Button
+          value="4"
+          onClick={(e) => {
+            handlePartButtonClick(e);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          variant={activePart === "4" ? "default" : "outline"}
+        >
+          Part 4
+        </Button>
+        <Button
+          value="5"
+          onClick={(e) => {
+            handlePartButtonClick(e);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          variant={activePart === "5" ? "default" : "outline"}
+        >
+          Part 5
+        </Button>
+        <Button
+          value="6"
+          onClick={(e) => {
+            handlePartButtonClick(e);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          variant={activePart === "6" ? "default" : "outline"}
+        >
+          Part 6
+        </Button>
+        <Button
+          value="7"
+          onClick={(e) => {
+            handlePartButtonClick(e);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          variant={activePart === "7" ? "default" : "outline"}
+        >
+          Part 7
+        </Button>
+      </div>
     </div>
   );
 }

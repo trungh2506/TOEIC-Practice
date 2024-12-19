@@ -18,10 +18,11 @@ export const submitTestApi = (toeic_test_id: string, answers: any[]) =>
 export const saveTestApi = (toeic_test_id: string, answers: any[]) =>
   axiosInstance.post(`/user-answer/save/${toeic_test_id}`, answers);
 
+export const autoSaveTestApi = (toeic_test_id: string, answers: any[]) =>
+  axiosInstance.post(`/user-answer/auto-save/${toeic_test_id}`, answers);
+
 export const cancelTestApi = (user_answer_id: string) =>
   axiosInstance.post(`/user-answer/cancel/${user_answer_id}`);
 
 export const resumeTestApi = (toeic_test_id: string) =>
   axiosInstance.post(`/user-answer/resume/${toeic_test_id}`);
-
-

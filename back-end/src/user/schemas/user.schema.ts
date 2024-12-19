@@ -32,8 +32,8 @@ export class User extends Document {
   @Prop()
   number_phone: string;
 
-  @Prop({ type: Object })
-  estimate_scores: Record<string, any>;
+  @Prop()
+  estimate_scores: number;
 
   @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Vocabulary' }] })
   saved_vocabulary: Vocabulary[];

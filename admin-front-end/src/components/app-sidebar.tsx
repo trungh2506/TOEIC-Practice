@@ -41,6 +41,7 @@ import { NavProjects } from "@/components/nav-projects";
 import { NavUser } from "@/components/nav-user";
 import { RootState } from "@/lib/redux/store";
 import { useSelector } from "react-redux";
+import Image from "next/image";
 
 // This is sample data.
 const data = {
@@ -68,75 +69,70 @@ const data = {
         },
       ],
     },
+    // {
+    //   title: "Luyện nghe",
+    //   url: "#",
+    //   icon: Files,
+    //   isActive: true,
+    //   items: [
+    //     {
+    //       title: "Danh sách bài luyện nghe",
+    //       url: "/dashboard/listening-tests",
+    //       icon: HeadphonesIcon,
+    //     },
+    //     {
+    //       title: "Thêm bài luyện nghe mới",
+    //       url: "/dashboard/listening-tests/add",
+    //       icon: FilePlus,
+    //     },
+    //   ],
+    // },
     {
-      title: "Luyện nghe",
-      url: "#",
-      icon: Files,
-      isActive: true,
-      items: [
-        {
-          title: "Danh sách bài luyện nghe",
-          url: "/dashboard/listening-tests",
-          icon: HeadphonesIcon,
-        },
-        {
-          title: "Thêm bài luyện nghe mới",
-          url: "/dashboard/listening-tests/add",
-          icon: FilePlus,
-        },
-      ],
-    },
-    {
-      title: "Người dùng",
+      title: "Thành viên",
       url: "#",
       icon: UsersRound,
       items: [
         {
-          title: "Danh sách người dùng",
+          title: "Danh sách thành viên",
           url: "/dashboard/users",
           icon: UsersRound,
         },
-        // {
-        //   title: "Thêm người dùng mới",
-        //   url: "/dashboard/users/add",
-        //   icon: UserRoundPlus,
-        // },
       ],
     },
-    {
-      title: "Ngữ pháp",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Danh sách bài học ngữ pháp",
-          url: "#",
-          icon: LibraryBig,
-        },
-        {
-          title: "Thêm bài học ngữ pháp mới",
-          url: "#",
-          icon: Plus,
-        },
-      ],
-    },
-    {
-      title: "Từ vựng",
-      url: "#",
-      icon: CaseSensitive,
-      items: [
-        {
-          title: "Danh sách từ vựng",
-          url: "#",
-          icon: BookA,
-        },
-        {
-          title: "Thêm từ vựng mới",
-          url: "#",
-          icon: Plus,
-        },
-      ],
-    },
+    // {
+    //   title: "Ngữ pháp",
+    //   url: "#",
+    //   icon: BookOpen,
+    //   items: [
+    //     {
+    //       title: "Danh sách bài học ngữ pháp",
+    //       url: "#",
+    //       icon: LibraryBig,
+    //     },
+    //     {
+    //       title: "Thêm bài học ngữ pháp mới",
+    //       url: "#",
+    //       icon: Plus,
+    //     },
+    //   ],
+    // },
+    // {
+    //   title: "Từ vựng",
+    //   url: "#",
+    //   icon: CaseSensitive,
+    //   items: [
+    //     {
+    //       title: "Danh sách từ vựng",
+    //       url: "#",
+    //       icon: BookA,
+    //     },
+    //     {
+    //       title: "Thêm từ vựng mới",
+    //       url: "#",
+    //       icon: Plus,
+    //     },
+    //   ],
+    // },
   ],
   users: [
     {
@@ -161,7 +157,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useSelector((state: RootState) => state.auth);
   return (
     <Sidebar collapsible="icon" {...props}>
-      {/* <SidebarHeader>TOEIC AREA ADMIN PAGE</SidebarHeader> */}
+      <SidebarHeader className="flex items-center justify-center">
+        <Image
+          className="basis-1/3 rounded-md"
+          src="/logo.png"
+          width={200}
+          height={100}
+          quality={100}
+          alt="Carousel image 1"
+        />
+      </SidebarHeader>
       <SidebarContent>
         <NavProjects users={data.users} />
         <NavMain items={data.navMain} />

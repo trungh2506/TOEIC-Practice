@@ -16,18 +16,21 @@ import { AppDispatch } from "@/lib/redux/store";
 import {
   deleteToeicTest,
   getAllToeicTest,
-  removeToeicTest,
+  refreshToeicTest,
+  restoreToeicTest,
 } from "@/lib/redux/features/toeic-tests/toeicTestSlice";
 import { toast } from "@/hooks/use-toast";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
 export type ToeicTest = {
   _id: string;
   title: string;
   image: string;
   type: string;
+  meta_data: {
+    is_deleted: boolean;
+  };
 };
 
 export const columns: ColumnDef<ToeicTest>[] = [
@@ -44,6 +47,7 @@ export const columns: ColumnDef<ToeicTest>[] = [
         </Button>
       );
     },
+    accessorFn: (row) => row._id,
   },
   {
     accessorKey: "title",
@@ -58,6 +62,7 @@ export const columns: ColumnDef<ToeicTest>[] = [
         </Button>
       );
     },
+    accessorFn: (row) => row.title,
   },
   {
     accessorKey: "image",
@@ -81,6 +86,7 @@ export const columns: ColumnDef<ToeicTest>[] = [
         quality={100}
       />
     ),
+    accessorFn: (row) => row.image,
   },
   {
     accessorKey: "type",
@@ -95,19 +101,72 @@ export const columns: ColumnDef<ToeicTest>[] = [
         </Button>
       );
     },
+    accessorFn: (row) => row.type,
+  },
+  {
+    accessorKey: "meta_data",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Đã xóa mềm
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const metaData = row.original.meta_data; // Lấy meta_data từ row
+      const isDeleted = metaData?.is_deleted; // Lấy trường is_deleted từ meta_data
+      return (
+        <span>
+          {isDeleted ? (
+            <span className="text-red-500">Đã xóa</span> // Hiển thị nếu đã xóa
+          ) : (
+            <span className="text-green-500">Chưa xóa</span> // Hiển thị nếu chưa xóa
+          )}
+        </span>
+      );
+    },
+    accessorFn: (row) => row.meta_data.is_deleted,
   },
   {
     id: "actions",
     cell: ({ row }) => {
       const toeicTest = row.original;
+      const router = useRouter();
       const dispatch = useDispatch<AppDispatch>();
       const handleDelete = async () => {
-        await dispatch(deleteToeicTest(toeicTest._id));
-        dispatch(removeToeicTest(toeicTest._id));
-        toast({
-          description: <span>Xóa thành công!</span>,
-        });
-        // dispatch(getAllToeicTest(1));
+        const result = await dispatch(deleteToeicTest(toeicTest._id));
+        if (result.meta.requestStatus === "fulfilled") {
+          dispatch(refreshToeicTest({ id: toeicTest._id, is_deleted: true }));
+          toast({
+            description: <span>Xóa mềm thành công!</span>,
+          });
+        } else
+          toast({
+            description: <span>Xảy ra lỗi khi xóa!</span>,
+          });
+      };
+      const handleUpdate = async () => {
+        router.push(`toeic-tests/update/${toeicTest._id.toString()}`);
+      };
+      const handleRestore = async () => {
+        const result = await dispatch(
+          restoreToeicTest({ toeic_test_id: toeicTest._id.toString() })
+        );
+        if (result.meta.requestStatus === "fulfilled") {
+          dispatch(
+            refreshToeicTest({
+              id: toeicTest._id,
+              is_deleted: false,
+            })
+          );
+          toast({
+            description: <span>Khôi phục thành công!</span>,
+          });
+        }
       };
       return (
         <DropdownMenu>
@@ -119,22 +178,20 @@ export const columns: ColumnDef<ToeicTest>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Hành động</DropdownMenuLabel>
-            {/* <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(toeicTest._id)}
-            >
-              Copy payment ID
-            </DropdownMenuItem> */}
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => {
-                console.log(`Xem chi tiết ${toeicTest._id}`);
-              }}
-            >
+            <DropdownMenuItem onClick={handleUpdate}>
               <Edit /> Chỉnh sửa
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleDelete}>
-              <Trash /> Xóa đề thi
-            </DropdownMenuItem>
+
+            {row.original.meta_data.is_deleted ? (
+              <DropdownMenuItem onClick={handleRestore}>
+                <Trash /> Khôi phục
+              </DropdownMenuItem>
+            ) : (
+              <DropdownMenuItem onClick={handleDelete}>
+                <Trash /> Xóa mềm
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       );

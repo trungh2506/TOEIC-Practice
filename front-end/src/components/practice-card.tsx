@@ -90,6 +90,9 @@ export default function PracticeCard({
   const { toeicTestList, currentPage, loading, isAnswerShowing } = useSelector(
     (state: RootState) => state.toeicTest
   );
+  const { isAuthenticated, user } = useSelector(
+    (state: RootState) => state.user
+  );
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
 
@@ -117,16 +120,21 @@ export default function PracticeCard({
         <CardTitle>{title}</CardTitle>
         <CardDescription>{type}</CardDescription>
       </CardHeader>
-      <CardContent className="quicksand-regular text-sm">
+      <CardContent className="quicksand-regular text-sm h-[200px]">
         <p className="text-base">{description}</p>
       </CardContent>
       <CardFooter>
         <AlertDialog>
           <AlertDialogTrigger>
-            <span className="bg-primary p-2 rounded-sm text-sm text-foreground">
-              Xem Chi Tiết
-            </span>
+            {isAuthenticated && user && (
+              <span className="bg-primary p-2 rounded-sm text-sm text-foreground">
+                Xem Chi Tiết
+              </span>
+            )}
           </AlertDialogTrigger>
+          {!isAuthenticated && !user && (
+            <span className="text-sm">Đăng nhập để thi...</span>
+          )}
           <AlertDialogContent className="w-full">
             <AlertDialogHeader>
               <AlertDialogTitle>Danh sách bài thi</AlertDialogTitle>

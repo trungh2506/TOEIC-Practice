@@ -133,7 +133,11 @@ export default function Page() {
           <TabsTrigger value="settings">Cài đặt</TabsTrigger>
         </TabsList>
         {/* history */}
+
         <TabsContent value="history">
+          <h1 className="p-3 text-center">
+            Danh sách các đề thi đã hoàn thành
+          </h1>
           <Table className="w-full">
             <TableHeader>
               <TableRow>
@@ -154,7 +158,7 @@ export default function Page() {
                   return (
                     <TableRow key={index}>
                       <TableCell className="font-medium quicksand-bold">
-                        {result?.toeic_test_id.title}
+                        {result?.toeic_test_id?.title}
                       </TableCell>
                       <TableCell className="text-green-500">
                         {result?.correct_answers}
@@ -178,7 +182,7 @@ export default function Page() {
                         {result?.part ? `${result?.part}` : "Full"}
                       </TableCell>
                       <TableCell>
-                        {result?.isPractice ? (
+                        {result?.is_practice ? (
                           <Badge variant={"outline"}>Luyện tập</Badge>
                         ) : (
                           <Badge>Thi thử</Badge>

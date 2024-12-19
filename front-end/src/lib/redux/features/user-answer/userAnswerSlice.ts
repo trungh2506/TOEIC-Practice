@@ -1,4 +1,5 @@
 import {
+  autoSaveTestApi,
   cancelTestApi,
   getAllResultByUserIdApi,
   resumeTestApi,
@@ -81,6 +82,19 @@ export const saveTest = createAsyncThunk<any, any>(
   async ({ toeic_test_id, answers }, { rejectWithValue }) => {
     try {
       const response = await saveTestApi(toeic_test_id, answers);
+      const data = response.data;
+      return data;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+export const autoSaveTest = createAsyncThunk<any, any>(
+  "userAnswer/autoSaveTest",
+  async ({ toeic_test_id, answers }, { rejectWithValue }) => {
+    try {
+      const response = await autoSaveTestApi(toeic_test_id, answers);
       const data = response.data;
       return data;
     } catch (error: any) {
@@ -239,6 +253,9 @@ const userAnswerSlice = createSlice({
       state.markedQuestions = [];
       state.questionNumberList = [];
     },
+    clearOngoingTest: (state) => {
+      state.onGoingTest = [];
+    },
     clearCurrentUserAnswer: (state) => {
       state.currentUserAnswer = null;
     },
@@ -318,6 +335,24 @@ const userAnswerSlice = createSlice({
       state.error = true;
     });
 
+    //auto save test
+    builder.addCase(autoSaveTest.pending, (state) => {
+      state.loading = true;
+      state.success = false;
+      state.error = false;
+    });
+    builder.addCase(autoSaveTest.fulfilled, (state, action) => {
+      state.loading = false;
+      state.success = true;
+      state.error = false;
+      state.currentUserAnswer = action.payload;
+    });
+    builder.addCase(autoSaveTest.rejected, (state, action) => {
+      state.loading = false;
+      state.success = false;
+      state.error = true;
+    });
+
     //start test
     builder.addCase(startTest.pending, (state) => {
       state.loading = true;
@@ -387,6 +422,7 @@ export const {
   addQuestionNumberList,
   addMarkedQuestions,
   setAnswers,
+  clearOngoingTest,
   setQuestionNumberList,
   setmarkedQuestions,
 } = userAnswerSlice.actions;

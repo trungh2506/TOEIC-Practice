@@ -82,7 +82,7 @@ export class UserAnswerController {
     return {
       message: 'Tiếp tục làm bài thi trước đó.',
       duration: result.duration,
-      questionNumberList: result.questionNumberList
+      questionNumberList: result.questionNumberList,
     };
   }
 
@@ -102,6 +102,15 @@ export class UserAnswerController {
     @Body() answers: any[],
   ) {
     return this.userAnswerService.saveTempTest(req.user?._id, test_id, answers);
+  }
+
+  @Post('/auto-save/:toeic_test_id')
+  autoSaveTest(
+    @Req() req,
+    @Param('toeic_test_id') test_id: string,
+    @Body() answers: any[],
+  ) {
+    return this.userAnswerService.autoSaveTest(req.user?._id, test_id, answers);
   }
 
   @Post('/cancel/:user_answer_id')

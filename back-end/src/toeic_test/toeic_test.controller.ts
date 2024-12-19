@@ -49,8 +49,8 @@ export class ToeicTestController {
     ),
   )
   create(
-    @Req() req: Request,
-    @Body() body: any,
+    @Req() req: any,
+    @Body() body: CreateToeicTestDto,
     @UploadedFiles()
     files: {
       testImage?: Express.Multer.File;
@@ -67,6 +67,7 @@ export class ToeicTestController {
       files,
       toeic_test_title,
       toeic_test_type,
+      req.user?._id,
     );
   }
 
@@ -76,18 +77,56 @@ export class ToeicTestController {
     return this.toeicTestService.findAll(paginationDto);
   }
 
+  @Roles(Role.Admin)
+  @Get('admin')
+  adminfindAll(@Query() paginationDto: PaginationDto) {
+    return this.toeicTestService.adminFindAll(paginationDto);
+  }
+
   @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.toeicTestService.findOne(id);
   }
 
+  @Roles(Role.Admin)
   @Patch(':id')
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        { name: 'questions', maxCount: 1 },
+        { name: 'passages', maxCount: 1 },
+        { name: 'images', maxCount: 100 },
+        { name: 'audios', maxCount: 100 },
+        { name: 'testImage', maxCount: 1 },
+        { name: 'fullAudio', maxCount: 1 },
+      ],
+      // { storageMemory },
+    ),
+  )
   update(
+    @Req() req: any,
     @Param('id') id: string,
-    @Body() updateToeicTestDto: UpdateToeicTestDto,
+    @Body() body: UpdateToeicTestDto,
+    @UploadedFiles()
+    files: {
+      testImage?: Express.Multer.File;
+      questions?: Express.Multer.File;
+      passages?: Express.Multer.File;
+      images?: Express.Multer.File[];
+      audios?: Express.Multer.File[];
+      fullAudio?: Express.Multer.File;
+    },
   ) {
-    return this.toeicTestService.update(+id, updateToeicTestDto);
+    const toeic_test_title = body.title;
+    const toeic_test_type = body.type;
+    return this.toeicTestService.update(
+      id,
+      files,
+      req.user?._id,
+      toeic_test_title,
+      toeic_test_type,
+    );
   }
 
   @Roles(Role.Admin)
@@ -103,5 +142,11 @@ export class ToeicTestController {
     @Param('partNumber') partNumber: number,
   ) {
     return this.toeicTestService.getPart(testId, partNumber);
+  }
+
+  @Roles(Role.Admin)
+  @Patch('restore/:id')
+  restoreAfterSoftDelete(@Param('id') toeic_test_id: string) {
+    return this.toeicTestService.restoreAfterSoftDelete(toeic_test_id);
   }
 }

@@ -1,10 +1,10 @@
 import { Mail, MapPin, Phone } from "lucide-react";
+import Image from "next/image";
 
 export default function Footer() {
   return (
     <div className="absolute flex flex-col sm:flex-row justify-center bg-primary p-12 text-white gap-5">
       <div>
-        <span className="text-3xl quicksand-regular">TOEIC AREA LOGO</span>
         <p className="mt-5 quicksand-medium">
           Chào mừng bạn đến với <strong>Trang Web Luyện Thi TOEIC</strong> – nền
           tảng trực tuyến giúp bạn chuẩn bị cho kỳ thi TOEIC một cách hiệu quả
